@@ -12,10 +12,22 @@ export interface EditorState {
   lastSaved: Date | null
   isDirty: boolean
   undoStack: Block[][]
+  
+  // Metadata & Editorial
   metaTitle: string
   metaDescription: string
-
-
+  categoryId: string | null
+  tags: string[]
+  featuredImage: string
+  isBreaking: boolean
+  isExclusive: boolean
+  isFeatured: boolean
+  
+  // UI State
+  isSidebarOpen: boolean
+  activeTab: 'content' | 'settings' | 'seo'
+  
+  // Actions
   setTitle: (title: string) => void
   setBlocks: (blocks: Block[]) => void
   addBlock: (type: Block['type'], afterId?: string) => void
@@ -24,10 +36,14 @@ export interface EditorState {
   moveBlock: (id: string, direction: 'up' | 'down') => void
   reorderBlocks: (fromIdx: number, toIdx: number) => void
   undo: () => void
+  
+  // Data Sync
   loadArticle: (id: string, siteId: string) => Promise<void>
   saveArticle: () => Promise<void>
-  updateMeta: (meta: Partial<{ metaTitle: string; metaDescription: string }>) => void
-
+  updateArticleData: (data: Partial<EditorState>) => void
+  
+  toggleSidebar: (isOpen?: boolean) => void
+  setActiveTab: (tab: EditorState['activeTab']) => void
   publishArticle: () => Promise<void>
   reset: () => void
 }
@@ -57,9 +73,18 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   lastSaved: null,
   isDirty: false,
   undoStack: [],
+  
   metaTitle: '',
   metaDescription: '',
-
+  categoryId: null,
+  tags: [],
+  featuredImage: '',
+  isBreaking: false,
+  isExclusive: false,
+  isFeatured: false,
+  
+  isSidebarOpen: false,
+  activeTab: 'content',
 
   setTitle: (title) => {
     set({ title, isDirty: true })
@@ -137,19 +162,33 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       status: article.status,
       metaTitle: article.metaTitle || '',
       metaDescription: article.metaDescription || '',
+      categoryId: article.categoryId,
+      tags: article.tags || [],
+      featuredImage: article.featuredImage || '',
+      isBreaking: article.isBreaking || false,
+      isExclusive: article.isExclusive || false,
+      isFeatured: article.isFeatured || false,
       isDirty: false,
       undoStack: []
     })
-
   },
 
   saveArticle: async () => {
-    const { articleId, title, blocks, metaTitle, metaDescription } = get()
-    if (!articleId) return
+    const s = get()
+    if (!s.articleId) return
     set({ saving: true })
     try {
-      await api.put(`/articles/${articleId}`, {
-        title, blocks, metaTitle, metaDescription
+      await api.put(`/articles/${s.articleId}`, {
+        title: s.title, 
+        blocks: s.blocks, 
+        metaTitle: s.metaTitle, 
+        metaDescription: s.metaDescription,
+        categoryId: s.categoryId,
+        tags: s.tags,
+        featuredImage: s.featuredImage,
+        isBreaking: s.isBreaking,
+        isExclusive: s.isExclusive,
+        isFeatured: s.isFeatured
       })
       set({ saving: false, lastSaved: new Date(), isDirty: false })
     } catch {
@@ -157,11 +196,13 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     }
   },
 
-  updateMeta: (meta) => {
-    set({ ...meta, isDirty: true })
+  updateArticleData: (data) => {
+    set({ ...data, isDirty: true })
     scheduleAutoSave(get)
   },
 
+  toggleSidebar: (isOpen) => set((s) => ({ isSidebarOpen: isOpen ?? !s.isSidebarOpen })),
+  setActiveTab: (activeTab) => set({ activeTab }),
 
   publishArticle: async () => {
     const { articleId } = get()
@@ -175,9 +216,10 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     articleId: null, title: '', status: 'draft',
     blocks: [{ id: uuidv4(), type: 'paragraph', content: '' }],
     saving: false, lastSaved: null, isDirty: false, undoStack: [],
-    metaTitle: '', metaDescription: ''
+    metaTitle: '', metaDescription: '', categoryId: null, tags: [],
+    featuredImage: '', isBreaking: false, isExclusive: false, isFeatured: false,
+    isSidebarOpen: false, activeTab: 'content'
   })
-
 }))
 
 function scheduleAutoSave(get: () => EditorState) {

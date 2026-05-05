@@ -14,23 +14,38 @@ import {
   ChevronRight,
   Users as UsersIcon,
   Menu,
-  X
+  X,
+  Bell,
+  Search,
+  Moon,
+  Sun,
+  ClipboardCheck,
+  BarChart3,
+  Shield,
+  Activity,
+  ChevronDown
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { cn } from '@/lib/utils'
-
 import { useRouter } from 'next/navigation'
+import NotificationBell from '@/components/dashboard/NotificationBell'
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const { site } = useParams() as { site: string }
   const { user, logout } = useAuthStore()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
+  const [theme, setTheme] = useState<'light' | 'dark'>('light')
   const router = useRouter()
 
   useEffect(() => {
-    // Pastikan ini berjalan di client-side
     if (typeof window !== 'undefined') {
+      const savedTheme = localStorage.getItem('theme') as 'light' | 'dark'
+      if (savedTheme) {
+        setTheme(savedTheme)
+        document.documentElement.classList.toggle('dark', savedTheme === 'dark')
+      }
       const token = localStorage.getItem('accessToken')
       if (!token) {
         router.push('/login')
@@ -43,141 +58,273 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }
   }, [user, router])
 
-  const navigation = [
-    { name: 'Ringkasan', href: `/${site}/dashboard`, icon: LayoutDashboard, roles: ['superadmin', 'pimred', 'journalist'] },
-    { name: 'Artikel', href: `/${site}/dashboard/articles`, icon: FileText, roles: ['superadmin', 'pimred', 'journalist'] },
-    { name: 'Kategori', href: `/${site}/dashboard/categories`, icon: Tag, roles: ['superadmin', 'pimred'] },
-    { name: 'Iklan & Banner', href: `/${site}/dashboard/ads`, icon: ImageIcon, roles: ['superadmin', 'pimred'] },
-    { name: 'Tim Redaksi', href: `/${site}/dashboard/users`, icon: UsersIcon, roles: ['superadmin'] },
-    { name: 'Pengaturan Situs', href: `/${site}/dashboard/settings`, icon: Settings, roles: ['superadmin', 'pimred'] },
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light'
+    setTheme(newTheme)
+    localStorage.setItem('theme', newTheme)
+    document.documentElement.classList.toggle('dark', newTheme === 'dark')
+  }
+
+  // Navigation organized by section
+  const navSections = [
+    {
+      label: 'Utama',
+      items: [
+        { name: 'Ringkasan', href: `/${site}/dashboard`, icon: LayoutDashboard, roles: ['superadmin', 'pimred', 'journalist'] },
+        { name: 'Artikel', href: `/${site}/dashboard/articles`, icon: FileText, roles: ['superadmin', 'pimred', 'journalist'] },
+        { name: 'Media', href: `/${site}/dashboard/media`, icon: ImageIcon, roles: ['superadmin', 'pimred', 'journalist'] },
+      ]
+    },
+    {
+      label: 'Editorial',
+      items: [
+        { name: 'Antrian Review', href: `/${site}/dashboard/review`, icon: ClipboardCheck, roles: ['superadmin', 'pimred'] },
+        { name: 'Kalender', href: `/${site}/dashboard/calendar`, icon: Calendar, roles: ['superadmin', 'pimred'] },
+        { name: 'Kategori', href: `/${site}/dashboard/categories`, icon: Tag, roles: ['superadmin', 'pimred'] },
+        { name: 'Iklan & Banner', href: `/${site}/dashboard/ads`, icon: ImageIcon, roles: ['superadmin', 'pimred'] },
+      ]
+    },
+    {
+      label: 'Administrasi',
+      items: [
+        { name: 'Monitor Tim', href: `/${site}/dashboard/team`, icon: UsersIcon, roles: ['superadmin', 'pimred'] },
+        { name: 'Audit Log', href: `/${site}/dashboard/audit`, icon: Shield, roles: ['superadmin', 'pimred'] },
+        { name: 'Pengaturan', href: `/${site}/dashboard/settings`, icon: Settings, roles: ['superadmin', 'pimred'] },
+      ]
+    }
   ]
 
-  const filteredNav = navigation.filter(item => user && item.roles.includes(user.role))
+  const ROLE_LABELS: Record<string, string> = {
+    superadmin: 'Superadmin',
+    pimred: 'Pimpinan Redaksi',
+    journalist: 'Wartawan',
+  }
+
+  const initials = user?.name
+    ?.split(' ')
+    .map((n: string) => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2) || 'U'
+
+  const SidebarContent = () => (
+    <>
+      {/* Logo Section */}
+      <div className="p-6 border-b border-white/5">
+        <Link href={`/${site}/dashboard`} className="flex items-center gap-3">
+          <div className="w-9 h-9 bg-brand-red rounded-lg flex items-center justify-center shadow-lg shadow-brand-red/30">
+            <span className="text-white text-sm font-black">BK</span>
+          </div>
+          {!isSidebarCollapsed && (
+            <div className="flex flex-col">
+              <h2 className="text-sm font-black tracking-tight uppercase leading-none text-white">
+                Berita<span className="text-brand-red">Karya</span>
+              </h2>
+              <p className="text-[8px] text-gray-500 uppercase tracking-[0.2em] font-bold mt-0.5">Admin Center</p>
+            </div>
+          )}
+        </Link>
+      </div>
+
+      {/* Site Indicator */}
+      <div className="mx-4 mt-4 mb-2 px-3 py-2.5 bg-white/5 rounded-lg border border-white/5">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Activity size={12} className="text-emerald-400" />
+            <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Portal Aktif</span>
+          </div>
+          <ChevronDown size={12} className="text-gray-500" />
+        </div>
+        {!isSidebarCollapsed && (
+          <p className="text-xs font-black text-white uppercase tracking-tight mt-1">
+            {site === 'pusat' ? 'Pusat (Nasional)' : site.charAt(0).toUpperCase() + site.slice(1)}
+          </p>
+        )}
+      </div>
+      
+      {/* Navigation Sections */}
+      <nav className="flex-1 px-3 pt-4 space-y-6 overflow-y-auto">
+        {navSections.map((section) => {
+          const filteredItems = section.items.filter(item => user && item.roles.includes(user.role))
+          if (filteredItems.length === 0) return null
+          return (
+            <div key={section.label}>
+              {!isSidebarCollapsed && (
+                <p className="px-3 text-[9px] font-black text-gray-600 uppercase tracking-[0.2em] mb-2">{section.label}</p>
+              )}
+              <div className="space-y-0.5">
+                {filteredItems.map((item) => {
+                  const isActive = pathname === item.href || (item.href !== `/${site}/dashboard` && pathname.startsWith(item.href))
+                  const Icon = item.icon
+                  return (
+                    <Link 
+                      key={item.name} 
+                      href={item.href}
+                      className={cn(
+                        "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group relative",
+                        isActive 
+                          ? 'bg-brand-red text-white shadow-lg shadow-brand-red/20' 
+                          : 'text-gray-400 hover:bg-white/5 hover:text-white'
+                      )}
+                    >
+                      <Icon size={17} strokeWidth={isActive ? 2.5 : 1.8} />
+                      {!isSidebarCollapsed && (
+                        <>
+                          <span className="text-[11px] font-bold uppercase tracking-wider">{item.name}</span>
+                          {isActive && <ChevronRight size={12} className="ml-auto opacity-60" />}
+                        </>
+                      )}
+                    </Link>
+                  )
+                })}
+              </div>
+            </div>
+          )
+        })}
+      </nav>
+
+      {/* User Footer */}
+      <div className="p-4 border-t border-white/5 bg-black/20">
+        <div className="flex items-center gap-3 mb-4 px-2">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-brand-red to-red-800 flex items-center justify-center text-xs font-black text-white shadow-inner flex-shrink-0">
+            {initials}
+          </div>
+          {!isSidebarCollapsed && (
+            <div className="flex flex-col min-w-0">
+              <span className="text-xs font-black truncate text-white leading-tight">{user?.name}</span>
+              <span className="text-[9px] text-brand-red font-bold uppercase tracking-widest mt-0.5">
+                {ROLE_LABELS[user?.role || ''] || user?.role}
+              </span>
+            </div>
+          )}
+        </div>
+        <button 
+          onClick={logout}
+          className="w-full flex items-center justify-center gap-2 px-3 py-2.5 text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-red-400 hover:bg-red-400/5 transition-all rounded-lg border border-transparent hover:border-red-400/10"
+        >
+          <LogOut size={14} />
+          {!isSidebarCollapsed && 'Keluar'}
+        </button>
+      </div>
+    </>
+  )
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0a0f1a] flex flex-col md:flex-row font-sans text-brand-black dark:text-white transition-colors duration-500">
+    <div className="min-h-screen bg-gray-50 dark:bg-[#0a0f1a] flex flex-col md:flex-row font-sans text-brand-black dark:text-white transition-colors duration-500">
       
       {/* Sidebar Desktop */}
-      <aside className="w-64 bg-slate-900 dark:bg-black/40 text-white flex-shrink-0 flex flex-col hidden md:flex border-r border-transparent dark:border-white/5">
-        <div className="p-8 border-b border-white/5">
-          <Link href={`/${site}/dashboard`} className="flex flex-col">
-            <h2 className="text-xl font-serif font-black tracking-tighter uppercase leading-none">
-              ADMIN<span className="text-brand-red">.</span>
-            </h2>
-            <p className="text-[9px] text-gray-500 mt-1 uppercase tracking-[0.2em] font-bold">CENTER</p>
-          </Link>
-        </div>
-        
-        <nav className="flex-1 p-4 pt-8 space-y-1">
-          <p className="px-4 text-[9px] font-black text-gray-500 uppercase tracking-[0.2em] mb-4">Utama</p>
-          {filteredNav.map((item) => {
-            const isActive = pathname === item.href || (item.href !== `/${site}/dashboard` && pathname.startsWith(item.href))
-            const Icon = item.icon
-            return (
-              <Link 
-                key={item.name} 
-                href={item.href}
-                className={cn(
-                  "flex items-center justify-between px-4 py-3 rounded-sm transition-all duration-200 group",
-                  isActive 
-                    ? 'bg-brand-red text-white shadow-lg shadow-brand-red/20' 
-                    : 'text-gray-400 hover:bg-white/5 hover:text-white'
-                )}
-              >
-                <div className="flex items-center gap-3">
-                  <Icon size={18} strokeWidth={isActive ? 2.5 : 2} />
-                  <span className="text-xs font-bold uppercase tracking-widest">{item.name}</span>
-                </div>
-                {isActive && <ChevronRight size={14} className="opacity-50" />}
-              </Link>
-            )
-          })}
-        </nav>
-
-        <div className="p-6 border-t border-white/5 bg-black/20">
-          <div className="flex items-center gap-3 mb-6 px-2">
-            <div className="w-10 h-10 rounded-full bg-brand-red flex items-center justify-center text-sm font-serif italic shadow-inner">
-              {user?.name?.charAt(0) || 'U'}
-            </div>
-            <div className="flex flex-col min-w-0">
-              <span className="text-xs font-black truncate uppercase tracking-widest leading-tight">{user?.name}</span>
-              <span className="text-[9px] text-gray-500 uppercase font-bold tracking-widest mt-0.5">{user?.role}</span>
-            </div>
-          </div>
-          <button 
-            onClick={logout}
-            className="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-red-400 hover:bg-red-400/5 transition-all rounded-sm"
-          >
-            <LogOut size={16} /> Keluar
-          </button>
-        </div>
+      <aside className={cn(
+        "bg-slate-900 dark:bg-[#050a15] text-white flex-shrink-0 flex-col hidden md:flex border-r border-white/5 transition-all duration-300 sticky top-0 h-screen",
+        isSidebarCollapsed ? "w-[72px]" : "w-64"
+      )}>
+        <SidebarContent />
       </aside>
 
       {/* Mobile Navbar */}
-      <div className="md:hidden bg-slate-900 dark:bg-black/40 text-white p-4 flex justify-between items-center sticky top-0 z-50 border-b border-transparent dark:border-white/5">
+      <div className="md:hidden bg-slate-900 dark:bg-[#050a15] text-white p-4 flex justify-between items-center sticky top-0 z-50 border-b border-white/5">
         <div className="flex items-center gap-3">
-          <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-2">
-            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-2 hover:bg-white/5 rounded-lg transition-colors">
+            {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
-          <h2 className="text-lg font-serif font-black uppercase tracking-tighter">ADMIN<span className="text-brand-red">.</span></h2>
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 bg-brand-red rounded-md flex items-center justify-center">
+              <span className="text-white text-[10px] font-black">BK</span>
+            </div>
+            <h2 className="text-sm font-black uppercase tracking-tight">Admin</h2>
+          </div>
         </div>
-        <Link href={`/${site}`} target="_blank" className="p-2 text-brand-red">
-          <ExternalLink size={20} />
-        </Link>
+        <div className="flex items-center gap-2">
+          <button onClick={toggleTheme} className="p-2 text-gray-400 hover:text-white transition-colors">
+            {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
+          </button>
+          <Link href={`/${site}`} target="_blank" className="p-2 text-brand-red hover:bg-brand-red/10 rounded-lg transition-colors">
+            <ExternalLink size={18} />
+          </Link>
+        </div>
       </div>
 
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
-        <div className="md:hidden fixed inset-0 z-40 bg-slate-900 dark:bg-[#0a0f1a] pt-20 px-6">
-          <nav className="space-y-4">
-            {filteredNav.map((item) => {
-              const isActive = pathname === item.href || (item.href !== `/${site}/dashboard` && pathname.startsWith(item.href))
-              const Icon = item.icon
-              return (
-                <Link 
-                  key={item.name} 
-                  href={item.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={cn(
-                    "flex items-center gap-4 py-4 border-b border-white/5",
-                    isActive ? "text-brand-red" : "text-gray-400"
-                  )}
-                >
-                  <Icon size={20} />
-                  <span className="text-sm font-bold uppercase tracking-widest">{item.name}</span>
-                </Link>
-              )
-            })}
-            <button onClick={logout} className="flex items-center gap-4 py-4 text-red-400 w-full">
+        <div className="md:hidden fixed inset-0 z-40 bg-slate-900 dark:bg-[#0a0f1a] pt-20 px-4 overflow-y-auto">
+          {navSections.map((section) => {
+            const filteredItems = section.items.filter(item => user && item.roles.includes(user.role))
+            if (filteredItems.length === 0) return null
+            return (
+              <div key={section.label} className="mb-6">
+                <p className="px-3 text-[9px] font-black text-gray-600 uppercase tracking-[0.2em] mb-2">{section.label}</p>
+                {filteredItems.map((item) => {
+                  const isActive = pathname === item.href || (item.href !== `/${site}/dashboard` && pathname.startsWith(item.href))
+                  const Icon = item.icon
+                  return (
+                    <Link 
+                      key={item.name} 
+                      href={item.href}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={cn(
+                        "flex items-center gap-4 py-3.5 px-3 rounded-lg mb-0.5",
+                        isActive ? "text-brand-red bg-brand-red/5" : "text-gray-400"
+                      )}
+                    >
+                      <Icon size={20} />
+                      <span className="text-sm font-bold uppercase tracking-widest">{item.name}</span>
+                    </Link>
+                  )
+                })}
+              </div>
+            )
+          })}
+          <div className="border-t border-white/5 pt-4 mt-4">
+            <button onClick={logout} className="flex items-center gap-4 py-3 px-3 text-red-400 w-full">
               <LogOut size={20} />
               <span className="text-sm font-bold uppercase tracking-widest">Keluar</span>
             </button>
-          </nav>
+          </div>
         </div>
       )}
 
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col h-screen overflow-hidden">
-        <header className="h-20 bg-white dark:bg-slate-900/50 border-b border-gray-100 dark:border-white/5 flex items-center justify-between px-8 flex-shrink-0">
-           <div className="flex flex-col">
-             <h3 className="text-xs font-black uppercase tracking-[0.25em] text-brand-black dark:text-white">Admin Center</h3>
-             <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">Sistem Manajemen Konten BeritaKarya</p>
-           </div>
-           <Link 
-            href={`/${site}`} 
-            target="_blank" 
-            className="flex items-center gap-2 px-4 py-2 bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 border border-gray-200 dark:border-white/10 rounded-sm text-[10px] font-bold uppercase tracking-widest transition-all text-brand-black dark:text-white"
-           >
-             Lihat Portal <ExternalLink size={12} className="text-brand-red" />
-           </Link>
+        {/* Top Header Bar */}
+        <header className="h-16 bg-white dark:bg-slate-900/50 border-b border-gray-100 dark:border-white/5 flex items-center justify-between px-6 flex-shrink-0 backdrop-blur-sm">
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+              className="hidden md:flex p-2 hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg transition-colors text-gray-400"
+            >
+              <Menu size={18} />
+            </button>
+            <div className="relative hidden md:block">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-300" />
+              <input 
+                type="text" 
+                placeholder="Cari di dashboard..."
+                className="pl-9 pr-4 py-2 bg-gray-50 dark:bg-white/5 border border-transparent focus:border-brand-red/20 rounded-lg text-xs w-64 outline-none transition-all text-brand-black dark:text-white placeholder:text-gray-300"
+              />
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <button onClick={toggleTheme} className="hidden md:flex p-2 text-gray-400 hover:text-brand-black dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg transition-colors">
+              {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
+            </button>
+            <NotificationBell />
+            <div className="w-px h-6 bg-gray-100 dark:bg-white/5 mx-1 hidden md:block" />
+            <Link 
+              href={`/${site}`} 
+              target="_blank" 
+              className="flex items-center gap-2 px-3 py-1.5 hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all text-gray-400 hover:text-brand-red"
+            >
+              <ExternalLink size={12} /> <span className="hidden sm:inline">Portal</span>
+            </Link>
+          </div>
         </header>
-        <div className="flex-1 overflow-y-auto p-8">
-          <div className="max-w-6xl mx-auto">
+
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto p-6 md:p-8">
+          <div className="max-w-7xl mx-auto animate-fade-in">
             {children}
           </div>
         </div>
       </main>
-
     </div>
   )
 }

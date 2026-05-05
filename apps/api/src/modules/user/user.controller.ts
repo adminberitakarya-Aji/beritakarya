@@ -4,6 +4,7 @@ import { prisma } from '../../db/client'
 import { requireAuth, requireRole } from '../../middleware/auth.middleware'
 import { siteMiddleware } from '../../middleware/site.middleware'
 import { asyncHandler } from '../../utils/asyncHandler'
+import * as repo from './user.repository'
 
 export const userRouter: Router = Router()
 
@@ -30,6 +31,16 @@ userRouter.get('/',
       orderBy: { createdAt: 'desc' }
     })
     res.json({ success: true, data: users })
+  })
+)
+
+userRouter.get('/stats',
+  requireAuth,
+  requireRole('superadmin', 'pimred'),
+  siteMiddleware,
+  asyncHandler(async (req: Request, res: Response) => {
+    const stats = await repo.getTeamStats(req.site!)
+    res.json({ success: true, data: stats })
   })
 )
 

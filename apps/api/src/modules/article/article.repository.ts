@@ -13,7 +13,7 @@ export async function findArticlesBySite(
     ...(search && { 
       OR: [
         { title: { contains: search, mode: 'insensitive' } },
-        { blocks: { path: ['$'], string_contains: search } } // Search in content blocks
+        { blocks: { path: ['$'], string_contains: search } }
       ]
     })
   }
@@ -23,7 +23,10 @@ export async function findArticlesBySite(
       select: {
         id: true, title: true, slug: true, status: true,
         siteId: true, authorId: true, publishedAt: true, createdAt: true,
-        author: { select: { id: true, name: true } }
+        isBreaking: true, isExclusive: true, isFeatured: true,
+        viewCount: true, wordCount: true, readingTimeMin: true,
+        category: { select: { name: true } },
+        author: { select: { id: true, name: true, role: true } }
       },
       orderBy: { createdAt: 'desc' },
       skip: (page - 1) * limit,
@@ -37,21 +40,30 @@ export async function findArticlesBySite(
 export async function findArticleById(id: string, siteId: string) {
   return prisma.article.findFirst({
     where: { id, siteId },
-    include: { author: { select: { id: true, name: true, email: true } } }
+    include: { 
+      author: { select: { id: true, name: true, email: true, role: true } },
+      category: { select: { name: true } }
+    }
   })
 }
 
 export async function findArticleBySlug(slug: string, siteId: string) {
   return prisma.article.findUnique({
     where: { siteId_slug: { siteId, slug } },
-    include: { author: { select: { id: true, name: true } } }
+    include: { 
+      author: { select: { id: true, name: true, role: true } },
+      category: { select: { name: true } }
+    }
   })
 }
 
 export async function findPublishedArticleBySlug(slug: string, siteId: string) {
   return prisma.article.findFirst({
     where: { siteId, slug, status: 'published' },
-    include: { author: { select: { id: true, name: true } } }
+    include: { 
+      author: { select: { id: true, name: true, role: true } },
+      category: { select: { name: true } }
+    }
   })
 }
 
@@ -64,7 +76,14 @@ export async function createArticle(data: {
 
 export async function updateArticle(
   id: string, siteId: string,
-  data: Partial<{ title: string; blocks: any[]; metaTitle: string; metaDescription: string; status: string; categoryId: string | null; tags: any }>
+  data: Partial<{ 
+    title: string; blocks: any[]; metaTitle: string; metaDescription: string; 
+    status: string; categoryId: string | null; tags: any;
+    isBreaking: boolean; isExclusive: boolean; isFeatured: boolean;
+    wordCount: number; readingTimeMin: number; publishedAt: Date;
+    reviewNotes: string; reviewedBy: string; reviewedAt: Date;
+    featuredImage: string;
+  }>
 ) {
   return prisma.article.update({ where: { id }, data })
 }
@@ -78,4 +97,40 @@ export async function slugExists(slug: string, siteId: string, excludeId?: strin
     where: { slug, siteId, ...(excludeId && { id: { not: excludeId } }) }
   })
   return !!article
+}
+
+export async function createAuditLog(data: {
+  userId: string; siteId: string; action: string;
+  entityType: string; entityId: string;
+  oldValue?: any; newValue?: any;
+}) {
+  return (prisma as any).auditLog.create({ data })
+}
+
+export async function createVersion(data: {
+  articleId: string; title: string; blocks: any[]; version: number; authorId: string
+}) {
+  return prisma.articleVersion.create({ data })
+}
+
+export async function findVersions(articleId: string) {
+  return prisma.articleVersion.findMany({
+    where: { articleId },
+    orderBy: { createdAt: 'desc' },
+    select: {
+      id: true, title: true, version: true, createdAt: true, authorId: true
+    }
+  })
+}
+
+export async function findVersionById(id: string) {
+  return prisma.articleVersion.findUnique({ where: { id } })
+}
+
+export async function getNextVersionNumber(articleId: string) {
+  const last = await prisma.articleVersion.findFirst({
+    where: { articleId },
+    orderBy: { version: 'desc' }
+  })
+  return (last?.version || 0) + 1
 }

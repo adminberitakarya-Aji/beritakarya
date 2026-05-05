@@ -1,86 +1,83 @@
 # BeritaKarya 📰
 
-Platform publikasi berita multi-site modern dengan asisten AI terintegrasi.
+Platform publikasi berita multi-tenant modern kelas dunia dengan asisten AI terintegrasi, alur kerja editorial profesional, dan sistem analitik real-time.
 
-## Fitur Utama
-- **Multi-site Architecture**: Satu instalasi untuk mengelola banyak sub-situs (misal: bandung.beritakarya.com, surabaya.beritakarya.com).
-- **Block-based Editor**: Editor artikel fleksibel berbasis blok (teks, gambar, grid, embed).
-- **AI Assistive**: Asisten AI untuk menulis ulang, memperluas konten, ekstraksi meta tag, dan optimasi layout.
-- **Sistem Media Cerdas**: Konversi otomatis ke WebP dan pembuatan thumbnail untuk performa maksimal.
-- **Security Hardened**: Perlindungan XSS (DOMPurify), rate limiting, dan header keamanan produksi.
+## 🚀 Fitur Unggulan
 
-## Struktur Project
+### 🏛️ Arsitektur Multi-Tenant
+Satu core engine untuk mengelola jaringan portal berita (Pusat & Daerah). Konfigurasi domain dinamis dan isolasi data antar portal yang ketat.
+
+### ✍️ Editorial Workflow Profesional
+- **Block-based Editor**: Editor artikel fleksibel (teks, gambar, quote, grid).
+- **Review Queue**: Alur kerja formal: `Draft` → `Submitted` → `Review` → `Scheduled` → `Published`.
+- **Article Versioning**: Simpan snapshot konten dan pulihkan versi lama kapan saja.
+- **Kalender Editorial**: Visualisasi jadwal terbit dalam tampilan kalender bulanan.
+
+### 📊 Analytics & Monitoring
+- **Real-time Traffic**: Visualisasi data pembaca menggunakan Recharts.
+- **Monitor Tim**: Pantau produktivitas wartawan (output harian, views, status online).
+- **Audit Log**: Transparansi penuh aksi administratif (siapa mengubah apa, kapan, dan IP address).
+
+### 🤖 Smart Assistant (AI)
+- **AI Content Helper**: Menulis ulang, memperluas paragraf, dan optimasi headline.
+- **Automated Metadata**: Ekstraksi meta tags dan saran SEO otomatis.
+- **Usage Tracking**: Audit penggunaan token AI per user/site.
+
+### 🖼️ Manajemen Media & SEO
+- **Media Manager**: Optimasi otomatis ke WebP, resize, watermarking, dan manajemen metadata IPTC.
+- **SEO Panel**: Preview OpenGraph (FB) & Twitter Cards secara real-time sebelum publikasi.
+- **Reader Tools**: Font size adjuster, Print-friendly view, dan sistem komentar premium.
+
+## 📁 Struktur Monorepo
+
 ```text
 beritakarya/
 ├── apps/
-│   ├── api/          # Express.js Backend
-│   └── web/          # Next.js Frontend (Admin & Public)
+│   ├── api/          # Express.js Backend (Prisma, Multer, Sharp, SSE)
+│   └── web/          # Next.js Frontend (Tailwind, Recharts, Framer Motion)
 ├── packages/
 │   ├── types/        # Shared TypeScript interfaces
-│   ├── config/       # Shared configurations
+│   ├── config/       # Shared configurations (Site map, AI configs)
 │   └── utils/        # Shared utility functions
-├── infra/            # Docker & Nginx (opsional, untuk self-hosted)
-└── docs/             # Dokumentasi fase pengembangan
+├── infra/            # Docker, Nginx, & CI/CD configurations
+└── docs/             # Dokumentasi teknis & workflow editorial
 ```
 
-## Cara Menjalankan (Lokal)
-1. Install dependencies: `pnpm install`
-2. Setup database: `cd apps/api && pnpm db:migrate`
-3. Jalankan development server: `pnpm dev`
+## 🛠️ Instalasi & Pengembangan
 
-## Role-Based Access Control (RBAC)
-Sistem ini menggunakan 4 tingkatan peran (role) untuk mengelola portal pusat dan daerah:
+1. **Install Dependencies**:
+   ```bash
+   pnpm install
+   ```
 
-1. **Superadmin (Pusat)**
-   - Akses global (lintas kota/cabang).
-   - Bisa membuat/mengedit/menghapus/mem-publish SEMUA artikel di semua cabang.
-   - Bisa mengundang/membuat akun Pimpinan Redaksi (Pimred) dan Jurnalis.
-2. **Pimpinan Redaksi (Daerah)**
-   - Terkunci pada satu daerah tertentu (`siteId`).
-   - Bisa membuat/mengedit/menghapus/mem-publish artikel di cabangnya saja.
-   - Bisa membuat akun Jurnalis untuk cabangnya.
-3. **Journalist (Jurnalis)**
-   - Terkunci pada satu daerah tertentu (`siteId`).
-   - Hanya bisa membuat artikel, dan mengedit/menghapus artikel miliknya sendiri.
-   - Tidak bisa mem-publish artikel (harus di-review Pimred/Superadmin).
-4. **Reader (Pembaca Publik)**
-   - Role default saat registrasi publik via web.
-   - Membaca artikel, berkomentar, dan bookmark.
+2. **Setup Environment**:
+   Salin `.env.example` di `apps/api` dan `apps/web`. Untuk produksi, gunakan referensi di `.env.production.example`.
 
-## Sistem Login (Authentication)
-Aplikasi ini menggunakan **Custom JWT Authentication** mandiri (tidak menggunakan Auth bawaan Supabase), dengan alur:
-1. **Login:** User memasukkan email & password. Password diverifikasi dengan algoritma `Bcrypt` di backend.
-2. **Token:** Backend menerbitkan 2 token:
-   - *Access Token (15 menit)*: Digunakan di Header untuk memvalidasi request API.
-   - *Refresh Token (7 hari)*: Disimpan di DB untuk memperpanjang sesi tanpa login ulang.
-3. **Frontend:** Menyimpan status login di state management `Zustand` dan menolak akses UI jika role tidak sesuai (misal tombol Publish disembunyikan untuk Jurnalis).
+3. **Database Sync**:
+   ```bash
+   cd apps/api
+   npx prisma db push
+   npx prisma generate
+   ```
 
-## Deployment (Vercel)
-Aplikasi di-deploy ke **Vercel** dengan konfigurasi:
-- **Web (Next.js):** Deploy langsung dari monorepo — Vercel otomatis mendeteksi Next.js framework.
-- **API (Express.js):** Deploy sebagai Vercel Serverless Functions atau ke Railway/Render sebagai long-running service.
-- **Database:** PostgreSQL via Supabase (connection pooling via PgBouncer di port 6543).
+4. **Run Development**:
+   ```bash
+   pnpm dev
+   ```
 
-### Environment Variables (Vercel Dashboard)
-```env
-# Database
-DATABASE_URL="postgresql://...@pooler.supabase.com:6543/postgres?pgbouncer=true"
+## 🔐 Keamanan & Akses (RBAC)
 
-# JWT
-JWT_SECRET="<random-64-char-string>"
-JWT_ACCESS_EXPIRES="15m"
+1. **Superadmin**: Akses global lintas portal, manajemen situs, dan audit log pusat.
+2. **Pimpinan Redaksi**: Manajemen redaksi daerah, approval artikel, dan statistik tim.
+3. **Journalist**: Penulisan artikel dan pengiriman draft ke antrian review.
+4. **Reader**: Akses publik, komentar, dan personalisasi bacaan.
 
-# AI (opsional)
-OPENAI_API_KEY="sk-..."
+## 📄 Dokumentasi Tambahan
 
-# URLs
-NEXT_PUBLIC_API_URL="https://api.beritakarya.com"
-NEXT_PUBLIC_URL="https://beritakarya.com"
-```
-
-> **Catatan:** Folder `infra/docker` dan `infra/nginx` tetap tersedia jika di masa depan ingin migrasi ke self-hosted deployment (VPS/bare metal).
-
-Panduan setup database: `apps/api/prisma/supabase-setup.sql`
+Lihat folder `docs/` untuk detail lebih mendalam:
+- [Workflow Editorial](./docs/EDITORIAL_WORKFLOW.md)
+- [Skema Database](./docs/DATABASE_SCHEMA.md)
+- [Panduan Produksi](./docs/PRODUCTION_SETUP.md)
 
 ---
-© 2026 BeritaKarya Project
+© 2026 BeritaKarya Global Media. *Jernih Melihat Nusantara.*

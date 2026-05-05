@@ -78,9 +78,32 @@ model Article {
   authorId        String
   blocks          Json     @default("[]")
   tags            Json     @default("[]")
+
+  // Editorial Workflow
+  // draft | submitted | review | revision | approved | scheduled | published | archived
   status          String   @default("draft")
+  reviewedBy      String?  // userId pimred yang mereview
+  reviewedAt      DateTime?
+  reviewNotes     String?  // Catatan revisi dari editor
+  scheduledAt     DateTime? // Waktu terbit yang dijadwalkan
+
+  // SEO
   metaTitle       String?
   metaDescription String?
+  featuredImage   String?  // URL gambar utama
+
+  // Article Metadata
+  wordCount       Int?     // Jumlah kata
+  readingTimeMin  Int?     // Estimasi menit baca
+  viewCount       Int      @default(0)
+  shareCount      Int      @default(0)
+  versions        ArticleVersion[]
+
+  // Editorial Flags
+  isBreaking      Boolean  @default(false)
+  isExclusive     Boolean  @default(false)
+  isFeatured      Boolean  @default(false)
+
   publishedAt     DateTime?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -93,6 +116,7 @@ model Article {
   @@index([siteId, status])
   @@index([authorId])
   @@index([categoryId])
+  @@index([scheduledAt])
 }
 
 model RefreshToken {
@@ -143,10 +167,61 @@ model Media {
   height         Int
   originalFormat String
   size           Int
+  altText        String?  // Teks alt untuk aksesibilitas & SEO
+  caption        String?  // Keterangan foto
+  credit         String?  // Kredit/sumber foto
   userId         String
   siteId         String?
   createdAt      DateTime @default(now())
 
   @@index([userId])
   @@index([siteId])
-}
+}
+
+model ArticleVersion {
+  id        String   @id @default(uuid())
+  articleId String
+  title     String
+  blocks    Json     @default("[]")
+  version   Int
+  authorId  String
+  createdAt DateTime @default(now())
+
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@index([articleId])
+}
+
+// Audit log untuk akuntabilitas semua aksi redaksi
+model AuditLog {
+  id         String   @id @default(uuid())
+  userId     String
+  siteId     String
+  action     String   // e.g. article.publish | article.review | user.create | settings.update
+  entityType String?  // 'article' | 'user' | 'site' | 'category'
+  entityId   String?  // ID entitas yang diubah
+  oldValue   Json?    // State sebelumnya
+  newValue   Json?    // State sesudahnya
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@index([siteId, action])
+  @@index([entityId])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  siteId    String
+  type      String   // e.g. article_submitted | article_reviewed | mention
+  title     String
+  message   String
+  link      String?
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([siteId])
+}

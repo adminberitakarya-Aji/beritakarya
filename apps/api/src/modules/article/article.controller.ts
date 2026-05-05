@@ -48,6 +48,22 @@ articleRouter.post('/:id/publish', ...withSite, asyncHandler(async (req: Request
   res.json({ success: true, data: article })
 }))
 
+// Versioning Endpoints
+articleRouter.get('/:id/versions', ...withSite, asyncHandler(async (req: Request, res: Response) => {
+  const versions = await service.getArticleVersions(req.params.id)
+  res.json({ success: true, data: versions })
+}))
+
+articleRouter.post('/:id/versions/save', ...withSite, asyncHandler(async (req: Request, res: Response) => {
+  const version = await service.saveArticleVersion(req.params.id, req.user!.userId, req.site!)
+  res.json({ success: true, data: version })
+}))
+
+articleRouter.post('/versions/:versionId/restore', ...withSite, asyncHandler(async (req: Request, res: Response) => {
+  const updated = await service.restoreArticleVersion(req.params.versionId, req.site!, req.user!)
+  res.json({ success: true, data: updated })
+}))
+
 articleRouter.delete('/:id', ...withSite, asyncHandler(async (req: Request, res: Response) => {
   await service.deleteArticle(req.params.id, req.site!, req.user!)
   res.json({ success: true, message: 'Artikel berhasil dihapus' })

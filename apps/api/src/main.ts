@@ -11,6 +11,9 @@ import { categoryRouter } from './modules/category/category.controller'
 import { adRouter } from './modules/ad/ad.controller'
 import { siteRouter } from './modules/site/site.controller'
 import { newsletterRouter } from './modules/newsletter/newsletter.controller'
+import { auditRouter } from './modules/audit/audit.controller'
+import { analyticsRouter } from './modules/analytics/analytics.controller'
+import { notificationRouter } from './modules/notification/notification.controller'
 import { requestIdMiddleware } from './middleware/requestId.middleware'
 import { errorMiddleware } from './middleware/error.middleware'
 import { sanitizeMiddleware } from './middleware/sanitize.middleware'
@@ -53,6 +56,9 @@ app.use('/api/v1/categories', categoryRouter)
 app.use('/api/v1/ads', adRouter)
 app.use('/api/v1/sites', siteRouter)
 app.use('/api/v1/newsletter', newsletterRouter)
+app.use('/api/v1/audit', auditRouter)
+app.use('/api/v1/analytics', analyticsRouter)
+app.use('/api/v1/notifications', notificationRouter)
 
 // ── System Endpoints ───────────────────────────────────────
 app.get('/health', (_, res) => {

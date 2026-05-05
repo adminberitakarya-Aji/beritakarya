@@ -2,32 +2,205 @@
 
 import { motion } from 'framer-motion';
 import { 
-  FileText, 
-  Eye, 
-  Image as ImageIcon, 
-  BarChart3, 
-  ChevronRight, 
-  TrendingUp,
-  Plus
+  FileText, Eye, BarChart3, ChevronRight, TrendingUp, Plus,
+  Clock, CheckCircle, AlertCircle, Send, Calendar, Users,
+  ArrowUpRight, ArrowDownRight, Zap, BookOpen, Target,
+  Tag, Settings, MousePointer2
 } from 'lucide-react';
+import TrafficChart from '@/components/dashboard/TrafficChart';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import Skeleton from '@/components/ui/Skeleton';
+import StatusBadge from '@/components/ui/StatusBadge';
 import { cn } from '@/lib/utils';
 import { api } from '@/lib/api';
+import { useAuthStore } from '../../../store/authStore';
 
+// ─── Types ──────────────────────────────────────────────────────
+interface Article {
+  id: string;
+  title: string;
+  status: string;
+  category?: { name: string };
+  author?: { name: string };
+  publishedAt?: string;
+  createdAt: string;
+  viewCount?: number;
+}
+
+// ─── Mini Sparkline ──────────────────────────────────────────────
+function Sparkline({ values, color = '#B91C1C' }: { values: number[]; color?: string }) {
+  const max = Math.max(...values, 1);
+  const pts = values.map((v, i) => {
+    const x = (i / (values.length - 1)) * 100;
+    const y = 100 - (v / max) * 100;
+    return `${x},${y}`;
+  }).join(' ');
+  return (
+    <svg viewBox="0 0 100 100" className="w-16 h-8" preserveAspectRatio="none">
+      <polyline points={pts} fill="none" stroke={color} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+// ─── KPI Card ──────────────────────────────────────────────────
+interface KPICardProps {
+  title: string;
+  value: string | number;
+  sub?: string;
+  trend?: number; // positive = up, negative = down
+  icon: React.ElementType;
+  accent: string;
+  sparkData?: number[];
+  delay?: number;
+}
+
+function KPICard({ title, value, sub, trend, icon: Icon, accent, sparkData, delay = 0 }: KPICardProps) {
+  const isUp = trend !== undefined && trend >= 0;
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay }}
+      className="dash-card p-5"
+    >
+      <div className="flex items-start justify-between mb-4">
+        <div className={cn('w-10 h-10 rounded-lg flex items-center justify-center', accent)}>
+          <Icon size={18} />
+        </div>
+        {trend !== undefined && (
+          <span className={cn(
+            'flex items-center gap-0.5 text-[10px] font-black px-2 py-1 rounded-full',
+            isUp ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400'
+                 : 'bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400'
+          )}>
+            {isUp ? <ArrowUpRight size={10} /> : <ArrowDownRight size={10} />}
+            {Math.abs(trend)}%
+          </span>
+        )}
+      </div>
+      <p className="dash-label mb-1">{title}</p>
+      <p className="text-2xl font-black text-brand-black dark:text-white tabular-nums">{value}</p>
+      <div className="flex items-center justify-between mt-3">
+        {sub && <p className="text-[10px] text-gray-400 font-medium">{sub}</p>}
+        {sparkData && <Sparkline values={sparkData} />}
+      </div>
+    </motion.div>
+  );
+}
+
+// ─── Review Queue Preview ────────────────────────────────────────
+function ReviewQueueItem({ article, site, index }: { article: Article; site: string; index: number }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -10 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: 0.1 * index }}
+      className="flex items-center gap-3 py-3.5 border-b border-gray-50 dark:border-white/5 last:border-0 group"
+    >
+      <div className="w-9 h-9 rounded-lg bg-violet-50 dark:bg-violet-900/20 flex items-center justify-center flex-shrink-0">
+        <AlertCircle size={16} className="text-violet-500" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-xs font-bold text-brand-black dark:text-white line-clamp-1 group-hover:text-brand-red transition-colors">
+          {article.title}
+        </p>
+        <div className="flex items-center gap-2 mt-0.5">
+          <span className="text-[10px] text-brand-red font-bold uppercase tracking-widest">
+            {article.category?.name || 'Umum'}
+          </span>
+          <span className="text-gray-300 dark:text-white/10 text-[10px]">•</span>
+          <span className="text-[10px] text-gray-400 font-medium">
+            oleh {article.author?.name || 'Redaksi'}
+          </span>
+        </div>
+      </div>
+      <Link
+        href={`/${site}/dashboard/articles/${article.id}`}
+        className="shrink-0 text-[9px] font-black uppercase tracking-widest px-3 py-1.5 bg-violet-600 text-white rounded-md hover:bg-violet-700 transition-colors"
+      >
+        Review
+      </Link>
+    </motion.div>
+  );
+}
+
+// ─── Recent Activity Item ─────────────────────────────────────────
+function ActivityItem({ article, site, index }: { article: Article; site: string; index: number }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: 10 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: 0.08 * index }}
+    >
+      <Link 
+        href={`/${site}/dashboard/articles/${article.id}`}
+        className="flex items-center gap-3 py-3.5 border-b border-gray-50 dark:border-white/5 last:border-0 group cursor-pointer"
+      >
+        <div className="w-9 h-9 rounded-lg bg-brand-surface dark:bg-white/5 flex items-center justify-center font-serif font-bold text-brand-red text-sm flex-shrink-0 group-hover:bg-brand-red group-hover:text-white transition-all">
+          {article.category?.name?.[0] || 'A'}
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-xs font-bold text-brand-black dark:text-white line-clamp-1 group-hover:text-brand-red transition-colors">
+            {article.title}
+          </p>
+          <div className="flex items-center gap-2 mt-0.5">
+            <StatusBadge status={article.status} />
+            <span className="text-[10px] text-gray-400 font-medium">
+              {new Date(article.createdAt).toLocaleDateString('id-ID', { day:'numeric', month:'short' })}
+            </span>
+          </div>
+        </div>
+        <ChevronRight size={14} className="text-gray-200 group-hover:text-brand-red transition-all group-hover:translate-x-0.5 flex-shrink-0" />
+      </Link>
+    </motion.div>
+  );
+}
+
+// ─── Category Performance Bar ─────────────────────────────────────
+function CategoryBar({ name, value, max }: { name: string; value: number; max: number }) {
+  const pct = max > 0 ? Math.round((value / max) * 100) : 0;
+  return (
+    <div className="space-y-1.5">
+      <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest">
+        <span className="text-gray-400">{name}</span>
+        <span className="text-brand-red">{value} artikel</span>
+      </div>
+      <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+        <motion.div 
+          initial={{ width: 0 }}
+          animate={{ width: `${pct}%` }}
+          transition={{ duration: 0.8, ease: 'easeOut' }}
+          className="h-full bg-gradient-to-r from-brand-red to-red-400 rounded-full"
+        />
+      </div>
+    </div>
+  );
+}
+
+// ─── Main Component ──────────────────────────────────────────────
 export default function DashboardOverview() {
   const { site } = useParams() as { site: string };
-  const [articles, setArticles] = useState<any[]>([]);
+  const { user } = useAuthStore();
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [trafficData, setTrafficData] = useState<any[]>([]);
+  const [topContent, setTopContent] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
       try {
-        const { data } = await api.get('/articles', { params: { site } });
-        setArticles(data.data.articles || data.data.items || []);
+        const [artRes, trafficRes, topRes] = await Promise.all([
+          api.get('/articles', { params: { site, limit: 50 } }),
+          api.get('/analytics/traffic', { params: { site, days: 7 } }),
+          api.get('/analytics/top-content', { params: { site, limit: 5 } })
+        ]);
+        
+        setArticles(artRes.data.data.articles || artRes.data.data.items || []);
+        setTrafficData(trafficRes.data.data);
+        setTopContent(topRes.data.data);
       } catch (err) {
         console.error('Failed to load dashboard data:', err);
       } finally {
@@ -37,145 +210,311 @@ export default function DashboardOverview() {
     loadData();
   }, [site]);
 
-  const StatCard = ({ title, value, icon: Icon, trend, color }: any) => (
-    <div className="bg-white p-6 border border-gray-100 rounded-sm shadow-sm hover:shadow-md transition-all">
-      <div className="flex justify-between items-start mb-4">
-        <div className={cn("p-2 rounded-sm", color || "bg-gray-50 text-gray-400")}>
-          <Icon size={20} />
+  if (loading) {
+    return (
+      <div className="space-y-8">
+        <Skeleton variant="text" className="h-8 w-72" />
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {[1,2,3,4].map(i => <Skeleton key={i} variant="text" className="h-36 w-full rounded-lg" />)}
         </div>
-        {trend && (
-          <span className="text-[10px] font-bold text-green-500 bg-green-500/5 px-2 py-1 flex items-center gap-1">
-            <TrendingUp size={10} /> {trend}
-          </span>
-        )}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2"><Skeleton variant="text" className="h-72 w-full rounded-lg" /></div>
+          <Skeleton variant="text" className="h-72 w-full rounded-lg" />
+        </div>
       </div>
-      <h3 className="text-[10px] uppercase font-black tracking-[0.2em] text-gray-400 mb-1">{title}</h3>
-      <p className="text-3xl font-serif font-black text-brand-black">{value}</p>
-    </div>
-  );
+    );
+  }
 
-  if (loading) return (
-    <div className="space-y-10 animate-fade-in">
-      <div className="flex justify-between items-center">
-        <div className="space-y-2">
-          <Skeleton variant="text" className="h-8 w-64" />
-          <Skeleton variant="text" className="h-4 w-96" />
-        </div>
-        <Skeleton variant="text" className="h-12 w-48" />
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        {[1, 2, 3, 4].map(i => <Skeleton key={i} variant="text" className="h-32 w-full" />)}
-      </div>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-4">
-          <Skeleton variant="text" className="h-64 w-full" />
-        </div>
-        <div className="space-y-4">
-          <Skeleton variant="text" className="h-64 w-full" />
-        </div>
-      </div>
-    </div>
-  );
+  // Computed stats
+  const total       = articles.length;
+  const published   = articles.filter(a => a.status === 'published').length;
+  const drafts      = articles.filter(a => a.status === 'draft').length;
+  const inReview    = articles.filter(a => a.status === 'review' || a.status === 'submitted').length;
+  const scheduled   = articles.filter(a => a.status === 'scheduled').length;
 
+  const reviewQueue   = articles.filter(a => a.status === 'review' || a.status === 'submitted').slice(0, 4);
+  const recentActivity = [...articles].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 5);
 
-  const totalArticles = articles.length;
-  const publishedArticles = articles.filter(a => a?.status === 'published').length;
-  const draftArticles = articles.filter(a => a?.status === 'draft').length;
+  // Category breakdown
+  const catMap: Record<string, number> = {};
+  articles.forEach(a => {
+    const cat = a.category?.name || 'Umum';
+    catMap[cat] = (catMap[cat] || 0) + 1;
+  });
+  const catEntries = Object.entries(catMap).sort((a, b) => b[1] - a[1]).slice(0, 5);
+  const catMax = catEntries[0]?.[1] || 1;
+
+  // Sparkline data from real traffic
+  const trafficSpark = trafficData.length > 0 ? trafficData.map(d => d.views) : [0,0,0,0,0,0,0];
+  const publishedSpark = trafficData.length > 0 ? trafficData.map(d => Math.floor(d.views / 20)) : [0,0,0,0,0,0,0];
+
+  const ROLE_GREETINGS: Record<string, string> = {
+    superadmin: 'Superadmin',
+    pimred: 'Pimpinan Redaksi',
+    journalist: 'Wartawan',
+  };
+
+  const hour = new Date().getHours();
+  const greeting = hour < 11 ? 'Selamat Pagi' : hour < 15 ? 'Selamat Siang' : hour < 18 ? 'Selamat Sore' : 'Selamat Malam';
 
   return (
-    <div className="space-y-10 animate-fade-in">
-      {/* Header with Action */}
+    <div className="space-y-8">
+      {/* ── Page Header ── */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-serif font-black text-brand-black uppercase tracking-tight">Ringkasan Redaksi</h1>
-          <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">Selamat datang kembali di pusat kendali berita.</p>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{greeting},</span>
+            <span className="text-[10px] font-black text-brand-red uppercase tracking-widest">
+              {ROLE_GREETINGS[user?.role || 'journalist']}
+            </span>
+          </div>
+          <h1 className="text-2xl font-black text-brand-black dark:text-white tracking-tight">
+            {user?.name || 'Redaktur'}
+          </h1>
+          <p className="text-xs text-gray-400 mt-1">
+            Portal <strong className="text-brand-red uppercase">{site}</strong> — {new Date().toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric' })}
+          </p>
         </div>
         <Link 
-          href={`/${site}/dashboard/articles/new`}
-          className="flex items-center gap-2 px-6 py-3 bg-brand-black text-white text-xs font-black uppercase tracking-widest hover:bg-brand-red transition-all shadow-lg shadow-black/10"
+          href={`/${site}/dashboard/articles`}
+          onClick={async (e) => {
+            e.preventDefault();
+            try {
+              const { data } = await api.post('/articles', { title: `Draft — ${new Date().toLocaleTimeString('id-ID')}`, blocks: [], tags: [] });
+              window.location.href = `/${site}/dashboard/articles/${data.data.id}`;
+            } catch { window.location.href = `/${site}/dashboard/articles`; }
+          }}
+          className="flex items-center gap-2 px-5 py-2.5 bg-brand-red text-white text-[11px] font-black uppercase tracking-widest rounded-lg hover:bg-red-700 transition-all shadow-lg shadow-brand-red/20"
         >
-          <Plus size={16} /> Tulis Artikel Baru
+          <Plus size={15} /> Tulis Artikel
         </Link>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <StatCard title="Total Artikel" value={totalArticles} icon={FileText} trend="+12%" color="bg-blue-50 text-blue-500" />
-        <StatCard title="Sudah Terbit" value={publishedArticles} icon={Eye} color="bg-green-50 text-green-500" />
-        <StatCard title="Draft / Review" value={draftArticles} icon={FileText} color="bg-yellow-50 text-yellow-500" />
-        <StatCard title="Estimasi Pembaca" value="12.4K" icon={BarChart3} trend="+5.4%" color="bg-purple-50 text-purple-500" />
+      {/* ── KPI Cards ── */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <KPICard title="Total Artikel" value={total} icon={FileText}
+          accent="bg-blue-50 text-blue-500 dark:bg-blue-900/20" trend={12}
+          sparkData={trafficSpark} sub="Semua status" delay={0} />
+        <KPICard title="Sudah Terbit" value={published} icon={CheckCircle}
+          accent="bg-emerald-50 text-emerald-500 dark:bg-emerald-900/20" trend={8}
+          sparkData={publishedSpark} sub="Hari ini" delay={0.05} />
+        <KPICard title="Antrian Review" value={inReview} icon={AlertCircle}
+          accent={inReview > 5 ? "bg-red-50 text-red-500 dark:bg-red-900/20" : "bg-amber-50 text-amber-500 dark:bg-amber-900/20"}
+          sub={inReview > 0 ? "Perlu perhatian" : "Semua bersih"} delay={0.1} />
+        <KPICard title="Terjadwal" value={scheduled} icon={Calendar}
+          accent="bg-cyan-50 text-cyan-500 dark:bg-cyan-900/20"
+          sub="Antri terbit" delay={0.15} />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Recent Activity */}
-        <div className="lg:col-span-2 bg-white border border-gray-100 p-8 rounded-sm shadow-sm">
-          <div className="flex justify-between items-center mb-8 border-b border-gray-50 pb-4">
-            <h3 className="font-serif font-black uppercase tracking-[0.2em] text-xs text-brand-black">Aktivitas Terakhir</h3>
-            <Link href={`/${site}/dashboard/articles`} className="text-[10px] font-black uppercase tracking-widest text-brand-red hover:underline">
-              Lihat Semua
-            </Link>
+      {/* ── Secondary Cards (hanya superadmin/pimred) ── */}
+      {(user?.role === 'superadmin' || user?.role === 'pimred') && (
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="dash-card p-4 flex items-center gap-4">
+            <div className="w-10 h-10 rounded-lg bg-violet-50 dark:bg-violet-900/20 flex items-center justify-center">
+              <Target size={18} className="text-violet-500" />
+            </div>
+            <div>
+              <p className="dash-label">Target Hari Ini</p>
+              <p className="text-lg font-black text-brand-black dark:text-white">{published} <span className="text-sm font-medium text-gray-400">/ 10</span></p>
+              <div className="mt-1.5 h-1 w-32 bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden">
+                <div className="h-full bg-violet-500 rounded-full" style={{ width: `${Math.min((published/10)*100, 100)}%` }} />
+              </div>
+            </div>
           </div>
-          <div className="space-y-6">
-            {articles.slice(0, 5).filter(a => a && a.id).map((article: any) => (
-              <Link 
-                key={article.id} 
-                href={`/${site}/dashboard/articles/edit/${article.id}`}
-                className="flex items-center gap-4 group cursor-pointer border-b border-gray-50 pb-4 last:border-0 last:pb-0"
-              >
-                <div className="w-12 h-12 bg-brand-surface flex items-center justify-center font-serif font-bold text-brand-red border border-gray-100 group-hover:bg-brand-red group-hover:text-white transition-all">
-                  {article.category?.name?.[0] || 'A'}
+          <div className="dash-card p-4 flex items-center gap-4">
+            <div className="w-10 h-10 rounded-lg bg-orange-50 dark:bg-orange-900/20 flex items-center justify-center">
+              <BookOpen size={18} className="text-orange-500" />
+            </div>
+            <div>
+              <p className="dash-label">Draft Belum Selesai</p>
+              <p className="text-lg font-black text-brand-black dark:text-white">{drafts}</p>
+              <p className="text-[10px] text-gray-400 mt-0.5">Perlu diselesaikan</p>
+            </div>
+          </div>
+          <div className="dash-card p-4 flex items-center gap-4">
+            <div className="w-10 h-10 rounded-lg bg-sky-50 dark:bg-sky-900/20 flex items-center justify-center">
+              <Zap size={18} className="text-sky-500" />
+            </div>
+            <div>
+              <p className="dash-label">Est. Total Views</p>
+              <p className="text-lg font-black text-brand-black dark:text-white">
+                {(articles.reduce((s, a) => s + (a.viewCount || 0), 0) / 1000).toFixed(1)}K
+              </p>
+              <p className="text-[10px] text-gray-400 mt-0.5">Semua artikel</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Traffic Overview Chart ── */}
+      <div className="dash-card">
+        <div className="dash-card-header">
+          <div className="flex items-center gap-2">
+            <BarChart3 size={16} className="text-brand-red" />
+            <h3 className="text-sm font-black text-brand-black dark:text-white uppercase tracking-tight">Ikhtisar Trafik</h3>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-brand-red animate-pulse" />
+            <span className="text-[10px] font-black uppercase tracking-widest text-brand-red">Real-time</span>
+          </div>
+        </div>
+        <div className="p-6">
+          <div className="flex items-end gap-12 mb-8">
+            <div>
+              <p className="dash-label mb-1">Total Views (7 Hari)</p>
+              <p className="text-4xl font-black text-brand-black dark:text-white tabular-nums">
+                {trafficData.reduce((acc, curr) => acc + curr.views, 0).toLocaleString('id-ID')}
+              </p>
+            </div>
+            <div className="h-10 w-px bg-gray-100 dark:bg-white/5 hidden sm:block" />
+            <div className="hidden sm:block">
+              <p className="dash-label mb-1">Rata-rata Harian</p>
+              <p className="text-xl font-black text-brand-black dark:text-white tabular-nums">
+                {Math.round(trafficData.reduce((acc, curr) => acc + curr.views, 0) / (trafficData.length || 1)).toLocaleString('id-ID')}
+              </p>
+            </div>
+          </div>
+          
+          <TrafficChart data={trafficData} />
+        </div>
+      </div>
+
+      {/* ── Main Grid ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        {/* Review Queue (pimred/superadmin) atau Recent Activity (journalist) */}
+        <div className="lg:col-span-2 space-y-6">
+          {(user?.role === 'superadmin' || user?.role === 'pimred') && reviewQueue.length > 0 && (
+            <div className="dash-card">
+              <div className="dash-card-header">
+                <div className="flex items-center gap-2">
+                  <AlertCircle size={14} className="text-violet-500" />
+                  <h3 className="dash-label text-violet-600 dark:text-violet-400">Antrian Review</h3>
+                  {inReview > 0 && (
+                    <span className="px-1.5 py-0.5 bg-violet-600 text-white text-[9px] font-black rounded-full">{inReview}</span>
+                  )}
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold text-brand-black line-clamp-1 group-hover:text-brand-red transition-colors uppercase tracking-tight">
-                    {article.title}
-                  </p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className={cn(
-                      "text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-sm",
-                      article.status === 'published' ? "bg-green-100 text-green-600" : "bg-yellow-100 text-yellow-600"
-                    )}>
-                      {article.status}
-                    </span>
-                    <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest tracking-tighter">
-                      {article.author?.name} • {new Date(article.publishedAt).toLocaleDateString()}
-                    </span>
-                  </div>
-                </div>
-                <ChevronRight size={16} className="text-gray-200 group-hover:text-brand-red transition-all group-hover:translate-x-1" />
+                <Link href={`/${site}/dashboard/review`} className="text-[10px] font-black uppercase tracking-widest text-brand-red hover:underline flex items-center gap-1">
+                  Semua <ChevronRight size={12} />
+                </Link>
+              </div>
+              <div className="dash-card-body py-2">
+                {reviewQueue.map((a, i) => <ReviewQueueItem key={a.id} article={a} site={site} index={i} />)}
+              </div>
+            </div>
+          )}
+
+          {/* Recent Activity */}
+          <div className="dash-card">
+            <div className="dash-card-header">
+              <div className="flex items-center gap-2">
+                <Clock size={14} className="text-brand-red" />
+                <h3 className="dash-label">Aktivitas Terakhir</h3>
+              </div>
+              <Link href={`/${site}/dashboard/articles`} className="text-[10px] font-black uppercase tracking-widest text-brand-red hover:underline flex items-center gap-1">
+                Lihat Semua <ChevronRight size={12} />
               </Link>
-            ))}
+            </div>
+            <div className="dash-card-body py-2">
+              {recentActivity.length === 0 ? (
+                <div className="py-12 flex flex-col items-center gap-3 text-gray-200 dark:text-white/10">
+                  <FileText size={40} strokeWidth={1} />
+                  <p className="text-xs font-bold uppercase tracking-widest text-gray-300">Belum ada artikel</p>
+                </div>
+              ) : (
+                recentActivity.map((a, i) => <ActivityItem key={a.id} article={a} site={site} index={i} />)
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Categories / Right Sidebar */}
-        <div className="space-y-8">
-          <div className="bg-brand-black p-8 rounded-sm shadow-xl text-white">
-            <h3 className="font-serif font-black uppercase tracking-[0.2em] text-xs mb-8 border-b border-white/10 pb-4">Performa Kategori</h3>
-            <div className="space-y-6">
-              {['Nasional', 'Daerah', 'Ekonomi'].map((cat, i) => (
-                <div key={cat} className="space-y-2">
-                  <div className="flex justify-between text-[10px] font-bold uppercase tracking-[0.2em]">
-                    <span className="text-gray-400">{cat}</span>
-                    <span className="text-brand-red">{85 - i * 15}%</span>
-                  </div>
-                  <div className="h-1 bg-white/10 overflow-hidden rounded-full">
-                    <motion.div 
-                      initial={{ width: 0 }}
-                      animate={{ width: `${85 - i * 15}%` }}
-                      className="h-full bg-brand-red"
-                    />
-                  </div>
-                </div>
+        {/* Right Sidebar */}
+        <div className="space-y-6">
+          {/* Category Performance */}
+          <div className="dash-card bg-slate-900 dark:bg-black/50 text-white border-0">
+            <div className="dash-card-header border-white/5">
+              <div className="flex items-center gap-2">
+                <BarChart3 size={14} className="text-brand-red" />
+                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Performa Rubrik</h3>
+              </div>
+              <TrendingUp size={14} className="text-brand-red" />
+            </div>
+            <div className="p-6 space-y-5">
+              {catEntries.length > 0 ? (
+                catEntries.map(([name, count]) => (
+                  <CategoryBar key={name} name={name} value={count} max={catMax} />
+                ))
+              ) : (
+                <p className="text-xs text-gray-500 text-center py-4">Belum ada data kategori</p>
+              )}
+            </div>
+          </div>
+
+          {/* Top Performing Content */}
+          <div className="dash-card">
+            <div className="dash-card-header">
+              <div className="flex items-center gap-2">
+                <TrendingUp size={16} className="text-brand-red" />
+                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Konten Terpopuler</h3>
+              </div>
+              <Link href={`/${site}/dashboard/articles`} className="text-[9px] font-black text-brand-red uppercase tracking-widest hover:underline">Semua</Link>
+            </div>
+            <div className="p-2">
+              {topContent.length > 0 ? (
+                topContent.map((item, i) => (
+                  <Link key={item.id} href={`/${site}/dashboard/articles/${item.id}`} className="flex items-center gap-4 p-4 hover:bg-gray-50 dark:hover:bg-white/5 rounded-xl transition-all group">
+                    <span className="text-sm font-black text-gray-300 group-hover:text-brand-red transition-colors w-4">0{i+1}</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-bold text-brand-black dark:text-white line-clamp-1">{item.title}</p>
+                      <p className="text-[10px] text-brand-red font-bold uppercase tracking-widest mt-0.5">{item.category?.name || 'NASIONAL'}</p>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-gray-400">
+                      <Eye size={12} />
+                      <span className="text-[11px] font-black tabular-nums">{(item.viewCount || 0).toLocaleString('id-ID')}</span>
+                    </div>
+                  </Link>
+                ))
+              ) : (
+                <p className="text-center py-10 text-xs text-gray-400">Belum ada data populer</p>
+              )}
+            </div>
+          </div>
+
+          {/* Quick Actions */}
+          <div className="dash-card">
+            <div className="dash-card-header">
+              <h3 className="dash-label">Aksi Cepat</h3>
+            </div>
+            <div className="p-4 space-y-2">
+              {[
+                { label: 'Tulis Artikel Baru', href: `/${site}/dashboard/articles`, icon: Plus, color: 'bg-brand-red text-white hover:bg-red-700' },
+                { label: 'Kelola Kategori', href: `/${site}/dashboard/categories`, icon: Tag, color: 'bg-gray-50 dark:bg-white/5 text-brand-black dark:text-white hover:bg-gray-100 dark:hover:bg-white/10' },
+                { label: 'Pengaturan Situs', href: `/${site}/dashboard/settings`, icon: Settings, color: 'bg-gray-50 dark:bg-white/5 text-brand-black dark:text-white hover:bg-gray-100 dark:hover:bg-white/10' },
+              ].filter(item => {
+                if (item.label === 'Pengaturan Situs') return user?.role === 'superadmin' || user?.role === 'pimred';
+                return true;
+              }).map(item => (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  className={cn('flex items-center gap-3 px-4 py-3 rounded-lg text-[11px] font-bold uppercase tracking-widest transition-all', item.color)}
+                >
+                  <item.icon size={14} /> {item.label}
+                </Link>
               ))}
             </div>
           </div>
 
-          <div className="bg-white border border-gray-100 p-8 rounded-sm shadow-sm">
-            <h3 className="font-serif font-black uppercase tracking-[0.2em] text-xs mb-6 text-brand-black">Bantuan Redaksi</h3>
-            <p className="text-xs text-gray-500 leading-relaxed font-light mb-6">
-              Butuh bantuan mengelola konten atau ada kendala teknis? Hubungi tim support kami.
+          {/* Support */}
+          <div className="dash-card p-6 text-center bg-gradient-to-br from-brand-red/5 to-violet-500/5 border-brand-red/10">
+            <div className="w-10 h-10 bg-brand-red/10 rounded-full flex items-center justify-center mx-auto mb-3">
+              <Users size={16} className="text-brand-red" />
+            </div>
+            <p className="text-xs font-black text-brand-black dark:text-white uppercase tracking-tight mb-1">Bantuan Redaksi</p>
+            <p className="text-[10px] text-gray-400 leading-relaxed mb-4">
+              Kendala teknis atau pertanyaan editorial? Tim kami siap membantu.
             </p>
-            <button className="w-full py-3 bg-gray-50 text-[10px] font-black uppercase tracking-widest text-brand-black hover:bg-brand-red hover:text-white transition-all border border-gray-100">
+            <button className="w-full py-2.5 bg-brand-red text-white text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-red-700 transition-all">
               Hubungi Support
             </button>
           </div>

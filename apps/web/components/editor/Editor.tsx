@@ -4,7 +4,8 @@ import { useEditorStore } from '../../store/editorStore'
 import { BlockList } from './BlockList'
 import { EditorToolbar } from './EditorToolbar'
 import { AddBlockMenu } from './AddBlockMenu'
-import { AISidebar } from './AISidebar'  // ← TAMBAHKAN INI
+import { AISidebar } from './AISidebar'
+import { EditorialSidebar } from './EditorialSidebar'
 
 interface EditorProps {
   articleId: string
@@ -35,28 +36,32 @@ export function Editor({ articleId, siteId }: EditorProps) {
   }, [handleKeyDown])
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-slate-950 transition-colors">
       <EditorToolbar />
 
       <div className="max-w-4xl mx-auto px-4 pt-32 pb-40">
         {/* Newsroom Editorial Header */}
-        <div className="mb-12 border-b border-gray-50 pb-12">
+        <div className="mb-12 border-b border-gray-50 dark:border-white/5 pb-12">
           <div className="flex items-center gap-3 mb-6">
-            <span className="w-8 h-8 rounded-full bg-brand-red text-white flex items-center justify-center font-serif italic text-sm">B</span>
-            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">Editorial Desk • Konten Investigasi</span>
+            <div className="w-8 h-8 rounded-lg bg-brand-red text-white flex items-center justify-center font-serif italic text-sm shadow-lg shadow-brand-red/20">B</div>
+            <div className="flex flex-col">
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">Editorial Desk</span>
+              <span className="text-[9px] font-bold text-brand-red uppercase tracking-widest mt-0.5">Konten Investigasi & Analisis</span>
+            </div>
           </div>
           <TitleInput />
         </div>
 
         <div className="relative">
           <BlockList />
-          <div className="mt-12 flex justify-center border-t border-gray-50 pt-12">
+          <div className="mt-16 flex justify-center border-t border-gray-50 dark:border-white/5 pt-12">
             <AddBlockMenu afterId={undefined} />
           </div>
         </div>
       </div>
 
       <AISidebar />
+      <EditorialSidebar />
     </div>
   )
 }
@@ -69,7 +74,7 @@ function TitleInput() {
       onChange={e => setTitle(e.target.value)}
       placeholder="Tulis Judul Berita yang Memikat..."
       rows={2}
-      className="w-full text-4xl md:text-6xl font-serif font-black border-none outline-none resize-none bg-transparent placeholder-gray-100 leading-[1.1] tracking-tight text-brand-black"
+      className="w-full text-4xl md:text-6xl font-serif font-black border-none outline-none resize-none bg-transparent placeholder-gray-100 dark:placeholder-white/5 leading-[1.1] tracking-tight text-brand-black dark:text-white"
     />
   )
 }
