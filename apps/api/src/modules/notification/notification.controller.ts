@@ -12,7 +12,7 @@ const withSite = [requireAuth, siteMiddleware, requireSiteAccess]
 
 // SSE Endpoint for real-time notifications
 notificationRouter.get('/stream', ...withSite, (req: Request, res: Response) => {
-  const userId = req.user!.id
+  const userId = req.user!.userId
   const siteId = req.site!
 
   res.setHeader('Content-Type', 'text/event-stream')
@@ -35,14 +35,14 @@ notificationRouter.get('/stream', ...withSite, (req: Request, res: Response) => 
 
 // GET /notifications
 notificationRouter.get('/', ...withSite, asyncHandler(async (req: Request, res: Response) => {
-  const notifications = await repo.findUserNotifications(req.user!.id, req.site!)
-  const unreadCount = await repo.getUnreadCount(req.user!.id, req.site!)
+  const notifications = await repo.findUserNotifications(req.user!.userId, req.site!)
+  const unreadCount = await repo.getUnreadCount(req.user!.userId, req.site!)
   res.json({ success: true, data: { items: notifications, unreadCount } })
 }))
 
 // PATCH /notifications/read-all
 notificationRouter.patch('/read-all', ...withSite, asyncHandler(async (req: Request, res: Response) => {
-  await repo.markAllAsRead(req.user!.id, req.site!)
+  await repo.markAllAsRead(req.user!.userId, req.site!)
   res.json({ success: true, message: 'Semua notifikasi ditandai sudah dibaca' })
 }))
 

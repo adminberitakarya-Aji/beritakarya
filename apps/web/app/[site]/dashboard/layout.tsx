@@ -23,7 +23,8 @@ import {
   BarChart3,
   Shield,
   Activity,
-  ChevronDown
+  ChevronDown,
+  Calendar
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { cn } from '@/lib/utils'

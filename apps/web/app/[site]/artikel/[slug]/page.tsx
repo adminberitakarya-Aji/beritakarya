@@ -31,11 +31,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!article) return { title: 'Artikel Tidak Ditemukan' }
 
   const siteConfig = SITE_MAP[siteParam] || SITE_MAP['pusat']
+  const siteName = siteConfig?.name || (siteParam.charAt(0).toUpperCase() + siteParam.slice(1));
+  
   const excerpt = article.blocks.find((b: any) => b.type === 'paragraph')?.content || ''
   const coverImage = article.featuredImage || article.blocks.find((b: any) => b.type === 'image')?.url || '/logo.png'
 
   return constructMetadata({
-    title: article.metaTitle || `${article.title} - ${siteConfig.name}`,
+    title: article.metaTitle || `${article.title} - ${siteName}`,
     description: article.metaDescription || excerpt.substring(0, 160),
     image: coverImage,
     siteParam,

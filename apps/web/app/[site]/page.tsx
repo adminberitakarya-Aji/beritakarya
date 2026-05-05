@@ -18,9 +18,11 @@ export async function generateMetadata({ params }: { params: { site: string } })
   const siteParam = resolvedParams?.site || 'pusat';
   const siteConfig = SITE_MAP[siteParam] || SITE_MAP['pusat'];
   
+  const siteName = siteConfig?.name || (siteParam.charAt(0).toUpperCase() + siteParam.slice(1));
+  
   return constructMetadata({
-    title: `${siteConfig.name} - Berita Terkini & Terpercaya`,
-    description: `Portal berita resmi ${siteConfig.name}. Menyajikan informasi terbaru, investigasi, dan analisis tajam dari seluruh Nusantara.`,
+    title: `${siteName} - Berita Terkini & Terpercaya`,
+    description: `Portal berita resmi ${siteName}. Menyajikan informasi terbaru, investigasi, dan analisis tajam dari seluruh Nusantara.`,
     siteParam
   })
 }

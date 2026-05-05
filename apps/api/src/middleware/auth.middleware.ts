@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
 import type { JWTPayload } from '@beritakarya/types'
+import { logger } from '../lib/logger'
 
 declare global {
   namespace Express {
@@ -17,14 +18,18 @@ export function requireAuth(
   next: NextFunction
 ) {
   const authHeader = req.headers.authorization
-  if (!authHeader?.startsWith('Bearer ')) {
+  const token = authHeader?.startsWith('Bearer ') 
+    ? authHeader.slice(7) 
+    : (req.query.token as string)
+
+  if (!token) {
+    logger.warn(`Auth failed: No token found for ${req.path}`)
     return res.status(401).json({
       success: false,
       error: { code: 'UNAUTHORIZED', message: 'Token tidak ditemukan' }
     })
   }
 
-  const token = authHeader.slice(7)
   try {
     const payload = jwt.verify(
       token,
@@ -32,7 +37,8 @@ export function requireAuth(
     ) as JWTPayload
     req.user = payload
     next()
-  } catch {
+  } catch (err: any) {
+    logger.warn(`Auth failed: Invalid token for ${req.path} - ${err.message}`)
     return res.status(401).json({
       success: false,
       error: { code: 'TOKEN_INVALID', message: 'Token tidak valid atau sudah expired' }
