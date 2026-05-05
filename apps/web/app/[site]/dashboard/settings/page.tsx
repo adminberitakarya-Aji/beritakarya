@@ -4,10 +4,11 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { Save, Plus, X, Globe, Settings as SettingsIcon, AlertCircle, CheckCircle2, Loader2 } from 'lucide-react'
 import { useAuthStore } from '../../../../store/authStore'
+import { api } from '../../../../lib/api'
 
 export default function SettingsPage() {
   const { site } = useParams() as { site: string }
-  const { accessToken } = useAuthStore()
+  const { user } = useAuthStore()
   
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -27,13 +28,12 @@ export default function SettingsPage() {
 
   const fetchSettings = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/sites/settings?site=${site}`)
-      const json = await res.json()
-      if (json.success) {
+      const { data } = await api.get('/sites/settings')
+      if (data.success) {
         setSettings({
-          name: json.data.name || '',
-          domain: json.data.domain || '',
-          trendingTopics: json.data.trendingTopics || []
+          name: data.data.name || '',
+          domain: data.data.domain || '',
+          trendingTopics: data.data.trendingTopics || []
         })
       }
     } catch (err) {
@@ -47,22 +47,15 @@ export default function SettingsPage() {
     setSaving(true)
     setMessage(null)
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/sites/settings?site=${site}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`
-        },
-        body: JSON.stringify(settings)
-      })
-      const json = await res.json()
-      if (json.success) {
+      const { data } = await api.patch('/sites/settings', settings)
+      if (data.success) {
         setMessage({ type: 'success', text: 'Pengaturan berhasil disimpan!' })
       } else {
-        setMessage({ type: 'error', text: json.error?.message || 'Gagal menyimpan pengaturan' })
+        setMessage({ type: 'error', text: data.error?.message || 'Gagal menyimpan pengaturan' })
       }
-    } catch (err) {
-      setMessage({ type: 'error', text: 'Terjadi kesalahan koneksi' })
+    } catch (err: any) {
+      const msg = err.response?.data?.error?.message || 'Terjadi kesalahan koneksi'
+      setMessage({ type: 'error', text: msg })
     } finally {
       setSaving(false)
     }
