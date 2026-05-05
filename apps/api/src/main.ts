@@ -9,6 +9,8 @@ import { mediaRouter } from './modules/media/media.controller'
 import { aiRouter } from './ai/ai.controller'
 import { categoryRouter } from './modules/category/category.controller'
 import { adRouter } from './modules/ad/ad.controller'
+import { siteRouter } from './modules/site/site.controller'
+import { newsletterRouter } from './modules/newsletter/newsletter.controller'
 import { requestIdMiddleware } from './middleware/requestId.middleware'
 import { errorMiddleware } from './middleware/error.middleware'
 import { sanitizeMiddleware } from './middleware/sanitize.middleware'
@@ -49,6 +51,8 @@ app.use('/api/v1/media', mediaRouter)
 app.use('/api/v1/ai', aiRouter)
 app.use('/api/v1/categories', categoryRouter)
 app.use('/api/v1/ads', adRouter)
+app.use('/api/v1/sites', siteRouter)
+app.use('/api/v1/newsletter', newsletterRouter)
 
 // ── System Endpoints ───────────────────────────────────────
 app.get('/health', (_, res) => {

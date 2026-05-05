@@ -6,6 +6,22 @@ import Link from 'next/link'
 import { ArrowRight, Share2, PlayCircle, Camera, MessageCircle } from 'lucide-react'
 import LoadMoreArticles from '@/components/ui/LoadMoreArticles'
 import VideoWidget from '@/components/ui/VideoWidget'
+import { Metadata } from 'next'
+import { notFound } from 'next/navigation'
+import NewsletterForm from '@/components/ui/NewsletterForm'
+
+export async function generateMetadata({ params }: { params: { site: string } }): Promise<Metadata> {
+  const resolvedParams = await params;
+  const siteParam = resolvedParams?.site || 'pusat';
+  const siteConfig = SITE_MAP[siteParam] || SITE_MAP['pusat'];
+  
+  return {
+    title: `${siteConfig.name} - Berita Terkini & Terpercaya`,
+    description: `Portal berita resmi ${siteConfig.name}. Menyajikan informasi terbaru, investigasi, dan analisis tajam dari seluruh Nusantara.`,
+  }
+}
+
+import { notFound } from 'next/navigation'
 
 async function getArticles(siteId: string, category?: string, search?: string) {
   try {
@@ -29,6 +45,19 @@ async function getArticles(siteId: string, category?: string, search?: string) {
   }
 }
 
+async function getSiteSettings(siteId: string) {
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+    const res = await fetch(`${apiUrl}/api/v1/sites/settings?site=${siteId}`, { cache: 'no-store' });
+    if (!res.ok) return null;
+    const json = await res.json();
+    return json?.data || null;
+  } catch (e) {
+    console.error("Error fetching site settings:", e);
+    return null;
+  }
+}
+
 export default async function SiteHomePage({ 
   params,
   searchParams 
@@ -45,20 +74,34 @@ export default async function SiteHomePage({
 
   console.log("DEBUG: Processing site:", siteParam, "Category:", categoryFilter, "Search:", searchQuery);
   
-  let siteConfig = SITE_MAP[siteParam] || SITE_MAP['pusat'];
+  const siteSettings = await getSiteSettings(siteParam)
   
-  // Hard fallback
-  if (!siteConfig) {
-    siteConfig = { id: 'pusat', name: 'BeritaKarya Pusat', domain: 'beritakarya.co', devDomain: 'localhost:3000' };
+  // If site not in DB and not 'pusat' -> 404 to prevent ghost tenants
+  if (!siteSettings && siteParam !== 'pusat') {
+    notFound()
+  }
+
+  // Build siteConfig dynamically from DB settings with static fallback
+  const siteConfig = {
+    id: siteParam,
+    name: siteSettings?.name || SITE_MAP[siteParam]?.name || (siteParam.charAt(0).toUpperCase() + siteParam.slice(1)),
+    domain: siteSettings?.domain || SITE_MAP[siteParam]?.domain || `${siteParam}.beritakarya.com`,
+    devDomain: SITE_MAP[siteParam]?.devDomain || `${siteParam}.localhost:3000`
   }
 
   const articles = await getArticles(siteConfig.id, categoryFilter, searchQuery)
+  
   const articlesList = Array.isArray(articles) ? articles : []
   
   const leadArticle = articlesList[0]
   const otherArticles = articlesList.slice(1, 11).filter(a => a && typeof a === 'object')
   const popular = articlesList.slice(0, 4).filter(a => a && typeof a === 'object')
-  const tags = ['Galian C', 'Reformasi Hukum', 'Ketahanan Keluarga', 'IKN', 'Gresik Hari Ini', 'Pilpres 2029']
+
+  // Dynamic tags from DB, fallback to default if empty
+  const defaultTags = ['Galian C', 'Reformasi Hukum', 'Ketahanan Keluarga', 'IKN', 'Gresik Hari Ini', 'Pilpres 2029']
+  const tags = (siteSettings?.trendingTopics as string[])?.length > 0 
+    ? (siteSettings.trendingTopics as string[]) 
+    : defaultTags
 
   return (
     <PublicSiteLayout siteConfig={siteConfig} initialCategory={categoryFilter}>
@@ -169,24 +212,7 @@ export default async function SiteHomePage({
               duration="12:45"
             />
 
-            {/* Newsletter */}
-            <div className="sticky top-40 bg-slate-900 dark:bg-black/40 border border-transparent dark:border-white/5 p-8 rounded-sm overflow-hidden relative">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-brand-red/10 rounded-full -mr-12 -mt-12 blur-3xl" />
-              <h4 className="text-white font-serif text-2xl font-bold mb-4 relative z-10">Dapatkan Berita Pilihan</h4>
-              <p className="text-gray-400 text-xs mb-6 font-light leading-relaxed relative z-10">
-                Laporan investigasi dan analisis tajam langsung di email Anda setiap pagi.
-              </p>
-              <div className="flex flex-col gap-3 relative z-10">
-                <input 
-                  type="email" 
-                  placeholder="Alamat Email Anda" 
-                  className="bg-white/5 border border-white/10 px-4 py-3 text-xs text-white outline-none focus:border-brand-red transition-colors rounded-sm"
-                />
-                <button className="bg-brand-red text-white py-3 text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-brand-black transition-all rounded-sm">
-                  Berlangganan
-                </button>
-              </div>
-            </div>
+            <NewsletterForm />
           </aside>
         </div>
       </main>

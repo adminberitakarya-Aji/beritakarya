@@ -49,6 +49,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { name: 'Kategori', href: `/${site}/dashboard/categories`, icon: Tag, roles: ['superadmin', 'pimred'] },
     { name: 'Iklan & Banner', href: `/${site}/dashboard/ads`, icon: ImageIcon, roles: ['superadmin', 'pimred'] },
     { name: 'Tim Redaksi', href: `/${site}/dashboard/users`, icon: UsersIcon, roles: ['superadmin'] },
+    { name: 'Pengaturan Situs', href: `/${site}/dashboard/settings`, icon: Settings, roles: ['superadmin', 'pimred'] },
   ]
 
   const filteredNav = navigation.filter(item => user && item.roles.includes(user.role))

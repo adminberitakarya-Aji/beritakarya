@@ -15,9 +15,7 @@ vi.mock('../../db/client', () => ({
   }
 }))
 
-vi.mock('../../lib/redis', () => ({
-  redis: { set: vi.fn(), get: vi.fn(), del: vi.fn() }
-}))
+
 
 import { prisma } from '../../db/client'
 import { loginUser, registerUser, refreshAccessToken, logoutUser } from './auth.service'

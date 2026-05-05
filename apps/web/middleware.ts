@@ -1,24 +1,31 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
-import { KNOWN_SITE_IDS } from '@beritakarya/config'
+import { NextResponse } from 'next'
+import type { NextRequest } from 'next'
 
 export function middleware(req: NextRequest) {
   const hostname = req.headers.get('host') || ''
-  const subdomain = hostname.split('.')[0]
+  
+  // Deteksi subdomain
+  // bandung.localhost:3000 -> bandung
+  // bandung.beritakarya.com -> bandung
+  // beritakarya.co -> beritakarya (default ke pusat nanti)
+  const parts = hostname.split('.')
+  let subdomain = parts.length > 1 ? parts[0] : ''
 
   const isLocalhost = hostname.includes('localhost')
-  let siteId = isLocalhost
-    ? req.nextUrl.searchParams.get('site') || subdomain
-    : subdomain
-
-  // If on localhost and siteId is not recognized (like 'localhost' itself), 
-  // default to 'pusat' for development convenience.
-  if (isLocalhost && !KNOWN_SITE_IDS.includes(siteId)) {
-    siteId = 'pusat'
-  }
-
-  if (!KNOWN_SITE_IDS.includes(siteId) && !hostname.includes('www') && !isLocalhost) {
-    return NextResponse.rewrite(new URL('/404', req.url))
+  
+  let siteId = subdomain
+  
+  if (isLocalhost) {
+    // Di localhost, prioritaskan ?site= parameter untuk testing
+    siteId = req.nextUrl.searchParams.get('site') || subdomain
+    if (!siteId || siteId === 'localhost' || siteId === '3000') {
+      siteId = 'pusat'
+    }
+  } else {
+    // Di produksi, jika domain utama atau pakai www, arahkan ke pusat
+    if (!subdomain || subdomain === 'www' || subdomain === 'beritakarya') {
+      siteId = 'pusat'
+    }
   }
 
   const res = NextResponse.next()
@@ -29,20 +36,21 @@ export function middleware(req: NextRequest) {
   })
   res.headers.set('x-site-id', siteId)
 
-  // Internal Rewrite: 
-  // If the user accesses '/' or '/dashboard' (and its subroutes), 
-  // we internally point them to '/[siteId]/...' 
-  // without changing the URL in the browser address bar.
   const url = req.nextUrl.clone()
+  
+  // Internal Rewrite: 
+  // Point '/' atau '/dashboard' ke '/[siteId]/...' secara internal
   if (url.pathname === '/' || url.pathname.startsWith('/dashboard')) {
     url.pathname = `/${siteId}${url.pathname === '/' ? '' : url.pathname}`
     const rewriteRes = NextResponse.rewrite(url)
-    // IMPORTANT: Set cookie on the rewrite response too!
+    
     rewriteRes.cookies.set('siteId', siteId, {
       httpOnly: false,
       sameSite: 'lax',
       maxAge: 60 * 60 * 24
     })
+    rewriteRes.headers.set('x-site-id', siteId)
+    
     return rewriteRes
   }
 

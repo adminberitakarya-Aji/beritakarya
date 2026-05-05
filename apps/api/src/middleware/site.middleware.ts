@@ -1,7 +1,23 @@
 import { Request, Response, NextFunction } from 'express'
 import { KNOWN_SITE_IDS } from '@beritakarya/config'
+import { prisma } from '../db/client'
 
-export function siteMiddleware(
+// In-memory cache for valid site IDs to avoid DB hits on every request
+const validSiteCache = new Set<string>(KNOWN_SITE_IDS)
+let lastCacheUpdate = 0
+const CACHE_TTL = 5 * 60 * 1000 // 5 minutes
+
+async function refreshCache() {
+  try {
+    const sites = await prisma.site.findMany({ select: { id: true } })
+    sites.forEach(s => validSiteCache.add(s.id))
+    lastCacheUpdate = Date.now()
+  } catch (e) {
+    console.error('Failed to refresh site cache', e)
+  }
+}
+
+export async function siteMiddleware(
   req: Request,
   res: Response,
   next: NextFunction
@@ -17,10 +33,12 @@ export function siteMiddleware(
     })
   }
 
-  const validSites = [...KNOWN_SITE_IDS];
-  if (!validSites.includes('pusat')) validSites.push('pusat');
+  // Refresh cache if expired or siteId not found
+  if (Date.now() - lastCacheUpdate > CACHE_TTL || !validSiteCache.has(siteId)) {
+    await refreshCache()
+  }
 
-  if (!validSites.includes(siteId)) {
+  if (!validSiteCache.has(siteId) && siteId !== 'pusat') {
     return res.status(400).json({
       success: false,
       error: { code: 'SITE_UNKNOWN', message: `Site "${siteId}" tidak dikenal` }

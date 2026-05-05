@@ -9,9 +9,46 @@ import ReadingProgress from '@/components/ui/ReadingProgress'
 import AdSpace from '@/components/ui/AdSpace'
 import ShareSidebar from '@/components/ui/ShareSidebar'
 import { Clock, User, Share2, Link as LinkIcon, BookOpen } from 'lucide-react'
+import { Metadata } from 'next'
 
 interface Props {
   params: { site: string; slug: string }
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const resolvedParams = await params;
+  const siteParam = resolvedParams?.site || 'pusat';
+  const slugParam = resolvedParams?.slug;
+  
+  const article = await getArticle(siteParam, slugParam)
+  if (!article) return { title: 'Artikel Tidak Ditemukan' }
+
+  const siteConfig = SITE_MAP[siteParam] || SITE_MAP['pusat']
+  const excerpt = article.blocks.find((b: any) => b.type === 'paragraph')?.content || ''
+  const coverImage = article.blocks.find((b: any) => b.type === 'image')?.url || '/logo.png'
+
+  const title = article.metaTitle || `${article.title} - ${siteConfig.name}`
+  const description = article.metaDescription || excerpt.substring(0, 160)
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: 'article',
+      url: `${process.env.NEXT_PUBLIC_URL}/${siteParam}/artikel/${slugParam}`,
+      images: [{ url: coverImage }],
+      publishedTime: article.publishedAt,
+      authors: [article.author?.name || 'Redaksi'],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [coverImage],
+    }
+  }
 }
 
 async function getArticle(site: string, slug: string) {
@@ -39,20 +76,34 @@ async function getRelatedArticles(site: string, currentSlug: string) {
   }
 }
 
+async function getSiteSettings(siteId: string) {
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+    const res = await fetch(`${apiUrl}/api/v1/sites/settings?site=${siteId}`, { cache: 'no-store' });
+    if (!res.ok) return null;
+    const json = await res.json();
+    return json?.data || null;
+  } catch (e) {
+    return null;
+  }
+}
+
 export default async function ArticlePage({ params }: Props) {
   const resolvedParams = await params;
   const siteParam = resolvedParams?.site || 'pusat';
   const slugParam = resolvedParams?.slug;
 
-  let siteConfig = SITE_MAP[siteParam] || SITE_MAP['pusat']
+  const siteSettings = await getSiteSettings(siteParam)
   
-  if (!siteConfig) {
-    siteConfig = {
-      id: 'pusat',
-      name: 'BeritaKarya Pusat',
-      domain: 'beritakarya.co',
-      devDomain: 'localhost:3000'
-    };
+  if (!siteSettings && siteParam !== 'pusat') {
+    notFound()
+  }
+
+  const siteConfig = {
+    id: siteParam,
+    name: siteSettings?.name || SITE_MAP[siteParam]?.name || (siteParam.charAt(0).toUpperCase() + siteParam.slice(1)),
+    domain: siteSettings?.domain || SITE_MAP[siteParam]?.domain || `${siteParam}.beritakarya.com`,
+    devDomain: SITE_MAP[siteParam]?.devDomain || `${siteParam}.localhost:3000`
   }
 
   const article = await getArticle(siteParam, slugParam)

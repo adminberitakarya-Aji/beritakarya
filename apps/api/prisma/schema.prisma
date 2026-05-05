@@ -11,13 +11,15 @@ model Site {
   id        String   @id
   name      String
   domain    String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  trendingTopics Json?    @default("[]")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   users          User[]
   articles       Article[]
   categories     Category[]
   advertisements Advertisement[]
+  newsletterSubscribers NewsletterSubscriber[]
 }
 
 model User {
@@ -117,6 +119,19 @@ model AIUsage {
   createdAt    DateTime @default(now())
 
   @@index([userId, action])
+  @@index([siteId])
+}
+
+model NewsletterSubscriber {
+  id        String   @id @default(uuid())
+  email     String
+  siteId    String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  site Site @relation(fields: [siteId], references: [id])
+
+  @@unique([siteId, email])
   @@index([siteId])
 }
 
