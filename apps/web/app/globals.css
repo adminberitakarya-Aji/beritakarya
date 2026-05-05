@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --brand-red: #B91C1C;
+    --brand-black: #0F172A;
+    --brand-dark: #020617;
+    --brand-grey: #F1F5F9;
+    --brand-surface: #F8FAFC;
+    --brand-text: #0F172A;
+    --brand-text-muted: #64748B;
+    --bg-main: #FFFFFF;
+  }
+
+  .dark {
+    --brand-red: #EF4444;
+    --brand-black: #F8FAFC;
+    --brand-dark: #F1F5F9;
+    --brand-grey: #1E293B;
+    --brand-surface: #0F172A;
+    --brand-text: #F8FAFC;
+    --brand-text-muted: #94A3B8;
+    --bg-main: #020617;
+  }
+
+  body {
+    @apply transition-colors duration-500;
+    background-color: var(--bg-main);
+    color: var(--brand-text);
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply tracking-tight transition-colors duration-500;
+    color: var(--brand-text);
+  }
+}
+
+@layer components {
+  .news-container {
+    @apply max-w-7xl mx-auto px-4;
+  }
+
+  /* Premium Article Typography */
+  .article-content p:first-of-type::first-letter {
+    font-family: var(--font-playfair);
+    font-weight: 900;
+    @apply float-left text-brand-black mr-2 text-7xl leading-[0.8] mt-2;
+  }
+
+  .pull-quote {
+    @apply relative my-12 py-10 px-12 border-y-2 border-brand-red/10 bg-brand-red/[0.02];
+  }
+
+  .pull-quote::before {
+    content: '"';
+    @apply absolute -top-4 left-6 text-8xl font-serif text-brand-red opacity-10 leading-none select-none;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+

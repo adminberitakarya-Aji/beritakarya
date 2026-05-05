@@ -1,0 +1,1199 @@
+
+<h2 class="sr-only">Fase 1 — Kode lengkap Auth dan Multi-Site Core Beritakarya, 22 file siap copy-paste</h2>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.wrap{padding:1rem 0;font-family:var(--font-sans)}
+.top-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.phase-pill{background:#E1F5EE;color:#085041;font-size:12px;font-weight:500;padding:3px 12px;border-radius:20px;white-space:nowrap}
+.title{font-size:15px;font-weight:500;color:var(--color-text-primary)}
+.progress{font-size:12px;color:var(--color-text-secondary);margin-left:auto}
+.layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:12px;min-height:440px}
+.sidebar{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow-y:auto;max-height:440px}
+.group-label{font-size:11px;font-weight:500;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.05em;padding:10px 12px 4px;position:sticky;top:0;background:var(--color-background-primary)}
+.file-btn{display:flex;align-items:center;gap:8px;width:100%;padding:7px 12px;background:none;border:none;cursor:pointer;text-align:left;font-size:12px;color:var(--color-text-secondary);border-left:2px solid transparent}
+.file-btn:hover{background:var(--color-background-secondary);color:var(--color-text-primary)}
+.file-btn.active{background:var(--color-background-secondary);color:#0F6E56;border-left-color:#0F6E56;font-weight:500}
+.code-panel{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;display:flex;flex-direction:column}
+.code-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--color-background-secondary);border-bottom:0.5px solid var(--color-border-tertiary);gap:8px;flex-wrap:wrap}
+.file-path{font-size:11px;font-family:var(--font-mono);color:var(--color-text-secondary);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.copy-btn{font-size:11px;padding:4px 10px;border-radius:var(--border-radius-md);cursor:pointer;background:none;border:0.5px solid var(--color-border-secondary);color:var(--color-text-secondary);white-space:nowrap}
+.copy-btn:hover{background:var(--color-background-primary)}
+.code-body{flex:1;overflow:auto;padding:14px;background:var(--color-background-primary);max-height:360px}
+.code-body pre{font-family:var(--font-mono);font-size:11.5px;line-height:1.7;color:var(--color-text-primary);white-space:pre;tab-size:2}
+.desc-bar{padding:8px 14px;background:var(--color-background-secondary);border-top:0.5px solid var(--color-border-tertiary);font-size:12px;color:var(--color-text-secondary);line-height:1.5}
+.step-row{display:flex;align-items:flex-start;gap:8px;margin-top:10px;padding:10px 12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);font-size:12px;color:var(--color-text-secondary)}
+.step-num{background:#0F6E56;color:#fff;min-width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;margin-top:1px}
+.nav-row{display:flex;gap:8px;margin-top:10px;justify-content:flex-end;flex-wrap:wrap}
+.nav-btn{font-size:12px;padding:5px 14px;border-radius:var(--border-radius-md);cursor:pointer;border:0.5px solid var(--color-border-secondary);background:none;color:var(--color-text-secondary)}
+.nav-btn:hover{background:var(--color-background-secondary)}
+.nav-btn.primary{background:#0F6E56;border-color:#0F6E56;color:#fff}
+.nav-btn.primary:hover{background:#085041}
+.warn-tag{display:inline-block;background:#FAEEDA;color:#633806;font-size:10px;font-weight:500;padding:2px 7px;border-radius:10px;margin-left:6px;vertical-align:middle}
+</style>
+
+<div class="wrap">
+  <div class="top-bar">
+    <span class="phase-pill">Fase 1</span>
+    <span class="title">Auth & Multi-Site Core</span>
+    <span class="progress" id="prog">1 / 22 file</span>
+  </div>
+  <div class="layout">
+    <div class="sidebar" id="sidebar"></div>
+    <div class="code-panel">
+      <div class="code-header">
+        <span class="file-path" id="fp">-</span>
+        <button class="copy-btn" onclick="copyCode()">Copy</button>
+      </div>
+      <div class="code-body"><pre id="code-pre">Pilih file di sebelah kiri</pre></div>
+      <div class="desc-bar" id="desc-bar">—</div>
+    </div>
+  </div>
+  <div class="step-row">
+    <span class="step-num" id="snum">1</span>
+    <span id="step-txt">Ikuti urutan dari atas — mulai dari Prisma schema, lalu install dependencies, baru jalankan migration.</span>
+  </div>
+  <div class="nav-row">
+    <button class="nav-btn" onclick="navFile(-1)">← Sebelumnya</button>
+    <button class="nav-btn primary" onclick="navFile(1)">Selanjutnya →</button>
+    <button class="nav-btn primary" onclick="sendPrompt('Fase 1 sudah selesai, lanjut generate kode Fase 2: CRUD Artikel dan Editor Blok')">Lanjut ke Fase 2 ↗</button>
+  </div>
+</div>
+
+<script>
+const files = [
+  {
+    group:'Backend — Setup',
+    name:'package.json',
+    path:'apps/api/package.json',
+    desc:'Dependencies backend: Express, Prisma, JWT, bcrypt, Redis, Zod, rate-limit',
+    step:'Langkah 1: Buat file ini lalu jalankan: cd apps/api && pnpm install',
+    code:`{
+  "name": "@beritakarya/api",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/main.ts",
+    "build": "tsc",
+    "start": "node dist/main.js",
+    "test": "vitest run",
+    "lint": "eslint src --ext .ts",
+    "type-check": "tsc --noEmit",
+    "db:migrate": "prisma migrate dev",
+    "db:generate": "prisma generate",
+    "db:studio": "prisma studio",
+    "db:seed": "ts-node src/db/seed.ts"
+  },
+  "dependencies": {
+    "express": "^4.19.0",
+    "@types/express": "^4.17.21",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "express-rate-limit": "^7.2.0",
+    "@prisma/client": "^5.12.0",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "ioredis": "^5.3.2",
+    "zod": "^3.22.4",
+    "winston": "^3.13.0",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "prisma": "^5.12.0",
+    "typescript": "^5.4.0",
+    "ts-node-dev": "^2.0.0",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.6",
+    "@types/cors": "^2.8.17",
+    "@types/uuid": "^9.0.8",
+    "vitest": "^1.4.0"
+  }
+}`
+  },
+  {
+    group:'Backend — Setup',
+    name:'tsconfig.json',
+    path:'apps/api/tsconfig.json',
+    desc:'TypeScript config untuk backend — extend dari root tsconfig',
+    step:'Langkah 1: Buat file ini di apps/api/',
+    code:`{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "paths": {
+      "@beritakarya/types": ["../../packages/types/src/index.ts"],
+      "@beritakarya/utils": ["../../packages/utils/src/index.ts"],
+      "@beritakarya/config": ["../../packages/config/src/index.ts"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}`
+  },
+  {
+    group:'Backend — DB',
+    name:'schema.prisma',
+    path:'apps/api/prisma/schema.prisma',
+    desc:'Prisma schema: model Site, User, Article, RefreshToken — fondasi semua data',
+    step:'Langkah 2: Buat folder apps/api/prisma/ lalu buat file ini. Setelah itu jalankan: pnpm db:generate && pnpm db:migrate',
+    code:`generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Site {
+  id        String   @id
+  name      String
+  domain    String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users    User[]
+  articles Article[]
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         String   @default("journalist")
+  siteId       String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  site          Site?          @relation(fields: [siteId], references: [id])
+  articles      Article[]
+  refreshTokens RefreshToken[]
+
+  @@index([siteId])
+  @@index([email])
+}
+
+model Article {
+  id              String   @id @default(uuid())
+  title           String
+  slug            String
+  siteId          String
+  authorId        String
+  blocks          Json     @default("[]")
+  status          String   @default("draft")
+  metaTitle       String?
+  metaDescription String?
+  publishedAt     DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  site   Site @relation(fields: [siteId], references: [id])
+  author User @relation(fields: [authorId], references: [id])
+
+  @@unique([siteId, slug])
+  @@index([siteId, status])
+  @@index([authorId])
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}`
+  },
+  {
+    group:'Backend — DB',
+    name:'seed.ts',
+    path:'apps/api/src/db/seed.ts',
+    desc:'Seed data awal: 2 site, 4 user (journalist bandung, journalist surabaya, editor per site, 1 editor pusat)',
+    step:'Langkah 2: Setelah migration berhasil, jalankan: pnpm db:seed',
+    code:`import { PrismaClient } from '@prisma/client'
+import bcrypt from 'bcryptjs'
+
+const prisma = new PrismaClient()
+
+async function main() {
+  await prisma.site.upsert({
+    where: { id: 'bandung' },
+    update: {},
+    create: { id: 'bandung', name: 'Beritakarya Bandung', domain: 'bandung.beritakarya.com' }
+  })
+  await prisma.site.upsert({
+    where: { id: 'surabaya' },
+    update: {},
+    create: { id: 'surabaya', name: 'Beritakarya Surabaya', domain: 'surabaya.beritakarya.com' }
+  })
+
+  const hash = await bcrypt.hash('password123', 10)
+
+  const users = [
+    { email: 'jurnalis@bandung.com', name: 'Jurnalis Bandung', role: 'journalist', siteId: 'bandung' },
+    { email: 'jurnalis@surabaya.com', name: 'Jurnalis Surabaya', role: 'journalist', siteId: 'surabaya' },
+    { email: 'editor@bandung.com', name: 'Editor Bandung', role: 'editor', siteId: 'bandung' },
+    { email: 'editor.pusat@beritakarya.com', name: 'Editor Pusat', role: 'editor', siteId: null },
+  ]
+
+  for (const u of users) {
+    await prisma.user.upsert({
+      where: { email: u.email },
+      update: {},
+      create: { ...u, passwordHash: hash }
+    })
+  }
+
+  console.log('Seed selesai.')
+}
+
+main().catch(console.error).finally(() => prisma.$disconnect())`
+  },
+  {
+    group:'Backend — DB',
+    name:'client.ts',
+    path:'apps/api/src/db/client.ts',
+    desc:'Singleton Prisma client — satu instance dipakai di seluruh aplikasi',
+    step:'Langkah 2: Buat folder apps/api/src/db/ lalu buat file ini',
+    code:`import { PrismaClient } from '@prisma/client'
+
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined
+}
+
+export const prisma =
+  globalForPrisma.prisma ??
+  new PrismaClient({
+    log: process.env.NODE_ENV === 'development'
+      ? ['query', 'error', 'warn']
+      : ['error'],
+  })
+
+if (process.env.NODE_ENV !== 'production') {
+  globalForPrisma.prisma = prisma
+}`
+  },
+  {
+    group:'Backend — Auth',
+    name:'auth.service.ts',
+    path:'apps/api/src/modules/auth/auth.service.ts',
+    desc:'Business logic autentikasi: login, register, refresh token, logout — inti dari sistem auth',
+    step:'Langkah 3: Buat folder apps/api/src/modules/auth/ lalu buat semua file auth',
+    code:`import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
+import { prisma } from '../../db/client'
+import { redis } from '../../lib/redis'
+import type { JWTPayload } from '@beritakarya/types'
+
+const ACCESS_SECRET = process.env.JWT_SECRET!
+const ACCESS_EXPIRES = process.env.JWT_ACCESS_EXPIRES || '15m'
+const REFRESH_EXPIRES_DAYS = 7
+
+export async function loginUser(email: string, password: string) {
+  const user = await prisma.user.findUnique({ where: { email } })
+  if (!user) throw new Error('Email atau password salah')
+
+  const valid = await bcrypt.compare(password, user.passwordHash)
+  if (!valid) throw new Error('Email atau password salah')
+
+  return generateTokenPair(user)
+}
+
+export async function registerUser(
+  email: string, password: string, name: string,
+  role: string, siteId: string | null
+) {
+  const exists = await prisma.user.findUnique({ where: { email } })
+  if (exists) throw new Error('Email sudah terdaftar')
+
+  const passwordHash = await bcrypt.hash(password, 10)
+  const user = await prisma.user.create({
+    data: { email, passwordHash, name, role, siteId }
+  })
+  return generateTokenPair(user)
+}
+
+export async function refreshAccessToken(refreshToken: string) {
+  const record = await prisma.refreshToken.findUnique({
+    where: { token: refreshToken },
+    include: { user: true }
+  })
+  if (!record || record.expiresAt < new Date()) {
+    throw new Error('Refresh token tidak valid atau sudah expired')
+  }
+  return generateTokenPair(record.user)
+}
+
+export async function logoutUser(userId: string, refreshToken: string) {
+  await prisma.refreshToken.deleteMany({
+    where: { userId, token: refreshToken }
+  })
+}
+
+async function generateTokenPair(user: any) {
+  const payload: Omit<JWTPayload, 'iat' | 'exp'> = {
+    userId: user.id,
+    role: user.role,
+    siteId: user.siteId
+  }
+  const accessToken = jwt.sign(payload, ACCESS_SECRET, {
+    expiresIn: ACCESS_EXPIRES
+  })
+
+  const expiresAt = new Date()
+  expiresAt.setDate(expiresAt.getDate() + REFRESH_EXPIRES_DAYS)
+
+  const { v4: uuidv4 } = await import('uuid')
+  const refreshToken = uuidv4()
+  await prisma.refreshToken.create({
+    data: { token: refreshToken, userId: user.id, expiresAt }
+  })
+
+  return {
+    accessToken,
+    refreshToken,
+    user: {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+      siteId: user.siteId
+    }
+  }
+}`
+  },
+  {
+    group:'Backend — Auth',
+    name:'auth.controller.ts',
+    path:'apps/api/src/modules/auth/auth.controller.ts',
+    desc:'Route handler: POST /login, /register, /refresh, /logout — validasi input dengan Zod',
+    step:'Langkah 3: Tambahkan ke apps/api/src/modules/auth/',
+    code:`import { Router, Request, Response } from 'express'
+import { z } from 'zod'
+import * as authService from './auth.service'
+import { asyncHandler } from '../../utils/asyncHandler'
+
+export const authRouter = Router()
+
+const loginSchema = z.object({
+  email: z.string().email('Email tidak valid'),
+  password: z.string().min(6, 'Password minimal 6 karakter')
+})
+
+const registerSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6),
+  name: z.string().min(2),
+  role: z.enum(['journalist', 'editor']).default('journalist'),
+  siteId: z.string().nullable().default(null)
+})
+
+authRouter.post('/login', asyncHandler(async (req: Request, res: Response) => {
+  const { email, password } = loginSchema.parse(req.body)
+  const result = await authService.loginUser(email, password)
+  res.json({ success: true, data: result })
+}))
+
+authRouter.post('/register', asyncHandler(async (req: Request, res: Response) => {
+  const input = registerSchema.parse(req.body)
+  const result = await authService.registerUser(
+    input.email, input.password, input.name,
+    input.role, input.siteId
+  )
+  res.status(201).json({ success: true, data: result })
+}))
+
+authRouter.post('/refresh', asyncHandler(async (req: Request, res: Response) => {
+  const { refreshToken } = z.object({
+    refreshToken: z.string()
+  }).parse(req.body)
+  const result = await authService.refreshAccessToken(refreshToken)
+  res.json({ success: true, data: result })
+}))
+
+authRouter.post('/logout', asyncHandler(async (req: Request, res: Response) => {
+  const { userId, refreshToken } = z.object({
+    userId: z.string(),
+    refreshToken: z.string()
+  }).parse(req.body)
+  await authService.logoutUser(userId, refreshToken)
+  res.json({ success: true, message: 'Logout berhasil' })
+}))`
+  },
+  {
+    group:'Backend — Middleware',
+    name:'auth.middleware.ts',
+    path:'apps/api/src/middleware/auth.middleware.ts',
+    desc:'Verifikasi JWT dari Authorization header — inject req.user ke semua protected route',
+    step:'Langkah 4: Buat folder apps/api/src/middleware/ lalu buat file ini',
+    code:`import { Request, Response, NextFunction } from 'express'
+import jwt from 'jsonwebtoken'
+import type { JWTPayload } from '@beritakarya/types'
+
+declare global {
+  namespace Express {
+    interface Request {
+      user?: JWTPayload
+      site?: string
+    }
+  }
+}
+
+export function requireAuth(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const authHeader = req.headers.authorization
+  if (!authHeader?.startsWith('Bearer ')) {
+    return res.status(401).json({
+      success: false,
+      error: { code: 'UNAUTHORIZED', message: 'Token tidak ditemukan' }
+    })
+  }
+
+  const token = authHeader.slice(7)
+  try {
+    const payload = jwt.verify(
+      token,
+      process.env.JWT_SECRET!
+    ) as JWTPayload
+    req.user = payload
+    next()
+  } catch {
+    return res.status(401).json({
+      success: false,
+      error: { code: 'TOKEN_INVALID', message: 'Token tidak valid atau sudah expired' }
+    })
+  }
+}
+
+export function requireRole(...roles: string[]) {
+  return (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        error: { code: 'UNAUTHORIZED', message: 'Belum login' }
+      })
+    }
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({
+        success: false,
+        error: { code: 'FORBIDDEN', message: 'Akses ditolak' }
+      })
+    }
+    next()
+  }
+}`
+  },
+  {
+    group:'Backend — Middleware',
+    name:'site.middleware.ts',
+    path:'apps/api/src/middleware/site.middleware.ts',
+    desc:'Deteksi siteId dari query param atau header — inject req.site, validasi site terdaftar',
+    step:'Langkah 4: Tambahkan ke apps/api/src/middleware/',
+    code:`import { Request, Response, NextFunction } from 'express'
+import { KNOWN_SITE_IDS } from '@beritakarya/config'
+
+export function siteMiddleware(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const siteId =
+    (req.query.site as string) ||
+    (req.headers['x-site-id'] as string)
+
+  if (!siteId) {
+    return res.status(400).json({
+      success: false,
+      error: { code: 'SITE_REQUIRED', message: 'Parameter site diperlukan' }
+    })
+  }
+
+  if (!KNOWN_SITE_IDS.includes(siteId)) {
+    return res.status(400).json({
+      success: false,
+      error: { code: 'SITE_UNKNOWN', message: \`Site "\${siteId}" tidak dikenal\` }
+    })
+  }
+
+  req.site = siteId
+  next()
+}
+
+export function requireSiteAccess(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  if (!req.user) return next()
+
+  if (
+    req.user.role === 'journalist' &&
+    req.user.siteId !== req.site
+  ) {
+    return res.status(403).json({
+      success: false,
+      error: {
+        code: 'SITE_FORBIDDEN',
+        message: 'Anda hanya bisa mengakses site Anda sendiri'
+      }
+    })
+  }
+  next()
+}`
+  },
+  {
+    group:'Backend — Middleware',
+    name:'error.middleware.ts',
+    path:'apps/api/src/middleware/error.middleware.ts',
+    desc:'Global error handler — tangkap semua error, format response konsisten, log ke winston',
+    step:'Langkah 4: Tambahkan ke apps/api/src/middleware/',
+    code:`import { Request, Response, NextFunction } from 'express'
+import { ZodError } from 'zod'
+import { logger } from '../lib/logger'
+
+export function errorMiddleware(
+  err: any,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  logger.error({
+    message: err.message,
+    stack: err.stack,
+    path: req.path,
+    method: req.method,
+    requestId: req.headers['x-request-id'],
+    userId: req.user?.userId,
+    site: req.site,
+  })
+
+  if (err instanceof ZodError) {
+    return res.status(400).json({
+      success: false,
+      error: {
+        code: 'VALIDATION_ERROR',
+        message: 'Input tidak valid',
+        details: err.errors.map(e => ({
+          field: e.path.join('.'),
+          message: e.message
+        }))
+      }
+    })
+  }
+
+  if (err.message?.includes('salah') ||
+      err.message?.includes('terdaftar') ||
+      err.message?.includes('tidak valid')) {
+    return res.status(400).json({
+      success: false,
+      error: { code: 'BAD_REQUEST', message: err.message }
+    })
+  }
+
+  const statusCode = err.statusCode || 500
+  const message = process.env.NODE_ENV === 'production'
+    ? 'Terjadi kesalahan server'
+    : err.message
+
+  res.status(statusCode).json({
+    success: false,
+    error: { code: 'SERVER_ERROR', message }
+  })
+}`
+  },
+  {
+    group:'Backend — Middleware',
+    name:'requestId.middleware.ts',
+    path:'apps/api/src/middleware/requestId.middleware.ts',
+    desc:'Generate UUID unik per request — memudahkan tracing log di multi-service environment',
+    step:'Langkah 4: Tambahkan ke apps/api/src/middleware/',
+    code:`import { Request, Response, NextFunction } from 'express'
+import { v4 as uuidv4 } from 'uuid'
+
+export function requestIdMiddleware(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const id = (req.headers['x-request-id'] as string) || uuidv4()
+  req.headers['x-request-id'] = id
+  res.setHeader('X-Request-ID', id)
+  next()
+}`
+  },
+  {
+    group:'Backend — Lib',
+    name:'redis.ts',
+    path:'apps/api/src/lib/redis.ts',
+    desc:'Singleton Redis client menggunakan ioredis — dipakai untuk rate limiting dan session',
+    step:'Langkah 5: Buat folder apps/api/src/lib/ lalu buat file ini',
+    code:`import Redis from 'ioredis'
+
+export const redis = new Redis(
+  process.env.REDIS_URL || 'redis://localhost:6379',
+  { lazyConnect: true, maxRetriesPerRequest: 3 }
+)
+
+redis.on('error', (err) => {
+  console.error('Redis error:', err.message)
+})`
+  },
+  {
+    group:'Backend — Lib',
+    name:'logger.ts',
+    path:'apps/api/src/lib/logger.ts',
+    desc:'Winston logger — Console di development, File di production, format JSON untuk structured logging',
+    step:'Langkah 5: Tambahkan ke apps/api/src/lib/',
+    code:`import winston from 'winston'
+import path from 'path'
+
+const { combine, timestamp, json, colorize, simple } = winston.format
+
+export const logger = winston.createLogger({
+  level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
+  format: combine(timestamp(), json()),
+  transports: [
+    new winston.transports.Console({
+      format: process.env.NODE_ENV === 'production'
+        ? combine(timestamp(), json())
+        : combine(colorize(), simple())
+    }),
+    ...(process.env.NODE_ENV === 'production'
+      ? [
+          new winston.transports.File({
+            filename: path.join('logs', 'error.log'),
+            level: 'error'
+          }),
+          new winston.transports.File({
+            filename: path.join('logs', 'app.log')
+          })
+        ]
+      : [])
+  ]
+})`
+  },
+  {
+    group:'Backend — Lib',
+    name:'rateLimit.ts',
+    path:'apps/api/src/lib/rateLimit.ts',
+    desc:'Konfigurasi rate limiter: ketat untuk auth (10/menit), longgar untuk API umum (100/menit)',
+    step:'Langkah 5: Tambahkan ke apps/api/src/lib/',
+    code:`import rateLimit from 'express-rate-limit'
+
+export const authLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 10,
+  message: {
+    success: false,
+    error: {
+      code: 'RATE_LIMITED',
+      message: 'Terlalu banyak percobaan login. Coba lagi dalam 1 menit.'
+    }
+  },
+  standardHeaders: true,
+  legacyHeaders: false
+})
+
+export const apiLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 100,
+  message: {
+    success: false,
+    error: {
+      code: 'RATE_LIMITED',
+      message: 'Terlalu banyak request. Coba lagi sebentar.'
+    }
+  },
+  standardHeaders: true,
+  legacyHeaders: false
+})
+
+export const aiLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 20,
+  message: {
+    success: false,
+    error: {
+      code: 'AI_RATE_LIMITED',
+      message: 'Batas penggunaan AI tercapai. Coba lagi dalam 1 jam.'
+    }
+  },
+  standardHeaders: true,
+  legacyHeaders: false
+})`
+  },
+  {
+    group:'Backend — Utils',
+    name:'asyncHandler.ts',
+    path:'apps/api/src/utils/asyncHandler.ts',
+    desc:'Wrapper untuk async route handler — menghilangkan try/catch berulang di setiap controller',
+    step:'Langkah 5: Buat folder apps/api/src/utils/ lalu buat file ini',
+    code:`import { Request, Response, NextFunction, RequestHandler } from 'express'
+
+export function asyncHandler(
+  fn: (req: Request, res: Response, next: NextFunction) => Promise<any>
+): RequestHandler {
+  return (req, res, next) => {
+    Promise.resolve(fn(req, res, next)).catch(next)
+  }
+}`
+  },
+  {
+    group:'Backend — User',
+    name:'user.controller.ts',
+    path:'apps/api/src/modules/user/user.controller.ts',
+    desc:'Route handler: GET /me, GET /users (per site), POST /users (editor only)',
+    step:'Langkah 6: Buat folder apps/api/src/modules/user/ lalu buat file ini',
+    code:`import { Router, Request, Response } from 'express'
+import { z } from 'zod'
+import { prisma } from '../../db/client'
+import { requireAuth, requireRole } from '../../middleware/auth.middleware'
+import { siteMiddleware } from '../../middleware/site.middleware'
+import { asyncHandler } from '../../utils/asyncHandler'
+
+export const userRouter = Router()
+
+userRouter.get('/me',
+  requireAuth,
+  asyncHandler(async (req: Request, res: Response) => {
+    const user = await prisma.user.findUnique({
+      where: { id: req.user!.userId },
+      select: { id: true, email: true, name: true, role: true, siteId: true, createdAt: true }
+    })
+    if (!user) return res.status(404).json({ success: false, error: { message: 'User tidak ditemukan' } })
+    res.json({ success: true, data: user })
+  })
+)
+
+userRouter.get('/',
+  requireAuth,
+  requireRole('editor'),
+  siteMiddleware,
+  asyncHandler(async (req: Request, res: Response) => {
+    const users = await prisma.user.findMany({
+      where: { siteId: req.site },
+      select: { id: true, email: true, name: true, role: true, siteId: true, createdAt: true },
+      orderBy: { createdAt: 'desc' }
+    })
+    res.json({ success: true, data: users })
+  })
+)
+
+userRouter.post('/',
+  requireAuth,
+  requireRole('editor'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const schema = z.object({
+      email: z.string().email(),
+      password: z.string().min(6),
+      name: z.string().min(2),
+      role: z.enum(['journalist', 'editor']),
+      siteId: z.string().nullable()
+    })
+    const input = schema.parse(req.body)
+    const bcrypt = await import('bcryptjs')
+    const passwordHash = await bcrypt.default.hash(input.password, 10)
+    const user = await prisma.user.create({
+      data: { ...input, passwordHash },
+      select: { id: true, email: true, name: true, role: true, siteId: true }
+    })
+    res.status(201).json({ success: true, data: user })
+  })
+)`
+  },
+  {
+    group:'Backend — Main',
+    name:'main.ts',
+    path:'apps/api/src/main.ts',
+    desc:'Entry point Express app — semua middleware, router, dan error handler dirakit di sini',
+    step:'Langkah 7: Buat file ini sebagai entry point. Jalankan dengan: pnpm dev',
+    code:`import 'dotenv/config'
+import express from 'express'
+import cors from 'cors'
+import helmet from 'helmet'
+import { authRouter } from './modules/auth/auth.controller'
+import { userRouter } from './modules/user/user.controller'
+import { requestIdMiddleware } from './middleware/requestId.middleware'
+import { errorMiddleware } from './middleware/error.middleware'
+import { authLimiter, apiLimiter } from './lib/rateLimit'
+import { logger } from './lib/logger'
+
+const app = express()
+const PORT = process.env.PORT || 4000
+
+app.use(helmet())
+app.use(cors({
+  origin: (origin, callback) => {
+    const allowed = [
+      /\\.beritakarya\\.com$/,
+      /localhost/,
+      /127\\.0\\.0\\.1/
+    ]
+    if (!origin || allowed.some(r => r.test(origin))) {
+      callback(null, true)
+    } else {
+      callback(new Error('CORS: origin tidak diizinkan'))
+    }
+  },
+  credentials: true
+}))
+
+app.use(express.json({ limit: '10mb' }))
+app.use(requestIdMiddleware)
+app.use('/api/v1', apiLimiter)
+
+app.use('/api/v1/auth', authLimiter, authRouter)
+app.use('/api/v1/users', userRouter)
+
+app.get('/health', (_, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() })
+})
+
+app.use(errorMiddleware)
+
+app.listen(PORT, () => {
+  logger.info(\`API berjalan di http://localhost:\${PORT}\`)
+})`
+  },
+  {
+    group:'Frontend — Setup',
+    name:'package.json',
+    path:'apps/web/package.json',
+    desc:'Dependencies frontend: Next.js, Zustand, Zod untuk form validation, axios untuk API call',
+    step:'Langkah 8: Buat file ini lalu jalankan: cd apps/web && pnpm install',
+    code:`{
+  "name": "@beritakarya/web",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "^14.2.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "zustand": "^4.5.0",
+    "zod": "^3.22.4",
+    "axios": "^1.6.8"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "tailwindcss": "^3.4.0",
+    "postcss": "^8.4.38",
+    "autoprefixer": "^10.4.19"
+  }
+}`
+  },
+  {
+    group:'Frontend — Middleware',
+    name:'middleware.ts',
+    path:'apps/web/middleware.ts',
+    desc:'Next.js Edge middleware — deteksi subdomain, inject siteId ke cookie, redirect 404 jika site tidak dikenal',
+    step:'Langkah 8: Buat file ini di apps/web/ (sejajar dengan app/ folder)',
+    code:`import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
+import { KNOWN_SITE_IDS } from '@beritakarya/config'
+
+export function middleware(req: NextRequest) {
+  const hostname = req.headers.get('host') || ''
+  const subdomain = hostname.split('.')[0]
+
+  const isLocalhost = hostname.includes('localhost')
+  const siteId = isLocalhost
+    ? req.nextUrl.searchParams.get('site') || subdomain
+    : subdomain
+
+  if (!KNOWN_SITE_IDS.includes(siteId) && !hostname.includes('www')) {
+    return NextResponse.rewrite(new URL('/404', req.url))
+  }
+
+  const res = NextResponse.next()
+  res.cookies.set('siteId', siteId, {
+    httpOnly: false,
+    sameSite: 'lax',
+    maxAge: 60 * 60 * 24
+  })
+  res.headers.set('x-site-id', siteId)
+  return res
+}
+
+export const config = {
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|api).*)']
+}`
+  },
+  {
+    group:'Frontend — Lib',
+    name:'api.ts',
+    path:'apps/web/lib/api.ts',
+    desc:'Axios instance terpusat — inject Authorization header dan siteId otomatis ke setiap request',
+    step:'Langkah 8: Buat folder apps/web/lib/ lalu buat file ini',
+    code:`import axios from 'axios'
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
+
+export const api = axios.create({
+  baseURL: \`\${API_URL}/api/v1\`,
+  headers: { 'Content-Type': 'application/json' }
+})
+
+api.interceptors.request.use((config) => {
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('accessToken')
+    if (token) config.headers.Authorization = \`Bearer \${token}\`
+
+    const siteId = document.cookie
+      .split('; ')
+      .find(r => r.startsWith('siteId='))
+      ?.split('=')[1]
+    if (siteId) {
+      config.headers['X-Site-ID'] = siteId
+      if (!config.params) config.params = {}
+      config.params.site = siteId
+    }
+  }
+  return config
+})
+
+api.interceptors.response.use(
+  (res) => res,
+  async (error) => {
+    const original = error.config
+    if (error.response?.status === 401 && !original._retry) {
+      original._retry = true
+      const refreshToken = localStorage.getItem('refreshToken')
+      if (refreshToken) {
+        try {
+          const { data } = await axios.post(
+            \`\${API_URL}/api/v1/auth/refresh\`,
+            { refreshToken }
+          )
+          localStorage.setItem('accessToken', data.data.accessToken)
+          original.headers.Authorization = \`Bearer \${data.data.accessToken}\`
+          return api(original)
+        } catch {
+          localStorage.removeItem('accessToken')
+          localStorage.removeItem('refreshToken')
+          window.location.href = '/login'
+        }
+      }
+    }
+    return Promise.reject(error)
+  }
+)`
+  },
+  {
+    group:'Frontend — Store',
+    name:'authStore.ts',
+    path:'apps/web/store/authStore.ts',
+    desc:'Zustand store untuk auth state — login, logout, user info, token management',
+    step:'Langkah 8: Buat folder apps/web/store/ lalu buat file ini',
+    code:`import { create } from 'zustand'
+import { api } from '../lib/api'
+import type { AuthUser } from '@beritakarya/types'
+
+interface AuthState {
+  user: AuthUser | null
+  isLoading: boolean
+  error: string | null
+  login: (email: string, password: string) => Promise<void>
+  logout: () => Promise<void>
+  clearError: () => void
+}
+
+export const useAuthStore = create<AuthState>((set, get) => ({
+  user: null,
+  isLoading: false,
+  error: null,
+
+  login: async (email, password) => {
+    set({ isLoading: true, error: null })
+    try {
+      const { data } = await api.post('/auth/login', { email, password })
+      const { accessToken, refreshToken, user } = data.data
+      localStorage.setItem('accessToken', accessToken)
+      localStorage.setItem('refreshToken', refreshToken)
+      set({ user, isLoading: false })
+    } catch (err: any) {
+      const msg = err.response?.data?.error?.message || 'Login gagal'
+      set({ error: msg, isLoading: false })
+      throw new Error(msg)
+    }
+  },
+
+  logout: async () => {
+    const refreshToken = localStorage.getItem('refreshToken')
+    const userId = get().user?.id
+    if (userId && refreshToken) {
+      await api.post('/auth/logout', { userId, refreshToken }).catch(() => {})
+    }
+    localStorage.removeItem('accessToken')
+    localStorage.removeItem('refreshToken')
+    set({ user: null })
+  },
+
+  clearError: () => set({ error: null })
+}))`
+  },
+  {
+    group:'Frontend — Store',
+    name:'siteStore.ts',
+    path:'apps/web/store/siteStore.ts',
+    desc:'Zustand store untuk site context — siteId aktif dipakai di seluruh aplikasi frontend',
+    step:'Langkah 8: Tambahkan ke apps/web/store/',
+    code:`import { create } from 'zustand'
+import type { Site } from '@beritakarya/types'
+import { api } from '../lib/api'
+
+interface SiteState {
+  currentSite: Site | null
+  siteId: string | null
+  setSiteId: (id: string) => void
+  fetchSite: (id: string) => Promise<void>
+}
+
+export const useSiteStore = create<SiteState>((set) => ({
+  currentSite: null,
+  siteId: null,
+
+  setSiteId: (id) => set({ siteId: id }),
+
+  fetchSite: async (id) => {
+    try {
+      const { data } = await api.get(\`/sites/\${id}\`)
+      set({ currentSite: data.data, siteId: id })
+    } catch {
+      set({ siteId: id })
+    }
+  }
+}))`
+  },
+  {
+    group:'Frontend — Tests',
+    name:'auth.test.ts',
+    path:'apps/api/src/modules/auth/auth.test.ts',
+    desc:'Unit test untuk auth service — test login valid, login salah password, dan token generation',
+    step:'Langkah 9: Buat file test ini. Jalankan dengan: cd apps/api && pnpm test',
+    code:`import { describe, it, expect, vi, beforeEach } from 'vitest'
+
+vi.mock('../../db/client', () => ({
+  prisma: {
+    user: {
+      findUnique: vi.fn(),
+      create: vi.fn()
+    },
+    refreshToken: {
+      create: vi.fn(),
+      findUnique: vi.fn(),
+      deleteMany: vi.fn()
+    }
+  }
+}))
+
+vi.mock('../../lib/redis', () => ({ redis: { set: vi.fn(), get: vi.fn() } }))
+
+import { prisma } from '../../db/client'
+import { loginUser } from './auth.service'
+import bcrypt from 'bcryptjs'
+
+describe('auth.service', () => {
+  beforeEach(() => vi.clearAllMocks())
+
+  it('login berhasil dengan kredensial valid', async () => {
+    const hash = await bcrypt.hash('password123', 10)
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({
+      id: 'user-1', email: 'test@test.com', name: 'Test',
+      role: 'journalist', siteId: 'bandung', passwordHash: hash,
+      createdAt: new Date(), updatedAt: new Date()
+    } as any)
+    vi.mocked(prisma.refreshToken.create).mockResolvedValue({} as any)
+
+    const result = await loginUser('test@test.com', 'password123')
+    expect(result.accessToken).toBeDefined()
+    expect(result.user.email).toBe('test@test.com')
+  })
+
+  it('login gagal dengan password salah', async () => {
+    const hash = await bcrypt.hash('benar123', 10)
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({
+      id: 'user-1', email: 'test@test.com', passwordHash: hash
+    } as any)
+
+    await expect(loginUser('test@test.com', 'salah123'))
+      .rejects.toThrow('Email atau password salah')
+  })
+
+  it('login gagal jika user tidak ditemukan', async () => {
+    vi.mocked(prisma.user.findUnique).mockResolvedValue(null)
+    await expect(loginUser('tidak@ada.com', 'password123'))
+      .rejects.toThrow('Email atau password salah')
+  })
+})`
+  }
+];
+
+let current = 0;
+
+function buildSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const groups = {};
+  files.forEach((f,i) => {
+    if (!groups[f.group]) groups[f.group] = [];
+    groups[f.group].push({...f, idx:i});
+  });
+  let html = '';
+  for (const [g, items] of Object.entries(groups)) {
+    html += `<div class="group-label">${g}</div>`;
+    items.forEach(f => {
+      const warn = f.name.includes('schema') || f.name.includes('middleware') || f.name.includes('main')
+        ? '<span class="warn-tag">penting</span>' : '';
+      html += `<button class="file-btn${f.idx===0?' active':''}" id="fb${f.idx}" onclick="selectFile(${f.idx})">
+        <svg style="width:14px;height:14px;flex-shrink:0;opacity:.5" viewBox="0 0 16 16" fill="currentColor"><path d="M9 1H4a1 1 0 00-1 1v12a1 1 0 001 1h8a1 1 0 001-1V6L9 1zm0 1.5L12.5 6H9V2.5z"/></svg>
+        <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${f.name}</span>${warn}
+      </button>`;
+    });
+  }
+  sidebar.innerHTML = html;
+}
+
+function selectFile(idx) {
+  current = idx;
+  const f = files[idx];
+  document.getElementById('fp').textContent = f.path;
+  document.getElementById('code-pre').textContent = f.code;
+  document.getElementById('desc-bar').textContent = f.desc;
+  document.getElementById('snum').textContent = idx + 1;
+  document.getElementById('step-txt').textContent = f.step;
+  document.getElementById('prog').textContent = `${idx+1} / ${files.length} file`;
+  document.querySelectorAll('.file-btn').forEach((b,i) => b.classList.toggle('active', i===idx));
+}
+
+function navFile(dir) {
+  const next = Math.max(0, Math.min(files.length-1, current+dir));
+  selectFile(next);
+  document.getElementById('fb'+next).scrollIntoView({block:'nearest'});
+}
+
+function copyCode() {
+  navigator.clipboard.writeText(files[current].code).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = 'Tersalin!';
+    setTimeout(() => btn.textContent = 'Copy', 1500);
+  });
+}
+
+buildSidebar();
+selectFile(0);
+</script>

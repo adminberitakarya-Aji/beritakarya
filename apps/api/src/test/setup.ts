@@ -1,0 +1,26 @@
+import { vi, afterAll } from 'vitest'
+
+// Set test environment variables
+process.env.NODE_ENV      = 'test'
+process.env.JWT_SECRET    = 'test-secret-key-minimal-32-chars-long'
+process.env.DATABASE_URL  = 'postgresql://postgres:postgres@localhost:5432/beritakarya_test'
+process.env.REDIS_URL     = 'redis://localhost:6379'
+process.env.API_URL       = 'http://localhost:4000'
+
+// Mock logger to keep test output clean
+vi.mock('../lib/logger', () => ({
+  logger: {
+    info:  vi.fn(),
+    warn:  vi.fn(),
+    error: vi.fn(),
+    debug: vi.fn()
+  }
+}))
+
+afterAll(async () => {
+  // Disconnect Prisma after all tests
+  try {
+    const { prisma } = await import('../db/client')
+    await prisma.$disconnect()
+  } catch {}
+})

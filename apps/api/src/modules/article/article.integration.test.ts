@@ -1,0 +1,86 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import request from 'supertest'
+import express from 'express'
+import jwt from 'jsonwebtoken'
+import { articleRouter } from './article.controller'
+import { errorMiddleware } from '../../middleware/error.middleware'
+
+vi.mock('./article.service')
+vi.mock('../../lib/rateLimit', () => ({
+  apiLimiter: (_: any, __: any, n: any) => n()
+}))
+
+import * as articleService from './article.service'
+
+const app = express()
+app.use(express.json())
+app.use('/api/v1/articles', articleRouter)
+app.use(errorMiddleware)
+
+function makeToken(payload: object) {
+  return jwt.sign(payload, 'test-secret-key-minimal-32-chars-long', { expiresIn: '1h' })
+}
+
+const tokenBandung  = makeToken({ userId: 'u-1', role: 'journalist', siteId: 'bandung' })
+const tokenEditor   = makeToken({ userId: 'u-3', role: 'editor',     siteId: null })
+
+const mockArticles = {
+  items: [{ id: 'a-1', title: 'Test', status: 'draft', siteId: 'bandung' }],
+  total: 1, page: 1, limit: 20, totalPages: 1
+}
+
+describe('Multi-site isolation — GET /articles', () => {
+  beforeEach(() => vi.clearAllMocks())
+
+  it('journalist bandung BISA akses site bandung', async () => {
+    vi.mocked(articleService.getArticles).mockResolvedValue(mockArticles as any)
+    const res = await request(app)
+      .get('/api/v1/articles?site=bandung')
+      .set('Authorization', `Bearer ${tokenBandung}`)
+    
+    expect(res.status).toBe(200)
+    expect(res.body.success).toBe(true)
+  })
+
+  it('journalist bandung TIDAK BISA akses site surabaya → 403', async () => {
+    const res = await request(app)
+      .get('/api/v1/articles?site=surabaya')
+      .set('Authorization', `Bearer ${tokenBandung}`)
+    
+    expect(res.status).toBe(403)
+    expect(res.body.error.code).toBe('SITE_FORBIDDEN')
+  })
+
+  it('editor pusat BISA akses site manapun', async () => {
+    vi.mocked(articleService.getArticles).mockResolvedValue(mockArticles as any)
+    const res = await request(app)
+      .get('/api/v1/articles?site=surabaya')
+      .set('Authorization', `Bearer ${tokenEditor}`)
+    
+    expect(res.status).toBe(200)
+  })
+
+  it('request tanpa token → 401', async () => {
+    const res = await request(app).get('/api/v1/articles?site=bandung')
+    expect(res.status).toBe(401)
+  })
+})
+
+describe('Public article route — GET /articles/slug/:slug', () => {
+  beforeEach(() => vi.clearAllMocks())
+
+  it('mengembalikan artikel published tanpa token', async () => {
+    vi.mocked(articleService.getPublishedArticleBySlug).mockResolvedValue({
+      id: 'a-1',
+      title: 'Artikel Publik',
+      slug: 'artikel-publik',
+      status: 'published',
+      siteId: 'bandung'
+    } as any)
+
+    const res = await request(app).get('/api/v1/articles/slug/artikel-publik?site=bandung')
+
+    expect(res.status).toBe(200)
+    expect(res.body.success).toBe(true)
+  })
+})

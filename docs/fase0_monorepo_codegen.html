@@ -1,0 +1,718 @@
+
+<h2 class="sr-only">Fase 0 — Kode lengkap setup monorepo Beritakarya, pilih file untuk melihat isinya</h2>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.wrap{padding:1rem 0;font-family:var(--font-sans)}
+.top-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.phase-pill{background:#EEEDFE;color:#3C3489;font-size:12px;font-weight:500;padding:3px 12px;border-radius:20px}
+.title{font-size:15px;font-weight:500;color:var(--color-text-primary)}
+.progress{font-size:12px;color:var(--color-text-secondary);margin-left:auto}
+.layout{display:grid;grid-template-columns:220px 1fr;gap:12px;min-height:420px}
+.sidebar{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden}
+.group-label{font-size:11px;font-weight:500;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.05em;padding:10px 12px 4px}
+.file-btn{display:flex;align-items:center;gap:8px;width:100%;padding:7px 12px;background:none;border:none;cursor:pointer;text-align:left;font-size:12px;color:var(--color-text-secondary);border-left:2px solid transparent}
+.file-btn:hover{background:var(--color-background-secondary);color:var(--color-text-primary)}
+.file-btn.active{background:var(--color-background-secondary);color:#534AB7;border-left-color:#534AB7;font-weight:500}
+.file-icon{width:14px;height:14px;flex-shrink:0;opacity:.6}
+.code-panel{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;display:flex;flex-direction:column}
+.code-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--color-background-secondary);border-bottom:0.5px solid var(--color-border-tertiary)}
+.file-path{font-size:12px;font-family:var(--font-mono);color:var(--color-text-secondary)}
+.copy-btn{font-size:11px;padding:4px 10px;border-radius:var(--border-radius-md);cursor:pointer;background:none;border:0.5px solid var(--color-border-secondary);color:var(--color-text-secondary)}
+.copy-btn:hover{background:var(--color-background-primary)}
+.code-body{flex:1;overflow:auto;padding:16px;background:var(--color-background-primary);max-height:400px}
+.code-body pre{font-family:var(--font-mono);font-size:12px;line-height:1.7;color:var(--color-text-primary);white-space:pre;tab-size:2}
+.desc-bar{padding:8px 14px;background:var(--color-background-secondary);border-top:0.5px solid var(--color-border-tertiary);font-size:12px;color:var(--color-text-secondary)}
+.step-row{display:flex;align-items:center;gap:8px;margin-top:12px;padding:10px 12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);font-size:12px;color:var(--color-text-secondary)}
+.step-num{background:#534AB7;color:#fff;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0}
+.nav-row{display:flex;gap:8px;margin-top:10px;justify-content:flex-end}
+.nav-btn{font-size:12px;padding:5px 14px;border-radius:var(--border-radius-md);cursor:pointer;border:0.5px solid var(--color-border-secondary);background:none;color:var(--color-text-secondary)}
+.nav-btn:hover{background:var(--color-background-secondary)}
+.nav-btn.primary{background:#534AB7;border-color:#534AB7;color:#fff}
+.nav-btn.primary:hover{background:#3C3489}
+</style>
+
+<div class="wrap">
+  <div class="top-bar">
+    <span class="phase-pill">Fase 0</span>
+    <span class="title">Setup & Fondasi Monorepo</span>
+    <span class="progress" id="prog">1 / 18 file</span>
+  </div>
+  <div class="layout">
+    <div class="sidebar" id="sidebar"></div>
+    <div class="code-panel">
+      <div class="code-header">
+        <span class="file-path" id="fp">-</span>
+        <button class="copy-btn" onclick="copyCode()">Copy</button>
+      </div>
+      <div class="code-body"><pre id="code-pre">Pilih file di sebelah kiri</pre></div>
+      <div class="desc-bar" id="desc-bar">—</div>
+    </div>
+  </div>
+  <div class="step-row">
+    <span class="step-num" id="snum">1</span>
+    <span id="step-txt">Mulai dari atas, jalankan tiap file sesuai urutan langkah di bawah ini.</span>
+  </div>
+  <div class="nav-row">
+    <button class="nav-btn" onclick="navFile(-1)">← Sebelumnya</button>
+    <button class="nav-btn primary" onclick="navFile(1)">Selanjutnya →</button>
+    <button class="nav-btn primary" onclick="sendPrompt('Fase 0 sudah selesai, lanjut generate kode Fase 1: Auth & Multi-Site Core')">Lanjut ke Fase 1 ↗</button>
+  </div>
+</div>
+
+<script>
+const files = [
+  {
+    group:'Root',
+    name:'package.json',
+    path:'package.json',
+    desc:'Root package.json untuk monorepo — mendefinisikan workspaces dan scripts global',
+    step:'Langkah 1: Buat file ini di folder root project (misal ~/projects/beritakarya/)',
+    code:`{
+  "name": "beritakarya",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "type-check": "turbo run type-check",
+    "clean": "turbo run clean"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0",
+    "typescript": "^5.4.0",
+    "@types/node": "^20.0.0",
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.0"
+  }
+}`
+  },
+  {
+    group:'Root',
+    name:'pnpm-workspace.yaml',
+    path:'pnpm-workspace.yaml',
+    desc:'Mendefinisikan workspace packages untuk pnpm — semua apps dan packages dikenal satu sama lain',
+    step:'Langkah 1: Buat file ini di root, sejajar dengan package.json',
+    code:`packages:
+  - "apps/*"
+  - "packages/*"`
+  },
+  {
+    group:'Root',
+    name:'turbo.json',
+    path:'turbo.json',
+    desc:'Konfigurasi Turborepo — menentukan pipeline build, test, dan dev dengan caching',
+    step:'Langkah 1: Buat file ini di root project',
+    code:`{
+  "$schema": "https://turbo.build/schema.json",
+  "pipeline": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "dist/**"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "test": {
+      "outputs": ["coverage/**"]
+    },
+    "lint": {},
+    "type-check": {},
+    "clean": {
+      "cache": false
+    }
+  }
+}`
+  },
+  {
+    group:'Root',
+    name:'.env',
+    path:'.env',
+    desc:'Environment variables — JANGAN commit file ini ke git, hanya .env.example yang di-commit',
+    step:'Langkah 1: Buat .env di root dan tambahkan ke .gitignore',
+    code:`# DATABASE
+DATABASE_URL="postgresql://beritakarya:dev123@localhost:5432/beritakarya_dev"
+
+# REDIS
+REDIS_URL="redis://localhost:6379"
+
+# JWT
+JWT_SECRET="ganti-dengan-random-string-panjang-minimal-32-karakter"
+JWT_ACCESS_EXPIRES="15m"
+JWT_REFRESH_EXPIRES="7d"
+
+# AI
+OPENAI_API_KEY="sk-..."
+AI_TIMEOUT_MS=30000
+AI_MAX_RETRIES=3
+
+# APPS
+WEB_URL="http://localhost:3000"
+API_URL="http://localhost:4000"
+NODE_ENV="development"`
+  },
+  {
+    group:'Root',
+    name:'.gitignore',
+    path:'.gitignore',
+    desc:'File dan folder yang tidak perlu masuk ke Git repository',
+    step:'Langkah 1: Buat .gitignore di root project',
+    code:`# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+.next/
+dist/
+build/
+
+# Environment
+.env
+.env.local
+.env.production
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Database
+*.db
+*.sqlite
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/settings.json
+.idea/
+
+# Turbo
+.turbo/`
+  },
+  {
+    group:'packages/types',
+    name:'package.json',
+    path:'packages/types/package.json',
+    desc:'Package config untuk shared types — digunakan oleh frontend dan backend',
+    step:'Langkah 2: Buat folder packages/types/ lalu buat file ini',
+    code:`{
+  "name": "@beritakarya/types",
+  "version": "1.0.0",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "type-check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}`
+  },
+  {
+    group:'packages/types',
+    name:'site.ts',
+    path:'packages/types/src/site.ts',
+    desc:'Type definition untuk Site — entitas utama multi-site system',
+    step:'Langkah 2: Buat folder packages/types/src/ lalu buat file ini',
+    code:`export interface Site {
+  id: string
+  name: string
+  domain: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+export type SiteId = string
+
+export const SITE_IDS = ['bandung', 'surabaya'] as const
+export type KnownSiteId = typeof SITE_IDS[number]`
+  },
+  {
+    group:'packages/types',
+    name:'user.ts',
+    path:'packages/types/src/user.ts',
+    desc:'Type definition untuk User dan Role — dasar permission system',
+    step:'Langkah 2: Tambahkan ke packages/types/src/',
+    code:`export type UserRole = 'journalist' | 'editor'
+
+export interface User {
+  id: string
+  email: string
+  name: string
+  role: UserRole
+  siteId: string | null  // null = editor pusat (akses semua site)
+  createdAt: Date
+  updatedAt: Date
+}
+
+export interface AuthUser {
+  id: string
+  email: string
+  name: string
+  role: UserRole
+  siteId: string | null
+}
+
+export interface JWTPayload {
+  userId: string
+  role: UserRole
+  siteId: string | null
+  iat: number
+  exp: number
+}`
+  },
+  {
+    group:'packages/types',
+    name:'block.ts',
+    path:'packages/types/src/block.ts',
+    desc:'Union type untuk semua tipe blok editor — fondasi block-based editor',
+    step:'Langkah 2: Tambahkan ke packages/types/src/',
+    code:`export interface BaseBlock {
+  id: string
+  type: string
+}
+
+export interface ParagraphBlock extends BaseBlock {
+  type: 'paragraph'
+  content: string
+}
+
+export interface HeadingBlock extends BaseBlock {
+  type: 'heading'
+  level: 1 | 2 | 3 | 4 | 5 | 6
+  content: string
+}
+
+export interface QuoteBlock extends BaseBlock {
+  type: 'quote'
+  content: string
+  attribution?: string
+}
+
+export interface ImageItem {
+  url: string
+  alt: string
+  caption?: string
+  width?: number
+  height?: number
+}
+
+export interface ImageBlock extends BaseBlock {
+  type: 'image'
+  url: string
+  alt: string
+  caption?: string
+  width?: number
+  height?: number
+}
+
+export interface ImageGridBlock extends BaseBlock {
+  type: 'imageGrid'
+  images: ImageItem[]
+  columns: 2 | 3
+}
+
+export interface GalleryBlock extends BaseBlock {
+  type: 'gallery'
+  images: ImageItem[]
+}
+
+export interface EmbedBlock extends BaseBlock {
+  type: 'embed'
+  url: string
+  embedType: 'youtube' | 'twitter' | 'instagram' | 'other'
+  title?: string
+}
+
+export type Block =
+  | ParagraphBlock
+  | HeadingBlock
+  | QuoteBlock
+  | ImageBlock
+  | ImageGridBlock
+  | GalleryBlock
+  | EmbedBlock`
+  },
+  {
+    group:'packages/types',
+    name:'article.ts',
+    path:'packages/types/src/article.ts',
+    desc:'Type definition untuk Article — entitas utama konten Beritakarya',
+    step:'Langkah 2: Tambahkan ke packages/types/src/',
+    code:`import type { Block } from './block'
+
+export type ArticleStatus = 'draft' | 'review' | 'published'
+
+export interface Article {
+  id: string
+  title: string
+  slug: string
+  siteId: string
+  authorId: string
+  blocks: Block[]
+  status: ArticleStatus
+  metaTitle?: string
+  metaDescription?: string
+  publishedAt?: Date
+  createdAt: Date
+  updatedAt: Date
+}
+
+export interface CreateArticleInput {
+  title: string
+  siteId: string
+  blocks?: Block[]
+}
+
+export interface UpdateArticleInput {
+  title?: string
+  blocks?: Block[]
+  metaTitle?: string
+  metaDescription?: string
+}
+
+export interface ArticleListItem {
+  id: string
+  title: string
+  slug: string
+  status: ArticleStatus
+  authorId: string
+  siteId: string
+  publishedAt?: Date
+  createdAt: Date
+}`
+  },
+  {
+    group:'packages/types',
+    name:'index.ts',
+    path:'packages/types/src/index.ts',
+    desc:'Re-export semua types dari satu entry point — cara import: import type { Article } from "@beritakarya/types"',
+    step:'Langkah 2: Buat file index.ts sebagai entry point',
+    code:`export * from './site'
+export * from './user'
+export * from './block'
+export * from './article'`
+  },
+  {
+    group:'packages/utils',
+    name:'slug.ts',
+    path:'packages/utils/src/slug.ts',
+    desc:'Utility untuk generate URL slug dari judul artikel — dipakai di backend saat artikel dibuat',
+    step:'Langkah 3: Buat folder packages/utils/src/ lalu buat file ini',
+    code:`export function generateSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[àáâãäå]/g, 'a')
+    .replace(/[èéêë]/g, 'e')
+    .replace(/[ìíîï]/g, 'i')
+    .replace(/[òóôõö]/g, 'o')
+    .replace(/[ùúûü]/g, 'u')
+    .replace(/[^a-z0-9\\s-]/g, '')
+    .replace(/\\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+}
+
+export function makeUniqueSlug(
+  base: string,
+  existingSlugs: string[]
+): string {
+  const slug = generateSlug(base)
+  if (!existingSlugs.includes(slug)) return slug
+  let counter = 2
+  while (existingSlugs.includes(\`\${slug}-\${counter}\`)) {
+    counter++
+  }
+  return \`\${slug}-\${counter}\`
+}`
+  },
+  {
+    group:'packages/utils',
+    name:'format.ts',
+    path:'packages/utils/src/format.ts',
+    desc:'Utility formatting tanggal dan teks — dipakai di frontend dan backend',
+    step:'Langkah 3: Tambahkan ke packages/utils/src/',
+    code:`export function formatDate(
+  date: Date | string,
+  locale = 'id-ID'
+): string {
+  const d = typeof date === 'string' ? new Date(date) : date
+  return d.toLocaleDateString(locale, {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  })
+}
+
+export function formatRelativeTime(date: Date | string): string {
+  const d = typeof date === 'string' ? new Date(date) : date
+  const diff = Date.now() - d.getTime()
+  const minutes = Math.floor(diff / 60000)
+  const hours = Math.floor(diff / 3600000)
+  const days = Math.floor(diff / 86400000)
+  if (minutes < 1) return 'Baru saja'
+  if (minutes < 60) return \`\${minutes} menit lalu\`
+  if (hours < 24) return \`\${hours} jam lalu\`
+  if (days < 7) return \`\${days} hari lalu\`
+  return formatDate(d)
+}
+
+export function truncate(text: string, maxLength: number): string {
+  if (text.length <= maxLength) return text
+  return text.slice(0, maxLength).trim() + '...'
+}
+
+export function wordCount(text: string): number {
+  return text.trim().split(/\\s+/).filter(Boolean).length
+}`
+  },
+  {
+    group:'packages/config',
+    name:'site.ts',
+    path:'packages/config/src/site.ts',
+    desc:'Konfigurasi mapping domain ke siteId — dipakai oleh middleware frontend dan backend',
+    step:'Langkah 4: Buat folder packages/config/src/ lalu buat file ini',
+    code:`export interface SiteConfig {
+  id: string
+  name: string
+  domain: string
+  devDomain: string
+}
+
+export const SITE_MAP: Record<string, SiteConfig> = {
+  bandung: {
+    id: 'bandung',
+    name: 'Beritakarya Bandung',
+    domain: 'bandung.beritakarya.com',
+    devDomain: 'bandung.localhost:3000'
+  },
+  surabaya: {
+    id: 'surabaya',
+    name: 'Beritakarya Surabaya',
+    domain: 'surabaya.beritakarya.com',
+    devDomain: 'surabaya.localhost:3000'
+  }
+}
+
+export function getSiteFromHostname(
+  hostname: string
+): SiteConfig | null {
+  const subdomain = hostname.split('.')[0]
+  return SITE_MAP[subdomain] ?? null
+}
+
+export const KNOWN_SITE_IDS = Object.keys(SITE_MAP)`
+  },
+  {
+    group:'packages/config',
+    name:'ai.ts',
+    path:'packages/config/src/ai.ts',
+    desc:'Konfigurasi konstanta AI — timeout, retry, dan model yang digunakan',
+    step:'Langkah 4: Tambahkan ke packages/config/src/',
+    code:`export const AI_CONFIG = {
+  model: 'gpt-4o',
+  maxTokens: 1000,
+  timeoutMs: 30_000,
+  maxRetries: 3,
+  retryDelayMs: 1_000,
+
+  rateLimits: {
+    perUserPerHour: 20,
+    perSitePerHour: 200
+  },
+
+  prompts: {
+    language: 'Indonesia',
+    newsStyle: 'gaya penulisan berita Indonesia yang formal dan faktual'
+  }
+} as const
+
+export type AIAction =
+  | 'rewrite'
+  | 'expand'
+  | 'headline'
+  | 'seo'
+  | 'grammar'
+  | 'readability'
+  | 'layout'
+  | 'caption'`
+  },
+  {
+    group:'infra',
+    name:'docker-compose.yml',
+    path:'infra/docker/docker-compose.yml',
+    desc:'Docker Compose untuk development lokal — menjalankan PostgreSQL dan Redis',
+    step:'Langkah 5: Buat folder infra/docker/ lalu buat file ini. Jalankan dengan: docker-compose -f infra/docker/docker-compose.yml up -d',
+    code:`version: '3.9'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: beritakarya_postgres
+    environment:
+      POSTGRES_USER: beritakarya
+      POSTGRES_PASSWORD: dev123
+      POSTGRES_DB: beritakarya_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U beritakarya"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: beritakarya_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+  redis_data:`
+  },
+  {
+    group:'infra',
+    name:'nginx.conf',
+    path:'infra/nginx/nginx.conf',
+    desc:'NGINX config untuk subdomain routing — meneruskan *.beritakarya.com ke frontend',
+    step:'Langkah 5: Buat folder infra/nginx/ lalu buat file ini. Dipakai saat staging/production.',
+    code:`events {
+  worker_connections 1024;
+}
+
+http {
+  upstream frontend {
+    server web:3000;
+  }
+
+  upstream backend {
+    server api:4000;
+  }
+
+  # Redirect HTTP ke HTTPS
+  server {
+    listen 80;
+    server_name *.beritakarya.com;
+    return 301 https://$host$request_uri;
+  }
+
+  # Main site handler
+  server {
+    listen 443 ssl;
+    server_name *.beritakarya.com;
+
+    ssl_certificate     /etc/ssl/certs/beritakarya.crt;
+    ssl_certificate_key /etc/ssl/private/beritakarya.key;
+
+    # API routes → backend
+    location /api/ {
+      proxy_pass http://backend;
+      proxy_set_header Host $host;
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Site-ID $subdomain;
+    }
+
+    # Everything else → frontend
+    location / {
+      proxy_pass http://frontend;
+      proxy_set_header Host $host;
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_http_version 1.1;
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection 'upgrade';
+    }
+  }
+}`
+  },
+  {
+    group:'Root',
+    name:'tsconfig.json',
+    path:'tsconfig.json',
+    desc:'Base TypeScript config yang di-extend oleh semua apps dan packages',
+    step:'Langkah 6: Buat tsconfig.json di root — semua app akan extend dari ini',
+    code:`{
+  "compilerOptions": {
+    "target": "ES2020",
+    "lib": ["ES2020"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true
+  },
+  "exclude": ["node_modules", "dist", ".next", "coverage"]
+}`
+  }
+];
+
+let current = 0;
+
+function buildSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const groups = {};
+  files.forEach((f, i) => {
+    if (!groups[f.group]) groups[f.group] = [];
+    groups[f.group].push({...f, idx: i});
+  });
+  let html = '';
+  for (const [g, items] of Object.entries(groups)) {
+    html += `<div class="group-label">${g}</div>`;
+    items.forEach(f => {
+      html += `<button class="file-btn${f.idx===0?' active':''}" id="fb${f.idx}" onclick="selectFile(${f.idx})">
+        <svg class="file-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M9 1H4a1 1 0 00-1 1v12a1 1 0 001 1h8a1 1 0 001-1V6L9 1zm0 1.5L12.5 6H9V2.5z"/></svg>
+        ${f.name}
+      </button>`;
+    });
+  }
+  sidebar.innerHTML = html;
+}
+
+function selectFile(idx) {
+  current = idx;
+  const f = files[idx];
+  document.getElementById('fp').textContent = f.path;
+  document.getElementById('code-pre').textContent = f.code;
+  document.getElementById('desc-bar').textContent = f.desc;
+  document.getElementById('snum').textContent = idx + 1;
+  document.getElementById('step-txt').textContent = f.step;
+  document.getElementById('prog').textContent = `${idx+1} / ${files.length} file`;
+  document.querySelectorAll('.file-btn').forEach((b,i) => b.classList.toggle('active', i===idx));
+}
+
+function navFile(dir) {
+  const next = Math.max(0, Math.min(files.length-1, current + dir));
+  selectFile(next);
+  document.getElementById('fb'+next).scrollIntoView({block:'nearest'});
+}
+
+function copyCode() {
+  navigator.clipboard.writeText(files[current].code).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = 'Tersalin!';
+    setTimeout(() => btn.textContent = 'Copy', 1500);
+  });
+}
+
+buildSidebar();
+selectFile(0);
+</script>

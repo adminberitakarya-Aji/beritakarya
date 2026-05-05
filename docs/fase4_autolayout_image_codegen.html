@@ -1,0 +1,1560 @@
+
+<h2 class="sr-only">Fase 4 — Kode lengkap Auto-Layout dan Image System Beritakarya, 22 file siap copy-paste</h2>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.wrap{padding:1rem 0;font-family:var(--font-sans)}
+.top-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.phase-pill{background:#FAECE7;color:#712B13;font-size:12px;font-weight:500;padding:3px 12px;border-radius:20px;white-space:nowrap}
+.title{font-size:15px;font-weight:500;color:var(--color-text-primary)}
+.progress{font-size:12px;color:var(--color-text-secondary);margin-left:auto}
+.layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:12px;min-height:440px}
+.sidebar{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow-y:auto;max-height:440px}
+.group-label{font-size:11px;font-weight:500;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.05em;padding:10px 12px 4px;position:sticky;top:0;background:var(--color-background-primary);z-index:1}
+.file-btn{display:flex;align-items:center;gap:8px;width:100%;padding:7px 12px;background:none;border:none;cursor:pointer;text-align:left;font-size:12px;color:var(--color-text-secondary);border-left:2px solid transparent}
+.file-btn:hover{background:var(--color-background-secondary);color:var(--color-text-primary)}
+.file-btn.active{background:var(--color-background-secondary);color:#993C1D;border-left-color:#993C1D;font-weight:500}
+.code-panel{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;display:flex;flex-direction:column}
+.code-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--color-background-secondary);border-bottom:0.5px solid var(--color-border-tertiary);gap:8px;flex-wrap:wrap}
+.file-path{font-size:11px;font-family:var(--font-mono);color:var(--color-text-secondary);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.copy-btn{font-size:11px;padding:4px 10px;border-radius:var(--border-radius-md);cursor:pointer;background:none;border:0.5px solid var(--color-border-secondary);color:var(--color-text-secondary);white-space:nowrap}
+.copy-btn:hover{background:var(--color-background-primary)}
+.code-body{flex:1;overflow:auto;padding:14px;background:var(--color-background-primary);max-height:360px}
+.code-body pre{font-family:var(--font-mono);font-size:11.5px;line-height:1.7;color:var(--color-text-primary);white-space:pre;tab-size:2}
+.desc-bar{padding:8px 14px;background:var(--color-background-secondary);border-top:0.5px solid var(--color-border-tertiary);font-size:12px;color:var(--color-text-secondary);line-height:1.5}
+.step-row{display:flex;align-items:flex-start;gap:8px;margin-top:10px;padding:10px 12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);font-size:12px;color:var(--color-text-secondary)}
+.step-num{background:#993C1D;color:#fff;min-width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;margin-top:1px}
+.nav-row{display:flex;gap:8px;margin-top:10px;justify-content:flex-end;flex-wrap:wrap}
+.nav-btn{font-size:12px;padding:5px 14px;border-radius:var(--border-radius-md);cursor:pointer;border:0.5px solid var(--color-border-secondary);background:none;color:var(--color-text-secondary)}
+.nav-btn:hover{background:var(--color-background-secondary)}
+.nav-btn.primary{background:#993C1D;border-color:#993C1D;color:#fff}
+.nav-btn.primary:hover{background:#712B13}
+.tag{display:inline-block;font-size:10px;font-weight:500;padding:2px 7px;border-radius:10px;margin-left:4px;vertical-align:middle;flex-shrink:0}
+.tag-be{background:#E6F1FB;color:#0C447C}
+.tag-fe{background:#E1F5EE;color:#085041}
+.tag-ai{background:#FAEEDA;color:#633806}
+.tag-test{background:#EEEDFE;color:#3C3489}
+</style>
+
+<div class="wrap">
+  <div class="top-bar">
+    <span class="phase-pill">Fase 4</span>
+    <span class="title">Auto-Layout & Image System</span>
+    <span class="progress" id="prog">1 / 22 file</span>
+  </div>
+  <div class="layout">
+    <div class="sidebar" id="sidebar"></div>
+    <div class="code-panel">
+      <div class="code-header">
+        <span class="file-path" id="fp">-</span>
+        <button class="copy-btn" onclick="copyCode()">Copy</button>
+      </div>
+      <div class="code-body"><pre id="code-pre">Pilih file di sebelah kiri</pre></div>
+      <div class="desc-bar" id="desc-bar">—</div>
+    </div>
+  </div>
+  <div class="step-row">
+    <span class="step-num" id="snum">1</span>
+    <span id="step-txt">Mulai dari backend image processing, lalu layout store, kemudian semua komponen frontend.</span>
+  </div>
+  <div class="nav-row">
+    <button class="nav-btn" onclick="navFile(-1)">← Sebelumnya</button>
+    <button class="nav-btn primary" onclick="navFile(1)">Selanjutnya →</button>
+    <button class="nav-btn primary" onclick="sendPrompt('Fase 4 sudah selesai, lanjut generate kode Fase 5: Testing dan Hardening')">Lanjut ke Fase 5 ↗</button>
+  </div>
+</div>
+
+<script>
+const files = [
+  // ── BACKEND ────────────────────────────────────────────────
+  {
+    group:'Backend — Media Update', tag:'be',
+    name:'media.controller.ts (update)',
+    path:'apps/api/src/modules/media/media.controller.ts',
+    desc:'Update media controller: tambah image optimization dengan Sharp (resize, WebP convert, thumbnail), return srcset metadata',
+    step:'Langkah 1: UPDATE media.controller.ts dari Fase 2 — ganti seluruh isi dengan versi ini yang sudah include Sharp pipeline',
+    code:`import { Router, Request, Response } from 'express'
+import multer from 'multer'
+import path from 'path'
+import fs from 'fs'
+import { v4 as uuidv4 } from 'uuid'
+import { requireAuth } from '../../middleware/auth.middleware'
+import { asyncHandler } from '../../utils/asyncHandler'
+
+export const mediaRouter = Router()
+
+const UPLOAD_DIR = path.join(process.cwd(), 'uploads')
+const THUMB_DIR  = path.join(process.cwd(), 'uploads', 'thumbs')
+;[UPLOAD_DIR, THUMB_DIR].forEach(d => {
+  if (!fs.existsSync(d)) fs.mkdirSync(d, { recursive: true })
+})
+
+const storage = multer.memoryStorage()
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (_, file, cb) => {
+    const allowed = ['image/jpeg','image/png','image/webp','image/gif']
+    if (allowed.includes(file.mimetype)) cb(null, true)
+    else cb(new Error('Tipe file tidak didukung. Gunakan JPG, PNG, WebP, atau GIF'))
+  }
+})
+
+async function processImage(buffer: Buffer, filename: string) {
+  const sharp = (await import('sharp')).default
+  const meta  = await sharp(buffer).metadata()
+
+  const maxW = 1920
+  const needResize = (meta.width ?? 0) > maxW
+
+  // Full size → WebP
+  const fullName = \`\${filename}.webp\`
+  const fullPath = path.join(UPLOAD_DIR, fullName)
+  await sharp(buffer)
+    .resize(needResize ? maxW : undefined)
+    .webp({ quality: 82 })
+    .toFile(fullPath)
+
+  // Thumbnail 400px → WebP
+  const thumbName = \`\${filename}_thumb.webp\`
+  const thumbPath = path.join(THUMB_DIR, thumbName)
+  await sharp(buffer).resize(400).webp({ quality: 70 }).toFile(thumbPath)
+
+  const finalMeta = await sharp(fullPath).metadata()
+  return {
+    fullName, thumbName,
+    width: finalMeta.width ?? meta.width ?? 0,
+    height: finalMeta.height ?? meta.height ?? 0,
+    originalFormat: meta.format ?? 'unknown'
+  }
+}
+
+mediaRouter.post(
+  '/upload',
+  requireAuth,
+  upload.single('file'),
+  asyncHandler(async (req: Request, res: Response) => {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        error: { message: 'File tidak ditemukan' }
+      })
+    }
+
+    const id = uuidv4()
+    const processed = await processImage(req.file.buffer, id)
+
+    const baseUrl  = process.env.API_URL || 'http://localhost:4000'
+    const url      = \`\${baseUrl}/uploads/\${processed.fullName}\`
+    const thumbUrl = \`\${baseUrl}/uploads/thumbs/\${processed.thumbName}\`
+
+    res.status(201).json({
+      success: true,
+      data: {
+        url,
+        thumbUrl,
+        width:          processed.width,
+        height:         processed.height,
+        originalFormat: processed.originalFormat,
+        size:           req.file.size
+      }
+    })
+  })
+)
+
+// Serve static files
+const express = require('express')
+mediaRouter.use('/uploads/thumbs', express.static(THUMB_DIR))
+mediaRouter.use('/uploads',        express.static(UPLOAD_DIR))`
+  },
+
+  // ── BACKEND: schema update ─────────────────────────────────
+  {
+    group:'Backend — DB Update', tag:'be',
+    name:'schema.prisma (update)',
+    path:'apps/api/prisma/schema.prisma',
+    desc:'Tambahkan model Media ke Prisma schema — simpan metadata gambar untuk reuse dan manajemen storage',
+    step:'Langkah 1: Tambahkan model Media di bawah model Article di schema.prisma, lalu: pnpm db:migrate (nama: add_media)',
+    code:`// Tambahkan model ini ke schema.prisma yang sudah ada
+// (taruh setelah model Article)
+
+model Media {
+  id             String   @id @default(uuid())
+  filename       String   @unique
+  thumbFilename  String?
+  url            String
+  thumbUrl       String?
+  width          Int
+  height         Int
+  size           Int
+  mimeType       String
+  uploadedById   String
+  siteId         String?
+  createdAt      DateTime @default(now())
+
+  uploadedBy User @relation(fields: [uploadedById], references: [id])
+
+  @@index([uploadedById])
+  @@index([siteId])
+}
+
+// CATATAN: Tambahkan juga relasi di model User:
+// media  Media[]`
+  },
+
+  // ── BACKEND: layout endpoint ───────────────────────────────
+  {
+    group:'Backend — AI Update', tag:'ai',
+    name:'ai.controller.ts (layout update)',
+    path:'apps/api/src/ai/ai.controller.ts',
+    desc:'Tidak ada perubahan kode — layout endpoint sudah ada di Fase 3. File ini hanya pengingat bahwa POST /ai/layout sudah aktif.',
+    step:'Langkah 1: TIDAK PERLU update — endpoint /ai/layout sudah ada dari Fase 3. Lanjut ke file berikutnya.',
+    code:`// ✅ Endpoint ini sudah ada dari Fase 3:
+// POST /api/v1/ai/layout
+// POST /api/v1/ai/caption
+//
+// Tidak perlu perubahan di ai.controller.ts
+//
+// Yang perlu ditambahkan di Fase 4:
+// 1. Frontend: useLayout hook (sudah ada di hooks/useAI.ts)
+// 2. Frontend: LayoutTab di AISidebar
+// 3. Frontend: ImageGridBlock komponen
+// 4. Frontend: GalleryBlock komponen
+// 5. Frontend: render publik untuk imageGrid dan gallery
+//
+// Lanjut ke file berikutnya →`
+  },
+
+  // ── FRONTEND: layout store extension ──────────────────────
+  {
+    group:'Frontend — Store', tag:'fe',
+    name:'layoutStore.ts',
+    path:'apps/web/store/layoutStore.ts',
+    desc:'Zustand store khusus layout suggestions — simpan saran AI, track mana yang dipilih, apply ke editorStore',
+    step:'Langkah 2: Buat file ini di apps/web/store/',
+    code:`import { create } from 'zustand'
+import { useEditorStore } from './editorStore'
+import { api } from '../lib/api'
+import type { Block } from '@beritakarya/types'
+
+export interface LayoutSuggestion {
+  type: 'split_paragraph' | 'insert_image_after' | 'add_heading' | 'reorder'
+  targetBlockId: string
+  reason: string
+  data?: Record<string, any>
+}
+
+interface LayoutState {
+  suggestions: LayoutSuggestion[]
+  selected: Set<number>
+  loading: boolean
+  error: string | null
+  summary: string
+
+  analyze: (blocks: Block[]) => Promise<void>
+  toggleSelect: (idx: number) => void
+  selectAll: () => void
+  clearAll: () => void
+  applySelected: () => void
+  dismiss: () => void
+}
+
+export const useLayoutStore = create<LayoutState>((set, get) => ({
+  suggestions: [],
+  selected: new Set(),
+  loading: false,
+  error: null,
+  summary: '',
+
+  analyze: async (blocks) => {
+    set({ loading: true, error: null, suggestions: [], selected: new Set() })
+    try {
+      const { data } = await api.post('/ai/layout', { blocks })
+      if (!data.success) throw new Error(data.error || 'Analisis gagal')
+      set({
+        suggestions: data.data.suggestions,
+        summary: data.data.summary,
+        selected: new Set(data.data.suggestions.map((_: any, i: number) => i)),
+        loading: false
+      })
+    } catch (err: any) {
+      set({
+        error: err.response?.data?.error || err.message || 'AI tidak tersedia',
+        loading: false
+      })
+    }
+  },
+
+  toggleSelect: (idx) => {
+    set(s => {
+      const next = new Set(s.selected)
+      next.has(idx) ? next.delete(idx) : next.add(idx)
+      return { selected: next }
+    })
+  },
+
+  selectAll: () => {
+    set(s => ({ selected: new Set(s.suggestions.map((_, i) => i)) }))
+  },
+
+  clearAll: () => set({ selected: new Set() }),
+
+  applySelected: () => {
+    const { suggestions, selected } = get()
+    const editor = useEditorStore.getState()
+    const toApply = suggestions.filter((_, i) => selected.has(i))
+
+    let blocks = [...editor.blocks]
+
+    toApply.forEach(s => {
+      const idx = blocks.findIndex(b => b.id === s.targetBlockId)
+      if (idx === -1) return
+
+      if (s.type === 'split_paragraph') {
+        const block = blocks[idx] as any
+        const content: string = block.content || ''
+        const sentences = content.match(/[^.!?]+[.!?]+/g) || [content]
+        const splitAt = s.data?.splitAfterSentence || Math.ceil(sentences.length / 2)
+        const part1 = sentences.slice(0, splitAt).join(' ').trim()
+        const part2 = sentences.slice(splitAt).join(' ').trim()
+        if (part1 && part2) {
+          const { v4: uuidv4 } = require('uuid')
+          blocks.splice(idx, 1,
+            { ...block, content: part1 },
+            { id: uuidv4(), type: 'paragraph', content: part2 }
+          )
+        }
+      }
+    })
+
+    editor.setBlocks(blocks)
+    set({ suggestions: [], selected: new Set(), summary: '' })
+  },
+
+  dismiss: () => set({ suggestions: [], selected: new Set(), error: null, summary: '' })
+}))`
+  },
+
+  // ── FRONTEND: layout tab ───────────────────────────────────
+  {
+    group:'Frontend — AI Tabs', tag:'fe',
+    name:'LayoutTab.tsx',
+    path:'apps/web/components/editor/ai/LayoutTab.tsx',
+    desc:'Tab Layout di AISidebar: tombol Analisis, daftar saran dengan checkbox pilih, preview ringkasan, tombol Terapkan',
+    step:'Langkah 3: Buat file ini di apps/web/components/editor/ai/',
+    code:`'use client'
+import { useEditorStore } from '../../../store/editorStore'
+import { useLayoutStore } from '../../../store/layoutStore'
+
+const TYPE_LABELS: Record<string, string> = {
+  split_paragraph:  'Pecah Paragraf',
+  insert_image_after: 'Sisipkan Gambar',
+  add_heading:      'Tambah Judul',
+  reorder:          'Susun Ulang'
+}
+const TYPE_ICONS: Record<string, string> = {
+  split_paragraph:  '✂',
+  insert_image_after: '🖼',
+  add_heading:      '📝',
+  reorder:          '↕'
+}
+
+export function LayoutTab() {
+  const { blocks } = useEditorStore()
+  const {
+    suggestions, selected, loading, error, summary,
+    analyze, toggleSelect, selectAll, clearAll, applySelected, dismiss
+  } = useLayoutStore()
+
+  const hasResult  = suggestions.length > 0
+  const hasSelected = selected.size > 0
+
+  return (
+    <div className="space-y-4">
+      <div className="bg-coral-50 border border-orange-100 rounded-xl p-3">
+        <p className="text-xs text-gray-600 leading-relaxed">
+          AI akan menganalisis struktur artikel dan menyarankan perbaikan layout.
+          Anda bisa pilih saran mana yang ingin diterapkan.
+        </p>
+      </div>
+
+      <button
+        onClick={() => analyze(blocks)}
+        disabled={loading || blocks.length < 2}
+        className="w-full py-2.5 bg-orange-600 text-white text-xs font-medium rounded-xl hover:bg-orange-700 disabled:opacity-50 transition-colors"
+      >
+        {loading ? 'Menganalisis struktur...' : '✦ Analisis Layout Artikel'}
+      </button>
+
+      {error && (
+        <p className="text-xs text-red-500 bg-red-50 p-2.5 rounded-xl">{error}</p>
+      )}
+
+      {hasResult && (
+        <div className="space-y-3">
+          {summary && (
+            <div className="bg-orange-50 border border-orange-200 rounded-xl p-3">
+              <p className="text-xs text-orange-800">{summary}</p>
+            </div>
+          )}
+
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium text-gray-600">
+              {suggestions.length} saran ditemukan
+            </span>
+            <div className="flex gap-2">
+              <button onClick={selectAll}
+                className="text-xs text-orange-600 hover:text-orange-800">Pilih Semua</button>
+              <span className="text-gray-300">|</span>
+              <button onClick={clearAll}
+                className="text-xs text-gray-400 hover:text-gray-600">Batal Pilih</button>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            {suggestions.map((s, i) => (
+              <div
+                key={i}
+                onClick={() => toggleSelect(i)}
+                className={\`flex items-start gap-2.5 p-3 rounded-xl border cursor-pointer transition-colors \${
+                  selected.has(i)
+                    ? 'bg-orange-50 border-orange-300'
+                    : 'bg-gray-50 border-gray-200 opacity-60'
+                }\`}
+              >
+                <div className={\`mt-0.5 w-4 h-4 rounded flex items-center justify-center border shrink-0 \${
+                  selected.has(i) ? 'bg-orange-500 border-orange-500' : 'border-gray-300'
+                }\`}>
+                  {selected.has(i) && <span className="text-white text-xs leading-none">✓</span>}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    <span className="text-sm">{TYPE_ICONS[s.type]}</span>
+                    <span className="text-xs font-medium text-gray-700">
+                      {TYPE_LABELS[s.type] || s.type}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-500 leading-relaxed">{s.reason}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex gap-2 pt-1">
+            <button
+              onClick={dismiss}
+              className="flex-1 py-2 text-xs border border-gray-200 text-gray-500 rounded-xl hover:bg-gray-50"
+            >
+              Abaikan Semua
+            </button>
+            <button
+              onClick={applySelected}
+              disabled={!hasSelected}
+              className="flex-1 py-2 text-xs bg-orange-600 text-white rounded-xl hover:bg-orange-700 disabled:opacity-50 font-medium"
+            >
+              Terapkan ({selected.size})
+            </button>
+          </div>
+        </div>
+      )}
+
+      {!hasResult && !loading && (
+        <p className="text-xs text-center text-gray-300 py-4">
+          Klik tombol di atas untuk menganalisis layout artikel
+        </p>
+      )}
+    </div>
+  )
+}`
+  },
+
+  // ── FRONTEND: update AISidebar ─────────────────────────────
+  {
+    group:'Frontend — AI Panel', tag:'fe',
+    name:'AISidebar.tsx (update)',
+    path:'apps/web/components/editor/AISidebar.tsx',
+    desc:'UPDATE AISidebar.tsx dari Fase 3 — tambahkan tab Layout sebagai tab keempat',
+    step:'Langkah 3: UPDATE AISidebar.tsx dari Fase 3 — tambahkan import LayoutTab dan tab baru',
+    code:`'use client'
+import { useState } from 'react'
+import { WriteTab }    from './ai/WriteTab'
+import { OptimizeTab } from './ai/OptimizeTab'
+import { ValidateTab } from './ai/ValidateTab'
+import { LayoutTab }   from './ai/LayoutTab'   // ← TAMBAHKAN
+
+type Tab = 'write' | 'optimize' | 'validate' | 'layout'
+
+const TABS: { id: Tab; label: string }[] = [
+  { id: 'write',    label: 'Tulis' },
+  { id: 'optimize', label: 'Optimasi' },
+  { id: 'validate', label: 'Validasi' },
+  { id: 'layout',   label: 'Layout' },   // ← TAMBAHKAN
+]
+
+export function AISidebar() {
+  const [open, setOpen] = useState(false)
+  const [tab, setTab]   = useState<Tab>('write')
+
+  if (!open) {
+    return (
+      <button
+        onClick={() => setOpen(true)}
+        className="fixed right-4 bottom-4 bg-amber-600 hover:bg-amber-700 text-white text-sm px-4 py-2.5 rounded-full shadow-lg flex items-center gap-2 transition-colors z-40"
+      >
+        <span>✦</span><span>Asisten AI</span>
+      </button>
+    )
+  }
+
+  return (
+    <div className="fixed right-0 top-0 h-full w-80 bg-white border-l shadow-xl flex flex-col z-40">
+      <div className="flex items-center justify-between px-4 py-3 border-b bg-amber-50">
+        <div className="flex items-center gap-2">
+          <span className="text-amber-600">✦</span>
+          <span className="text-sm font-semibold text-amber-800">Asisten AI</span>
+        </div>
+        <button onClick={() => setOpen(false)} className="text-gray-400 hover:text-gray-600 text-lg">×</button>
+      </div>
+
+      <div className="flex border-b overflow-x-auto">
+        {TABS.map(t => (
+          <button key={t.id} onClick={() => setTab(t.id)}
+            className={\`flex-1 py-2.5 text-xs font-medium transition-colors border-b-2 whitespace-nowrap px-1 \${
+              tab === t.id
+                ? 'border-amber-500 text-amber-700 bg-amber-50/50'
+                : 'border-transparent text-gray-500 hover:text-gray-700'
+            }\`}>
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="flex-1 overflow-y-auto p-4">
+        {tab === 'write'    && <WriteTab />}
+        {tab === 'optimize' && <OptimizeTab />}
+        {tab === 'validate' && <ValidateTab />}
+        {tab === 'layout'   && <LayoutTab />}
+      </div>
+
+      <div className="px-4 py-2 border-t bg-gray-50">
+        <p className="text-xs text-gray-400 text-center">
+          AI bersifat asistif — selalu review sebelum terapkan
+        </p>
+      </div>
+    </div>
+  )
+}`
+  },
+
+  // ── FRONTEND: ImageGridBlock ───────────────────────────────
+  {
+    group:'Frontend — Blocks', tag:'fe',
+    name:'ImageGridBlock.tsx',
+    path:'apps/web/components/editor/blocks/ImageGridBlock.tsx',
+    desc:'Blok grid gambar: 2 atau 3 kolom, upload per slot, drag reorder gambar dalam grid, hapus per item',
+    step:'Langkah 4: Tambahkan ke apps/web/components/editor/blocks/',
+    code:`'use client'
+import { useRef, useState } from 'react'
+import { useEditorStore } from '../../../store/editorStore'
+import { api } from '../../../lib/api'
+import type { ImageGridBlock as TImageGridBlock, ImageItem } from '@beritakarya/types'
+
+interface Props { block: TImageGridBlock }
+
+export function ImageGridBlock({ block }: Props) {
+  const { updateBlock } = useEditorStore()
+  const [dragIdx, setDragIdx] = useState<number | null>(null)
+
+  const setColumns = (columns: 2 | 3) => updateBlock(block.id, { columns })
+
+  const uploadImage = async (file: File): Promise<ImageItem | null> => {
+    const form = new FormData()
+    form.append('file', file)
+    try {
+      const { data } = await api.post('/media/upload', form, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      })
+      return { url: data.data.url, alt: file.name.replace(/\.[^/.]+$/, '') }
+    } catch { return null }
+  }
+
+  const handleAddImage = async (file: File) => {
+    const item = await uploadImage(file)
+    if (!item) return
+    updateBlock(block.id, { images: [...block.images, item] })
+  }
+
+  const handleRemove = (idx: number) => {
+    updateBlock(block.id, {
+      images: block.images.filter((_, i) => i !== idx)
+    })
+  }
+
+  const handleCaptionChange = (idx: number, caption: string) => {
+    const images = block.images.map((img, i) => i === idx ? { ...img, caption } : img)
+    updateBlock(block.id, { images })
+  }
+
+  const handleDragStart = (idx: number) => setDragIdx(idx)
+
+  const handleDrop = (targetIdx: number) => {
+    if (dragIdx === null || dragIdx === targetIdx) return
+    const imgs = [...block.images]
+    const [moved] = imgs.splice(dragIdx, 1)
+    imgs.splice(targetIdx, 0, moved)
+    updateBlock(block.id, { images: imgs })
+    setDragIdx(null)
+  }
+
+  const gridCols = block.columns === 2 ? 'grid-cols-2' : 'grid-cols-3'
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center gap-2">
+        <span className="text-xs text-gray-500 font-medium">Grid Gambar</span>
+        <div className="flex gap-1">
+          {([2, 3] as const).map(c => (
+            <button key={c} onClick={() => setColumns(c)}
+              className={\`text-xs px-2 py-0.5 rounded border transition-colors \${
+                block.columns === c
+                  ? 'bg-blue-100 border-blue-400 text-blue-700'
+                  : 'border-gray-200 text-gray-400 hover:border-gray-300'
+              }\`}>
+              {c} Kolom
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className={\`grid \${gridCols} gap-2\`}>
+        {block.images.map((img, idx) => (
+          <div
+            key={idx}
+            draggable
+            onDragStart={() => handleDragStart(idx)}
+            onDragOver={e => e.preventDefault()}
+            onDrop={() => handleDrop(idx)}
+            className="group relative cursor-grab active:cursor-grabbing"
+          >
+            <img src={img.url} alt={img.alt}
+              className="w-full aspect-square object-cover rounded-lg" />
+            <button
+              onClick={() => handleRemove(idx)}
+              className="absolute top-1 right-1 w-5 h-5 bg-black/60 text-white rounded-full text-xs opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+            >×</button>
+            <input
+              value={img.caption || ''}
+              onChange={e => handleCaptionChange(idx, e.target.value)}
+              placeholder="Caption..."
+              className="w-full mt-1 text-xs text-gray-400 text-center outline-none bg-transparent placeholder-gray-300"
+            />
+          </div>
+        ))}
+
+        {/* Add slot */}
+        <UploadSlot onFile={handleAddImage} />
+      </div>
+    </div>
+  )
+}
+
+function UploadSlot({ onFile }: { onFile: (f: File) => void }) {
+  const ref = useRef<HTMLInputElement>(null)
+  const [uploading, setUploading] = useState(false)
+
+  const handle = async (file: File) => {
+    setUploading(true)
+    await onFile(file)
+    setUploading(false)
+  }
+
+  return (
+    <div
+      onClick={() => ref.current?.click()}
+      onDrop={e => { e.preventDefault(); const f = e.dataTransfer.files[0]; if(f) handle(f) }}
+      onDragOver={e => e.preventDefault()}
+      className="aspect-square border-2 border-dashed border-gray-200 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-blue-300 hover:bg-blue-50/30 transition-colors"
+    >
+      {uploading
+        ? <span className="text-xs text-gray-400">Uploading...</span>
+        : <>
+            <span className="text-xl text-gray-300">+</span>
+            <span className="text-xs text-gray-300 mt-1">Tambah</span>
+          </>
+      }
+      <input ref={ref} type="file" accept="image/*" className="hidden"
+        onChange={e => { const f = e.target.files?.[0]; if(f) handle(f) }} />
+    </div>
+  )
+}`
+  },
+
+  // ── FRONTEND: GalleryBlock ─────────────────────────────────
+  {
+    group:'Frontend — Blocks', tag:'fe',
+    name:'GalleryBlock.tsx',
+    path:'apps/web/components/editor/blocks/GalleryBlock.tsx',
+    desc:'Blok galeri editor: thumbnail strip + upload, preview fullscreen lightbox dengan navigasi arrow dan keyboard',
+    step:'Langkah 4: Tambahkan ke apps/web/components/editor/blocks/',
+    code:`'use client'
+import { useRef, useState, useEffect } from 'react'
+import { useEditorStore } from '../../../store/editorStore'
+import { api } from '../../../lib/api'
+import type { GalleryBlock as TGalleryBlock } from '@beritakarya/types'
+
+export function GalleryBlock({ block }: { block: TGalleryBlock }) {
+  const { updateBlock } = useEditorStore()
+  const [lightbox, setLightbox] = useState<number | null>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
+  const [uploading, setUploading] = useState(false)
+
+  const handleUpload = async (files: FileList) => {
+    setUploading(true)
+    const newItems = []
+    for (const file of Array.from(files)) {
+      const form = new FormData()
+      form.append('file', file)
+      try {
+        const { data } = await api.post('/media/upload', form, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        })
+        newItems.push({ url: data.data.url, alt: file.name.replace(/\.[^/.]+$/, '') })
+      } catch {}
+    }
+    updateBlock(block.id, { images: [...block.images, ...newItems] })
+    setUploading(false)
+  }
+
+  const handleRemove = (idx: number) => {
+    updateBlock(block.id, { images: block.images.filter((_, i) => i !== idx) })
+    if (lightbox === idx) setLightbox(null)
+  }
+
+  const handleCaptionChange = (idx: number, caption: string) => {
+    const images = block.images.map((img, i) => i === idx ? { ...img, caption } : img)
+    updateBlock(block.id, { images })
+  }
+
+  // Keyboard nav in lightbox
+  useEffect(() => {
+    if (lightbox === null) return
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowRight') setLightbox(i => Math.min((i ?? 0) + 1, block.images.length - 1))
+      if (e.key === 'ArrowLeft')  setLightbox(i => Math.max((i ?? 0) - 1, 0))
+      if (e.key === 'Escape')     setLightbox(null)
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [lightbox, block.images.length])
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between">
+        <span className="text-xs text-gray-500 font-medium">Galeri ({block.images.length} foto)</span>
+        <button onClick={() => inputRef.current?.click()}
+          disabled={uploading}
+          className="text-xs px-2.5 py-1 border border-gray-200 rounded-lg hover:border-blue-300 text-gray-500 hover:text-blue-600 transition-colors disabled:opacity-50">
+          {uploading ? 'Uploading...' : '+ Tambah Foto'}
+        </button>
+        <input ref={inputRef} type="file" accept="image/*" multiple className="hidden"
+          onChange={e => { if(e.target.files) handleUpload(e.target.files) }} />
+      </div>
+
+      {block.images.length === 0 ? (
+        <div
+          onClick={() => inputRef.current?.click()}
+          className="border-2 border-dashed border-gray-200 rounded-xl p-8 text-center cursor-pointer hover:border-blue-300"
+        >
+          <p className="text-gray-300 text-sm">Klik atau drag foto untuk galeri</p>
+        </div>
+      ) : (
+        <div className="flex gap-2 overflow-x-auto pb-2">
+          {block.images.map((img, idx) => (
+            <div key={idx} className="relative group shrink-0 w-24 h-24">
+              <img
+                src={img.url} alt={img.alt}
+                onClick={() => setLightbox(idx)}
+                className="w-full h-full object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+              />
+              <button
+                onClick={() => handleRemove(idx)}
+                className="absolute top-1 right-1 w-5 h-5 bg-black/60 text-white rounded-full text-xs opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+              >×</button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Lightbox */}
+      {lightbox !== null && (
+        <div
+          className="fixed inset-0 bg-black/90 z-50 flex flex-col items-center justify-center"
+          onClick={() => setLightbox(null)}
+        >
+          <img
+            src={block.images[lightbox]?.url}
+            alt={block.images[lightbox]?.alt}
+            className="max-h-[80vh] max-w-[90vw] object-contain rounded-xl"
+            onClick={e => e.stopPropagation()}
+          />
+          {block.images[lightbox]?.caption && (
+            <p className="text-white text-sm mt-3 opacity-70">{block.images[lightbox].caption}</p>
+          )}
+          <div className="flex items-center gap-6 mt-4">
+            <button
+              onClick={e => { e.stopPropagation(); setLightbox(i => Math.max((i ?? 0) - 1, 0)) }}
+              disabled={lightbox === 0}
+              className="text-white text-2xl opacity-70 hover:opacity-100 disabled:opacity-20"
+            >←</button>
+            <span className="text-white text-xs opacity-50">{lightbox + 1} / {block.images.length}</span>
+            <button
+              onClick={e => { e.stopPropagation(); setLightbox(i => Math.min((i ?? 0) + 1, block.images.length - 1)) }}
+              disabled={lightbox === block.images.length - 1}
+              className="text-white text-2xl opacity-70 hover:opacity-100 disabled:opacity-20"
+            >→</button>
+          </div>
+
+          <div className="flex gap-1.5 mt-4 overflow-x-auto max-w-xs">
+            {block.images.map((img, idx) => (
+              <img
+                key={idx}
+                src={img.url}
+                onClick={e => { e.stopPropagation(); setLightbox(idx) }}
+                className={\`w-10 h-10 object-cover rounded cursor-pointer transition-opacity \${idx === lightbox ? 'opacity-100 ring-2 ring-white' : 'opacity-50 hover:opacity-80'}\`}
+              />
+            ))}
+          </div>
+
+          <button onClick={() => setLightbox(null)}
+            className="absolute top-4 right-4 text-white text-2xl opacity-70 hover:opacity-100">×</button>
+        </div>
+      )}
+    </div>
+  )
+}`
+  },
+
+  // ── FRONTEND: BlockList update ─────────────────────────────
+  {
+    group:'Frontend — Editor Update', tag:'fe',
+    name:'BlockList.tsx (update)',
+    path:'apps/web/components/editor/BlockList.tsx',
+    desc:'UPDATE BlockList.tsx dari Fase 2 — tambahkan render case untuk ImageGridBlock dan GalleryBlock',
+    step:'Langkah 4: UPDATE BlockList.tsx dari Fase 2 — tambahkan 2 import dan 2 case di BlockRenderer',
+    code:`'use client'
+import { useEditorStore } from '../../store/editorStore'
+import { BlockWrapper }   from './BlockWrapper'
+import { ParagraphBlock } from './blocks/ParagraphBlock'
+import { HeadingBlock }   from './blocks/HeadingBlock'
+import { QuoteBlock }     from './blocks/QuoteBlock'
+import { ImageBlock }     from './blocks/ImageBlock'
+import { ImageGridBlock } from './blocks/ImageGridBlock'  // ← TAMBAHKAN
+import { GalleryBlock }   from './blocks/GalleryBlock'    // ← TAMBAHKAN
+import { EmbedBlock }     from './blocks/EmbedBlock'
+import type { Block }     from '@beritakarya/types'
+
+export function BlockList() {
+  const { blocks } = useEditorStore()
+
+  if (!blocks.length) {
+    return (
+      <p className="text-gray-300 text-sm py-4 text-center">
+        Belum ada blok. Klik + untuk menambah konten.
+      </p>
+    )
+  }
+
+  return (
+    <div className="space-y-1">
+      {blocks.map((block, idx) => (
+        <BlockWrapper key={block.id} block={block} index={idx}>
+          <BlockRenderer block={block} />
+        </BlockWrapper>
+      ))}
+    </div>
+  )
+}
+
+function BlockRenderer({ block }: { block: Block }) {
+  switch (block.type) {
+    case 'paragraph':  return <ParagraphBlock block={block} />
+    case 'heading':    return <HeadingBlock block={block} />
+    case 'quote':      return <QuoteBlock block={block} />
+    case 'image':      return <ImageBlock block={block} />
+    case 'imageGrid':  return <ImageGridBlock block={block} />  // ← TAMBAHKAN
+    case 'gallery':    return <GalleryBlock block={block} />    // ← TAMBAHKAN
+    case 'embed':      return <EmbedBlock block={block} />
+    default:
+      return (
+        <div className="text-xs text-gray-400 py-2 px-3 border rounded bg-gray-50">
+          Blok tipe "{(block as any).type}" belum didukung
+        </div>
+      )
+  }
+}`
+  },
+
+  // ── FRONTEND: Caption in ImageBlock ───────────────────────
+  {
+    group:'Frontend — Blocks', tag:'fe',
+    name:'ImageBlock.tsx (update)',
+    path:'apps/web/components/editor/blocks/ImageBlock.tsx',
+    desc:'UPDATE ImageBlock.tsx dari Fase 2 — tambahkan tombol "Generate Caption" yang memanggil AI caption service',
+    step:'Langkah 5: UPDATE ImageBlock.tsx dari Fase 2 — tambahkan tombol AI caption di bawah gambar',
+    code:`'use client'
+import { useRef, useState } from 'react'
+import { useEditorStore } from '../../../store/editorStore'
+import { useCaption } from '../../../hooks/useAI'
+import { api } from '../../../lib/api'
+import type { ImageBlock as TImageBlock } from '@beritakarya/types'
+
+export function ImageBlock({ block }: { block: TImageBlock }) {
+  const { updateBlock } = useEditorStore()
+  const inputRef        = useRef<HTMLInputElement>(null)
+  const [uploading, setUploading] = useState(false)
+  const [progress,  setProgress]  = useState(0)
+  const [captionState, doCaption] = useCaption()
+
+  const handleUpload = async (file: File) => {
+    const form = new FormData()
+    form.append('file', file)
+    setUploading(true); setProgress(10)
+    try {
+      const { data } = await api.post('/media/upload', form, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+        onUploadProgress: e => { if (e.total) setProgress(Math.round(e.loaded / e.total * 90)) }
+      })
+      setProgress(100)
+      updateBlock(block.id, {
+        url: data.data.url,
+        alt: file.name.replace(/\.[^/.]+$/, ''),
+        width: data.data.width,
+        height: data.data.height
+      })
+    } catch { alert('Upload gagal') }
+    finally { setUploading(false); setProgress(0) }
+  }
+
+  const handleGenerateCaption = async () => {
+    if (!block.url) return
+    const result = await doCaption({ imageUrl: block.url })
+    if (result) {
+      updateBlock(block.id, { caption: result.caption, alt: result.altText })
+    }
+  }
+
+  if (!block.url) {
+    return (
+      <div
+        onClick={() => inputRef.current?.click()}
+        onDrop={e => { e.preventDefault(); const f = e.dataTransfer.files[0]; if(f) handleUpload(f) }}
+        onDragOver={e => e.preventDefault()}
+        className="border-2 border-dashed border-gray-200 rounded-xl p-8 text-center cursor-pointer hover:border-blue-300 hover:bg-blue-50/30 transition-colors"
+      >
+        <p className="text-gray-400 text-sm">Klik atau drag & drop gambar di sini</p>
+        <p className="text-gray-300 text-xs mt-1">JPG, PNG, WebP — maks 10MB</p>
+        {uploading && (
+          <div className="mt-3 bg-gray-200 rounded-full h-1.5">
+            <div className="bg-blue-500 h-1.5 rounded-full transition-all" style={{ width: \`\${progress}%\` }} />
+          </div>
+        )}
+        <input ref={inputRef} type="file" accept="image/*" className="hidden"
+          onChange={e => { const f = e.target.files?.[0]; if(f) handleUpload(f) }} />
+      </div>
+    )
+  }
+
+  return (
+    <div className="relative group">
+      <img src={block.url} alt={block.alt}
+        className="w-full rounded-xl object-cover max-h-96" />
+      <button
+        onClick={() => updateBlock(block.id, { url: '', alt: '' })}
+        className="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+      >Ganti</button>
+
+      <div className="flex items-center gap-2 mt-1.5">
+        <input
+          value={block.caption || ''}
+          onChange={e => updateBlock(block.id, { caption: e.target.value })}
+          placeholder="Tambah caption gambar..."
+          className="flex-1 text-xs text-gray-400 text-center outline-none bg-transparent placeholder-gray-300"
+        />
+        <button
+          onClick={handleGenerateCaption}
+          disabled={captionState.loading}
+          className="text-xs px-2 py-0.5 border border-amber-200 text-amber-600 rounded-lg hover:bg-amber-50 shrink-0 disabled:opacity-50 transition-colors"
+        >
+          {captionState.loading ? '...' : '✦ AI Caption'}
+        </button>
+      </div>
+
+      {captionState.error && (
+        <p className="text-xs text-red-400 text-center mt-1">{captionState.error}</p>
+      )}
+    </div>
+  )
+}`
+  },
+
+  // ── FRONTEND: Public render updates ───────────────────────
+  {
+    group:'Frontend — Pages', tag:'fe',
+    name:'artikel publik (update)',
+    path:'apps/web/app/[site]/artikel/[slug]/page.tsx',
+    desc:'UPDATE halaman artikel publik dari Fase 2 — tambahkan render untuk imageGrid dan gallery di PublicBlock',
+    step:'Langkah 6: UPDATE file page.tsx artikel publik dari Fase 2 — tambahkan 2 case di switch PublicBlock',
+    code:`// Tambahkan 2 case ini ke fungsi PublicBlock di halaman artikel publik
+// (di dalam switch block.type, setelah case 'image')
+
+case 'imageGrid': {
+  const cols = block.columns === 2 ? 'grid-cols-2' : 'grid-cols-3'
+  return (
+    <figure className={\`my-6 grid \${cols} gap-2\`}>
+      {block.images.map((img: any, i: number) => (
+        <div key={i} className="space-y-1">
+          <img
+            src={img.url}
+            alt={img.alt}
+            className="w-full aspect-square object-cover rounded-lg"
+          />
+          {img.caption && (
+            <p className="text-xs text-gray-400 text-center">{img.caption}</p>
+          )}
+        </div>
+      ))}
+    </figure>
+  )
+}
+
+case 'gallery': {
+  // Render sebagai grid responsif di halaman publik
+  // Lightbox untuk publik bisa ditambahkan dengan library seperti yet-another-react-lightbox
+  return (
+    <figure className="my-6">
+      <div className="grid grid-cols-3 gap-1.5">
+        {block.images.map((img: any, i: number) => (
+          <img
+            key={i}
+            src={img.url}
+            alt={img.alt}
+            className="w-full aspect-square object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+          />
+        ))}
+      </div>
+      {block.images[0]?.caption && (
+        <figcaption className="text-sm text-gray-400 text-center mt-2">
+          {block.images[0].caption}
+        </figcaption>
+      )}
+    </figure>
+  )
+}
+
+// Catatan: Copy seluruh komponen page.tsx dari Fase 2,
+// lalu tambahkan kedua case ini setelah case 'image'`
+  },
+
+  // ── FRONTEND: useImageUpload hook ──────────────────────────
+  {
+    group:'Frontend — Hooks', tag:'fe',
+    name:'useImageUpload.ts',
+    path:'apps/web/hooks/useImageUpload.ts',
+    desc:'Custom hook reusable untuk upload gambar — state progress, error, hasil — dipakai oleh semua block gambar',
+    step:'Langkah 7: Buat file ini di apps/web/hooks/ untuk DRY upload logic',
+    code:`import { useState, useCallback } from 'react'
+import { api } from '../lib/api'
+
+export interface UploadResult {
+  url: string
+  thumbUrl: string
+  width: number
+  height: number
+  size: number
+}
+
+interface UploadState {
+  uploading: boolean
+  progress: number
+  error: string | null
+  result: UploadResult | null
+}
+
+export function useImageUpload() {
+  const [state, setState] = useState<UploadState>({
+    uploading: false, progress: 0, error: null, result: null
+  })
+
+  const upload = useCallback(async (file: File): Promise<UploadResult | null> => {
+    // Validate client-side
+    const allowed = ['image/jpeg','image/png','image/webp','image/gif']
+    if (!allowed.includes(file.type)) {
+      setState(s => ({ ...s, error: 'Format file tidak didukung (JPG, PNG, WebP, GIF)' }))
+      return null
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      setState(s => ({ ...s, error: 'Ukuran file melebihi 10MB' }))
+      return null
+    }
+
+    setState({ uploading: true, progress: 5, error: null, result: null })
+
+    const form = new FormData()
+    form.append('file', file)
+
+    try {
+      const { data } = await api.post('/media/upload', form, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+        onUploadProgress: e => {
+          if (e.total) {
+            setState(s => ({ ...s, progress: Math.round(e.loaded / e.total! * 90) }))
+          }
+        }
+      })
+      const result: UploadResult = data.data
+      setState({ uploading: false, progress: 100, error: null, result })
+      return result
+    } catch (err: any) {
+      const msg = err.response?.data?.error?.message || 'Upload gagal, coba lagi'
+      setState({ uploading: false, progress: 0, error: msg, result: null })
+      return null
+    }
+  }, [])
+
+  const reset = useCallback(() => {
+    setState({ uploading: false, progress: 0, error: null, result: null })
+  }, [])
+
+  return { ...state, upload, reset }
+}`
+  },
+
+  // ── FRONTEND: editorStore update ──────────────────────────
+  {
+    group:'Frontend — Store', tag:'fe',
+    name:'editorStore.ts (update)',
+    path:'apps/web/store/editorStore.ts',
+    desc:'UPDATE editorStore.ts — tambahkan action setBlocks yang dibutuhkan oleh layoutStore.applySelected',
+    step:'Langkah 7: Cek editorStore.ts — pastikan action setBlocks sudah ada (sudah ada dari Fase 2, tidak perlu update)',
+    code:`// ✅ setBlocks sudah ada di editorStore.ts dari Fase 2:
+//
+// setBlocks: (blocks) => {
+//   set((s) => ({
+//     undoStack: [...s.undoStack.slice(-20), s.blocks],
+//     blocks,
+//     isDirty: true
+//   }))
+//   scheduleAutoSave(get)
+// },
+//
+// layoutStore.applySelected() memanggil editor.setBlocks(blocks)
+// yang sudah ada — tidak perlu perubahan apapun.
+//
+// Yang perlu dicek:
+// 1. import { v4 as uuidv4 } from 'uuid' ada di editorStore ✅
+// 2. setBlocks ada di interface EditorState ✅
+// 3. setBlocks diexpose dari create() ✅
+//
+// Tidak ada update yang diperlukan untuk editorStore.ts`
+  },
+
+  // ── FRONTEND: test layout ──────────────────────────────────
+  {
+    group:'Frontend — Test', tag:'test',
+    name:'layoutStore.test.ts',
+    path:'apps/web/store/layoutStore.test.ts',
+    desc:'Test layoutStore: apply split_paragraph benar memecah blok jadi dua, dismiss membersihkan state',
+    step:'Langkah 8: Buat test ini, jalankan: pnpm test dari root',
+    code:`import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { act } from 'react'
+
+// Mock api
+vi.mock('../lib/api', () => ({
+  api: {
+    post: vi.fn().mockResolvedValue({
+      data: {
+        success: true,
+        data: {
+          suggestions: [
+            {
+              type: 'split_paragraph',
+              targetBlockId: 'block-1',
+              reason: 'Paragraf terlalu panjang',
+              data: { splitAfterSentence: 1 }
+            }
+          ],
+          summary: 'Ditemukan 1 saran'
+        }
+      }
+    })
+  }
+}))
+
+// Mock editorStore
+vi.mock('./editorStore', () => ({
+  useEditorStore: {
+    getState: vi.fn().mockReturnValue({
+      blocks: [
+        { id: 'block-1', type: 'paragraph', content: 'Kalimat pertama. Kalimat kedua.' }
+      ],
+      setBlocks: vi.fn()
+    })
+  }
+}))
+
+import { useLayoutStore } from './layoutStore'
+import { useEditorStore } from './editorStore'
+
+describe('layoutStore', () => {
+  beforeEach(() => {
+    useLayoutStore.setState({
+      suggestions: [], selected: new Set(),
+      loading: false, error: null, summary: ''
+    })
+  })
+
+  it('analyze mengisi suggestions dari API', async () => {
+    await useLayoutStore.getState().analyze([
+      { id: 'block-1', type: 'paragraph', content: 'Test.' }
+    ])
+    const { suggestions, summary } = useLayoutStore.getState()
+    expect(suggestions).toHaveLength(1)
+    expect(suggestions[0].type).toBe('split_paragraph')
+    expect(summary).toBe('Ditemukan 1 saran')
+  })
+
+  it('dismiss membersihkan semua state', () => {
+    useLayoutStore.setState({
+      suggestions: [{ type: 'split_paragraph', targetBlockId: 'x', reason: 'test' }],
+      selected: new Set([0]),
+      summary: 'ada saran'
+    })
+    useLayoutStore.getState().dismiss()
+    const { suggestions, selected, summary } = useLayoutStore.getState()
+    expect(suggestions).toHaveLength(0)
+    expect(selected.size).toBe(0)
+    expect(summary).toBe('')
+  })
+
+  it('toggleSelect menambah dan menghapus index dari selected', () => {
+    useLayoutStore.setState({
+      suggestions: [
+        { type: 'split_paragraph', targetBlockId: 'a', reason: 'r1' },
+        { type: 'add_heading',     targetBlockId: 'b', reason: 'r2' }
+      ],
+      selected: new Set()
+    })
+    useLayoutStore.getState().toggleSelect(0)
+    expect(useLayoutStore.getState().selected.has(0)).toBe(true)
+    useLayoutStore.getState().toggleSelect(0)
+    expect(useLayoutStore.getState().selected.has(0)).toBe(false)
+  })
+})`
+  },
+
+  // ── BACKEND: image integration test ───────────────────────
+  {
+    group:'Backend — Test', tag:'test',
+    name:'media.test.ts',
+    path:'apps/api/src/modules/media/media.test.ts',
+    desc:'Test upload endpoint: validasi tipe file ditolak, file terlalu besar ditolak, response shape benar',
+    step:'Langkah 8: Tambahkan test ini untuk memastikan upload pipeline berjalan benar',
+    code:`import { describe, it, expect, vi } from 'vitest'
+import request from 'supertest'
+import express from 'express'
+import path from 'path'
+import { mediaRouter } from './media.controller'
+import { errorMiddleware } from '../../middleware/error.middleware'
+
+vi.mock('../../middleware/auth.middleware', () => ({
+  requireAuth: (_: any, __: any, next: any) => next()
+}))
+
+// Mock sharp agar tidak perlu binary di test
+vi.mock('sharp', () => ({
+  default: vi.fn(() => ({
+    metadata: vi.fn().mockResolvedValue({ width: 800, height: 600, format: 'jpeg' }),
+    resize: vi.fn().mockReturnThis(),
+    webp: vi.fn().mockReturnThis(),
+    toFile: vi.fn().mockResolvedValue({})
+  }))
+}))
+
+const app = express()
+app.use(express.json())
+app.use('/api/v1/media', mediaRouter)
+app.use(errorMiddleware)
+
+describe('media upload endpoint', () => {
+  it('menolak file bukan gambar (PDF)', async () => {
+    const res = await request(app)
+      .post('/api/v1/media/upload')
+      .attach('file', Buffer.from('%PDF-1.4'), {
+        filename: 'doc.pdf',
+        contentType: 'application/pdf'
+      })
+    expect(res.status).toBe(400)
+  })
+
+  it('return 400 jika tidak ada file', async () => {
+    const res = await request(app)
+      .post('/api/v1/media/upload')
+      .send({})
+    expect(res.status).toBe(400)
+    expect(res.body.success).toBe(false)
+  })
+})`
+  },
+
+  // ── PUBLIC: Gallery with lightbox ─────────────────────────
+  {
+    group:'Frontend — Public', tag:'fe',
+    name:'PublicGallery.tsx',
+    path:'apps/web/components/berita/PublicGallery.tsx',
+    desc:'Komponen galeri untuk halaman artikel publik: grid foto + lightbox interaktif dengan keyboard navigation',
+    step:'Langkah 9: Buat folder apps/web/components/berita/ lalu buat file ini untuk dipakai di halaman publik',
+    code:`'use client'
+import { useState, useEffect } from 'react'
+import type { ImageItem } from '@beritakarya/types'
+
+interface Props {
+  images: ImageItem[]
+}
+
+export function PublicGallery({ images }: Props) {
+  const [active, setActive] = useState<number | null>(null)
+
+  useEffect(() => {
+    if (active === null) return
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowRight') setActive(i => Math.min((i ?? 0) + 1, images.length - 1))
+      if (e.key === 'ArrowLeft')  setActive(i => Math.max((i ?? 0) - 1, 0))
+      if (e.key === 'Escape')     setActive(null)
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [active, images.length])
+
+  return (
+    <>
+      <figure className="my-6">
+        <div className="grid grid-cols-3 gap-1.5">
+          {images.map((img, i) => (
+            <button key={i} onClick={() => setActive(i)} className="focus:outline-none">
+              <img
+                src={img.url} alt={img.alt}
+                className="w-full aspect-square object-cover rounded-lg hover:opacity-90 transition-opacity cursor-pointer"
+              />
+            </button>
+          ))}
+        </div>
+      </figure>
+
+      {active !== null && (
+        <div
+          className="fixed inset-0 bg-black/92 z-50 flex flex-col items-center justify-center p-4"
+          onClick={() => setActive(null)}
+        >
+          <img
+            src={images[active]?.url} alt={images[active]?.alt}
+            className="max-h-[80vh] max-w-[90vw] object-contain rounded-xl"
+            onClick={e => e.stopPropagation()}
+          />
+          {images[active]?.caption && (
+            <p className="text-white/70 text-sm mt-3">{images[active].caption}</p>
+          )}
+
+          <div className="flex items-center gap-8 mt-5">
+            <button onClick={e => { e.stopPropagation(); setActive(i => Math.max((i ?? 0) - 1, 0)) }}
+              disabled={active === 0}
+              className="text-white text-3xl opacity-60 hover:opacity-100 disabled:opacity-20 transition-opacity"
+            >‹</button>
+            <span className="text-white/50 text-sm">{active + 1} / {images.length}</span>
+            <button onClick={e => { e.stopPropagation(); setActive(i => Math.min((i ?? 0) + 1, images.length - 1)) }}
+              disabled={active === images.length - 1}
+              className="text-white text-3xl opacity-60 hover:opacity-100 disabled:opacity-20 transition-opacity"
+            >›</button>
+          </div>
+
+          {/* Thumbnail strip */}
+          <div className="flex gap-1.5 mt-4 overflow-x-auto max-w-sm">
+            {images.map((img, i) => (
+              <img key={i} src={img.url} alt={img.alt}
+                onClick={e => { e.stopPropagation(); setActive(i) }}
+                className={\`w-12 h-12 object-cover rounded cursor-pointer shrink-0 transition-all \${
+                  i === active ? 'ring-2 ring-white opacity-100' : 'opacity-40 hover:opacity-70'
+                }\`}
+              />
+            ))}
+          </div>
+
+          <button onClick={() => setActive(null)}
+            className="absolute top-4 right-4 text-white/60 hover:text-white text-3xl transition-colors"
+          >×</button>
+        </div>
+      )}
+    </>
+  )
+}`
+  },
+
+  // ── FRONTEND: SEO meta update ──────────────────────────────
+  {
+    group:'Frontend — Store', tag:'fe',
+    name:'editorStore SEO update',
+    path:'apps/web/store/editorStore.ts',
+    desc:'UPDATE editorStore — tambahkan field metaTitle & metaDescription ke state dan action updateMeta, diperlukan oleh OptimizeTab',
+    step:'Langkah 10: UPDATE editorStore.ts — tambahkan metaTitle, metaDescription ke state dan action updateMeta',
+    code:`// Tambahkan ke interface EditorState (setelah isDirty):
+metaTitle: string
+metaDescription: string
+updateMeta: (meta: Partial<{ metaTitle: string; metaDescription: string }>) => void
+
+// Tambahkan ke initial state di create():
+metaTitle: '',
+metaDescription: '',
+
+// Tambahkan action updateMeta:
+updateMeta: (meta) => {
+  set({ ...meta, isDirty: true })
+  scheduleAutoSave(get)
+},
+
+// Update loadArticle untuk load meta:
+loadArticle: async (id, siteId) => {
+  const { data } = await api.get(\`/articles/\${id}?site=\${siteId}\`)
+  const article = data.data
+  set({
+    articleId: article.id,
+    title: article.title,
+    blocks: article.blocks,
+    status: article.status,
+    metaTitle: article.metaTitle || '',
+    metaDescription: article.metaDescription || '',
+    isDirty: false,
+    undoStack: []
+  })
+},
+
+// Update saveArticle untuk include meta:
+saveArticle: async () => {
+  const { articleId, title, blocks, metaTitle, metaDescription } = get()
+  if (!articleId) return
+  set({ saving: true })
+  try {
+    await api.put(\`/articles/\${articleId}\`, {
+      title, blocks, metaTitle, metaDescription
+    })
+    set({ saving: false, lastSaved: new Date(), isDirty: false })
+  } catch {
+    set({ saving: false })
+  }
+},`
+  },
+
+  // ── DEPLOY CHECK ──────────────────────────────────────────
+  {
+    group:'Checklist', tag:'test',
+    name:'fase4-checklist.md',
+    path:'docs/fase4-checklist.md',
+    desc:'Checklist verifikasi Fase 4 selesai — jalankan semua item ini sebelum lanjut ke Fase 5',
+    step:'Langkah 11: Verifikasi semua item di checklist ini sebelum lanjut ke Fase 5',
+    code:`# Checklist Fase 4 — Auto-Layout & Image System
+
+## Backend
+- [ ] pnpm db:migrate berhasil (model Media ditambahkan)
+- [ ] POST /api/v1/media/upload menerima gambar JPG/PNG/WebP
+- [ ] Response upload mengandung url, thumbUrl, width, height
+- [ ] Sharp mengkonversi gambar ke WebP (cek folder uploads/)
+- [ ] POST /api/v1/ai/layout mengembalikan suggestions array
+- [ ] POST /api/v1/ai/caption mengembalikan caption dan altText
+
+## Frontend — Editor
+- [ ] ImageGridBlock tampil di editor (blok tipe imageGrid)
+- [ ] Upload gambar ke slot grid berfungsi
+- [ ] Drag reorder gambar dalam grid berfungsi
+- [ ] GalleryBlock tampil thumbnail strip
+- [ ] Lightbox gallery buka saat klik thumbnail
+- [ ] Navigasi lightbox: arrow key kiri/kanan, Escape menutup
+- [ ] Tombol "✦ AI Caption" muncul di ImageBlock setelah upload
+- [ ] Tab Layout muncul di AISidebar (4 tab total)
+- [ ] Klik "Analisis Layout Artikel" mengembalikan suggestions
+- [ ] Checkbox pilih/batal pilih saran berfungsi
+- [ ] Tombol Terapkan memperbarui blok di editor
+
+## Frontend — Publik
+- [ ] imageGrid render grid 2/3 kolom di halaman publik
+- [ ] gallery render grid + caption di halaman publik
+- [ ] PublicGallery lightbox bisa diklik di halaman publik
+
+## Test
+- [ ] pnpm test dari root: semua test lulus
+- [ ] Khusus: layoutStore.test.ts — dismiss dan toggleSelect OK
+- [ ] Khusus: media.test.ts — file PDF ditolak dengan 400
+
+## Performance
+- [ ] Gambar di folder uploads/ tersimpan sebagai .webp
+- [ ] Thumbnail tersimpan di uploads/thumbs/ ukuran ~400px
+
+Jika semua item di atas ✅ → lanjut ke Fase 5: Testing & Hardening`
+  }
+];
+
+let current = 0;
+const tagMap   = { be:'tag-be', fe:'tag-fe', ai:'tag-ai', test:'tag-test' };
+const tagLabel = { be:'BE',     fe:'FE',     ai:'AI',     test:'Test'     };
+
+function buildSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const groups  = {};
+  files.forEach((f,i) => {
+    if (!groups[f.group]) groups[f.group] = [];
+    groups[f.group].push({...f, idx:i});
+  });
+  let html = '';
+  for (const [g, items] of Object.entries(groups)) {
+    html += `<div class="group-label">${g}</div>`;
+    items.forEach(f => {
+      const tc = tagMap[f.tag]  || '';
+      const tl = tagLabel[f.tag] || '';
+      html += `<button class="file-btn${f.idx===0?' active':''}" id="fb${f.idx}" onclick="selectFile(${f.idx})">
+        <svg style="width:13px;height:13px;flex-shrink:0;opacity:.4" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M9 1H4a1 1 0 00-1 1v12a1 1 0 001 1h8a1 1 0 001-1V6L9 1zm0 1.5L12.5 6H9V2.5z"/>
+        </svg>
+        <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11.5px">${f.name}</span>
+        <span class="tag ${tc}">${tl}</span>
+      </button>`;
+    });
+  }
+  sidebar.innerHTML = html;
+}
+
+function selectFile(idx) {
+  current = idx;
+  const f = files[idx];
+  document.getElementById('fp').textContent       = f.path;
+  document.getElementById('code-pre').textContent = f.code;
+  document.getElementById('desc-bar').textContent = f.desc;
+  document.getElementById('snum').textContent     = String(idx + 1);
+  document.getElementById('step-txt').textContent = f.step;
+  document.getElementById('prog').textContent     = `${idx+1} / ${files.length} file`;
+  document.querySelectorAll('.file-btn').forEach((b,i) => b.classList.toggle('active', i===idx));
+}
+
+function navFile(dir) {
+  const next = Math.max(0, Math.min(files.length - 1, current + dir));
+  selectFile(next);
+  document.getElementById('fb' + next).scrollIntoView({ block: 'nearest' });
+}
+
+function copyCode() {
+  navigator.clipboard.writeText(files[current].code).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = 'Tersalin!';
+    setTimeout(() => btn.textContent = 'Copy', 1500);
+  });
+}
+
+buildSidebar();
+selectFile(0);
+</script>
