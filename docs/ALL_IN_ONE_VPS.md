@@ -2,17 +2,53 @@
 
 Panduan ini ditujukan bagi Anda yang ingin menghemat biaya dengan menggabungkan **Express API** dan **PostgreSQL Database** dalam satu VPS menggunakan Docker Compose.
 
-## 📋 Prasyarat
-- Sebuah VPS (Ubuntu 20.04/22.04 direkomendasikan).
-- Spek minimum: 1 GB RAM (2 GB lebih baik), 1 Core CPU.
-- Sudah menginstal Docker & Docker Compose.
-  ```bash
-  # Cara cepat install Docker di Ubuntu:
-  curl -fsSL https://get.docker.com -o get-docker.sh
-  sudo sh get-docker.sh
-  ```
+## 📋 Persiapan Server (Instalasi Alat)
 
-## 🛠️ Langkah-Langkah Deployment
+Sebelum mendeploy, Anda perlu menginstal 4 alat utama di VPS Anda (Ubuntu 22.04):
+
+### 1. Docker & Docker Compose (Wajib)
+Ini adalah jantung dari sistem Anda. Docker akan menjalankan Database dan API secara otomatis tanpa Anda perlu menginstal Node.js atau PostgreSQL secara manual di sistem utama.
+```bash
+# Cara cepat install Docker di Ubuntu:
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+```
+
+### 2. Git (Wajib)
+Untuk mengambil/menarik kode proyek Anda dari GitHub ke dalam VPS dengan rapi dan mudah diupdate.
+```bash
+sudo apt update
+sudo apt install git -y
+```
+
+### 3. Nginx (Wajib untuk Online)
+Nginx bertugas sebagai "satpam" di depan. Dia yang menerima tamu dari internet (`api.beritakarya.co`) dan meneruskannya ke dalam aplikasi di dalam Docker.
+```bash
+sudo apt install nginx -y
+```
+
+### 4. Certbot (Wajib untuk HTTPS/SSL)
+Agar API Anda aman (menggunakan `https://`). Ini wajib agar frontend Vercel bisa berkomunikasi dengan aman ke backend Anda.
+```bash
+sudo apt install certbot python3-certbot-nginx -y
+```
+
+---
+
+## 🔄 Ringkasan Urutan Kerja Deployment
+1. **Sewa VPS** (Ubuntu 22.04).
+2. **Login via SSH** ke VPS tersebut.
+3. **Instal 4 alat di atas** (Docker, Git, Nginx, Certbot).
+4. **Clone Repo**: `git clone https://github.com/username/beritakarya.git` (Ganti dengan link repo Anda).
+5. **Setup .env**: Buat file `.env.production` sesuai panduan di bawah.
+6. **Jalankan Docker**: `docker compose -f infra/docker/docker-compose.backend.yml --env-file .env.production up -d`.
+7. **Setup SSL**: Jalankan `sudo certbot --nginx -d api.beritakarya.co`.
+
+**Keuntungan**: Anda **TIDAK PERLU** menginstal Node.js, NPM, atau PostgreSQL secara manual di VPS, karena semuanya sudah dibungkus rapi di dalam Docker. Ini menjaga VPS Anda tetap bersih dan ringan.
+
+---
+
+## 🛠️ Langkah-Langkah Detail Deployment
 
 ### 1. Persiapkan Environment
 Buat file `.env.production` di direktori root proyek Anda di VPS:
