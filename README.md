@@ -107,6 +107,7 @@ Lihat folder `docs/` untuk detail lebih mendalam:
 - [Workflow Editorial](./docs/EDITORIAL_WORKFLOW.md)
 - [Skema Database](./docs/DATABASE_SCHEMA.md)
 - [Panduan Produksi (VPS/Docker)](./docs/PRODUCTION_SETUP.md)
+- [Panduan All-in-One VPS (API + DB)](./docs/ALL_IN_ONE_VPS.md)
 - [Deployment ke Vercel (Frontend)](./docs/VERCEL_DEPLOYMENT.md)
 
 ---

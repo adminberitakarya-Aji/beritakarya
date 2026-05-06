@@ -1,0 +1,51 @@
+version: '3.9'
+
+services:
+  # ── DATABASE ──────────────────────────────────────────────
+  postgres:
+    image: postgres:15-alpine
+    container_name: beritakarya_db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-beritakarya}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ganti_password_ini}
+      POSTGRES_DB: ${POSTGRES_DB:-beritakarya_prod}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-beritakarya}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── BACKEND API ───────────────────────────────────────────
+  api:
+    build:
+      context: ../../
+      dockerfile: infra/docker/api.Dockerfile
+    container_name: beritakarya_api
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-beritakarya}:${POSTGRES_PASSWORD:-ganti_password_ini}@postgres:5432/${POSTGRES_DB:-beritakarya_prod}
+    env_file:
+      - ../../.env.production
+    ports:
+      - "3001:3001"
+    volumes:
+      - uploads_data:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  postgres_data:
+  uploads_data:
