@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express'
-import { metricsCollector } from '../lib/monitoring'
+import { metrics } from '../lib/monitoring'
 
 export function performanceMiddleware(
   req: Request,
@@ -13,13 +13,9 @@ export function performanceMiddleware(
     const method = req.method
     const route = req.route?.path || req.path
     const statusCode = res.statusCode
+    const isError = statusCode >= 400
 
-    metricsCollector.recordRequest(
-      method,
-      route,
-      statusCode,
-      duration
-    )
+    metrics.record(`${method} ${route}`, duration, isError)
   })
 
   next()
