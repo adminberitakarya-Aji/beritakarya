@@ -15,7 +15,7 @@ const TABS: { id: Tab; label: string }[] = [
 ]
 
 import { Sparkles, X } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn } from '../../lib/utils'
 
 export function AISidebar() {
   const [open, setOpen] = useState(false)

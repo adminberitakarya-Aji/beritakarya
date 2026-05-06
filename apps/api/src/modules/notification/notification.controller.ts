@@ -35,9 +35,11 @@ notificationRouter.get('/stream', ...withSite, (req: Request, res: Response) => 
 
 // GET /notifications
 notificationRouter.get('/', ...withSite, asyncHandler(async (req: Request, res: Response) => {
-  const notifications = await repo.findUserNotifications(req.user!.userId, req.site!)
+  const page = parseInt(req.query.page as string) || 1
+  const limit = parseInt(req.query.limit as string) || 20
+  const result = await repo.findUserNotifications(req.user!.userId, req.site!, { page, limit })
   const unreadCount = await repo.getUnreadCount(req.user!.userId, req.site!)
-  res.json({ success: true, data: { items: notifications, unreadCount } })
+  res.json({ success: true, data: { ...result, unreadCount } })
 }))
 
 // PATCH /notifications/read-all

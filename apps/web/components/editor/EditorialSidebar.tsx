@@ -8,8 +8,8 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import { api } from '@/lib/api';
-import { cn } from '@/lib/utils';
+import { api } from '../../lib/api';
+import { cn } from '../../lib/utils';
 import Image from 'next/image';
 
 export function EditorialSidebar() {
@@ -194,7 +194,7 @@ export function EditorialSidebar() {
 
                   {/* Editorial Flags */}
                   <div className="space-y-4 pt-4 border-t border-gray-50 dark:border-white/5">
-                    <label className="dash-label">Status Editorial</ts-label>
+                    <label className="dash-label">Status Editorial</label>
                     <div className="space-y-3">
                       {[
                         { id: 'isBreaking', label: 'Breaking News', icon: ShieldAlert, color: 'text-red-500', bg: 'bg-red-50 dark:bg-red-900/10' },
@@ -307,6 +307,7 @@ export function EditorialSidebar() {
                     </div>
                   </div>
                 </div>
+              )}
               {activeTab === 'history' && (
                 <div className="space-y-6">
                   <div className="flex items-center justify-between">

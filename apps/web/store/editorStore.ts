@@ -25,7 +25,7 @@ export interface EditorState {
   
   // UI State
   isSidebarOpen: boolean
-  activeTab: 'content' | 'settings' | 'seo'
+  activeTab: 'content' | 'settings' | 'seo' | 'history'
   
   // Actions
   setTitle: (title: string) => void

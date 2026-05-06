@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import DateTimeWeather from '../ui/DateTimeWeather';
-import { cn } from '@/lib/utils';
+import { cn } from '../../lib/utils';
 
 import { useRouter, usePathname } from 'next/navigation';
 

@@ -3,10 +3,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { Bell, Check, ExternalLink, RefreshCw, X, MessageSquare, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { api } from '@/lib/api';
+import { api } from '../../lib/api';
 import { useAuthStore } from '../../store/authStore';
 import { useParams } from 'next/navigation';
-import { cn } from '@/lib/utils';
+import { cn } from '../../lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 import { id } from 'date-fns/locale';
 import Link from 'next/link';

@@ -1,17 +1,17 @@
 import { SITE_MAP } from '@beritakarya/config'
-import NewsCard from '@/components/ui/NewsCard'
-import PublicSiteLayout from '@/components/layout/PublicSiteLayout'
-import AdSpace from '@/components/ui/AdSpace'
+import NewsCard from '../../components/ui/NewsCard'
+import PublicSiteLayout from '../../components/layout/PublicSiteLayout'
+import AdSpace from '../../components/ui/AdSpace'
 import Link from 'next/link'
 import { ArrowRight, Share2, PlayCircle, Camera, MessageCircle, TrendingUp, Zap, Star, Send } from 'lucide-react'
-import LoadMoreArticles from '@/components/ui/LoadMoreArticles'
-import VideoWidget from '@/components/ui/VideoWidget'
+import LoadMoreArticles from '../../components/ui/LoadMoreArticles'
+import VideoWidget from '../../components/ui/VideoWidget'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import NewsletterForm from '@/components/ui/NewsletterForm'
-import EditorialBadge from '@/components/ui/EditorialBadge'
+import NewsletterForm from '../../components/ui/NewsletterForm'
+import EditorialBadge from '../../components/ui/EditorialBadge'
 
-import { constructMetadata } from '@/lib/metadata'
+import { constructMetadata } from '../../lib/metadata'
 
 export async function generateMetadata({ params }: { params: { site: string } }): Promise<Metadata> {
   const resolvedParams = await params;

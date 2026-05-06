@@ -2,25 +2,25 @@ import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import type { Block } from '@beritakarya/types'
-import PublicSiteLayout from '@/components/layout/PublicSiteLayout'
+import PublicSiteLayout from '../../../../components/layout/PublicSiteLayout'
 import { SITE_MAP } from '@beritakarya/config'
-import NewsCard from '@/components/ui/NewsCard'
-import ReadingProgress from '@/components/ui/ReadingProgress'
-import AdSpace from '@/components/ui/AdSpace'
-import ShareSidebar from '@/components/ui/ShareSidebar'
-import AuthorCard from '@/components/ui/AuthorCard'
-import EditorialBadge, { resolveArticleBadge } from '@/components/ui/EditorialBadge'
+import NewsCard from '../../../../components/ui/NewsCard'
+import ReadingProgress from '../../../../components/ui/ReadingProgress'
+import AdSpace from '../../../../components/ui/AdSpace'
+import ShareSidebar from '../../../../components/ui/ShareSidebar'
+import AuthorCard from '../../../../components/ui/AuthorCard'
+import EditorialBadge, { resolveArticleBadge } from '../../../../components/ui/EditorialBadge'
 import { Clock, User, Share2, Link as LinkIcon, BookOpen, Calendar, Printer, MessageCircle, MessageSquare, X as XIcon } from 'lucide-react'
 import { Metadata } from 'next'
-import { cn } from '@/lib/utils'
-import CommentSection from '@/components/ui/CommentSection'
-import FontSizeControl from '@/components/ui/FontSizeControl'
+import { cn } from '../../../../lib/utils'
+import CommentSection from '../../../../components/ui/CommentSection'
+import FontSizeControl from '../../../../components/ui/FontSizeControl'
 
 interface Props {
   params: { site: string; slug: string }
 }
 
-import { constructMetadata } from '@/lib/metadata'
+import { constructMetadata } from '../../../../lib/metadata'
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const resolvedParams = await params;
@@ -334,42 +334,7 @@ export default async function ArticlePage({ params }: Props) {
         </div>
       </article>
 
-      <style jsx global>{`
-        @media print {
-          .no-print, 
-          header, 
-          footer, 
-          aside, 
-          nav, 
-          .share-sidebar, 
-          .comment-section, 
-          button,
-          .reading-progress,
-          .ad-space {
-            display: none !important;
-          }
-          
-          body {
-            background: white !important;
-            color: black !important;
-          }
-          
-          .article-content {
-            font-size: 12pt !important;
-            line-height: 1.6 !important;
-          }
-          
-          .max-w-4xl, .max-w-7xl {
-            max-width: 100% !important;
-            margin: 0 !important;
-            padding: 0 !important;
-          }
-          
-          img {
-            max-width: 100% !important;
-          }
-        }
-      `}</style>
+
     </PublicSiteLayout>
   )
 }

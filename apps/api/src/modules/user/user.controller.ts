@@ -25,12 +25,25 @@ userRouter.get('/',
   requireRole('superadmin', 'pimred'),
   siteMiddleware,
   asyncHandler(async (req: Request, res: Response) => {
-    const users = await prisma.user.findMany({
-      where: { siteId: req.site },
-      select: { id: true, email: true, name: true, role: true, siteId: true, createdAt: true },
-      orderBy: { createdAt: 'desc' }
-    })
-    res.json({ success: true, data: users })
+    const page = parseInt(req.query.page as string) || 1
+    const limit = parseInt(req.query.limit as string) || 30
+    
+    const where = { siteId: req.site }
+    const select = { id: true, email: true, name: true, role: true, siteId: true, createdAt: true }
+    
+    const [items, total] = await Promise.all([
+      prisma.user.findMany({
+        where,
+        select,
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * limit,
+        take: limit
+      }),
+      prisma.user.count({ where })
+    ])
+    
+    const result = { items, total, page, limit, totalPages: Math.ceil(total / limit) }
+    res.json({ success: true, data: result })
   })
 )
 

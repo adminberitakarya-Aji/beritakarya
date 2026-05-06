@@ -22,7 +22,9 @@ import { callAI, chatComplete } from './base.service'
 
 
 describe('base.service — retry & fallback', () => {
-  beforeEach(() => vi.clearAllMocks())
+  beforeEach(async () => {
+    vi.clearAllMocks()
+  })
 
   it('berhasil pada attempt pertama', async () => {
     mockCreate.mockResolvedValueOnce({

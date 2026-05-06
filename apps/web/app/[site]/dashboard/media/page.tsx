@@ -9,8 +9,8 @@ import {
 } from 'lucide-react';
 import ReactCrop, { Crop, PixelCrop, centerCrop, makeAspectCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
-import { api } from '@/lib/api';
-import { cn } from '@/lib/utils';
+import { api } from '../../../../lib/api';
+import { cn } from '../../../../lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // ─── Types ───────────────────────────────────────────────────────

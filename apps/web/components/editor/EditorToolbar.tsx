@@ -11,7 +11,7 @@ import {
   History,
   MoreHorizontal
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from '../../lib/utils';
 import { useParams, useRouter } from 'next/navigation';
 
 const STATUS_LABELS: Record<string, string> = {

@@ -117,6 +117,12 @@ export async function updateArticle(
 
   // Notifications
   if (input.status === 'submitted') {
+    const userData = await prisma.user.findUnique({
+      where: { id: user.userId },
+      select: { name: true }
+    })
+    const userName = userData?.name || 'User'
+
     const editors = await prisma.user.findMany({
       where: { siteId, role: { in: ['superadmin', 'pimred'] } },
       select: { id: true }
@@ -127,7 +133,7 @@ export async function updateArticle(
         siteId,
         type: 'article_submitted',
         title: 'Artikel Baru Masuk Antrian',
-        message: `${user.name} baru saja mengirim artikel "${updated.title}" untuk di-review.`,
+        message: `${userName} baru saja mengirim artikel "${updated.title}" untuk di-review.`,
         link: `/${siteId}/dashboard/review`
       })
     }

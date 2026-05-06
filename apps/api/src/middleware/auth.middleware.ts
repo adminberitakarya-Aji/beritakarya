@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
 import type { JWTPayload } from '@beritakarya/types'
 import { logger } from '../lib/logger'
+import { env } from '../lib/env'
 
 declare global {
   namespace Express {
@@ -33,7 +34,7 @@ export function requireAuth(
   try {
     const payload = jwt.verify(
       token,
-      process.env.JWT_SECRET!
+      env.JWT_SECRET
     ) as JWTPayload
     req.user = payload
     next()

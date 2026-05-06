@@ -1,13 +1,8 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "baseUrl": ".",
-    "outDir": "./dist",
-    "paths": {
-      "@beritakarya/types": ["../../packages/types/src"],
-      "@beritakarya/utils": ["../../packages/utils/src"],
-      "@beritakarya/config": ["../../packages/config/src"]
-    }
+    "rootDir": "./src",
+    "outDir": "./dist"
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]

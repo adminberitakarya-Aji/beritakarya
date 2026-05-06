@@ -1,6 +1,7 @@
 import winston from 'winston'
 import { Request, Response, NextFunction } from 'express'
 import path from 'path'
+import { env } from './env'
 
 const { combine, timestamp, json, colorize, printf } = winston.format
 
@@ -12,15 +13,15 @@ const devFormat = printf(({ level, message, timestamp, ...meta }) => {
 })
 
 export const logger = winston.createLogger({
-  level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
+  level: env.NODE_ENV === 'production' ? 'info' : 'debug',
   format: combine(timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), json()),
   transports: [
     new winston.transports.Console({
-      format: process.env.NODE_ENV === 'production'
+      format: env.NODE_ENV === 'production'
         ? combine(timestamp(), json())
         : combine(colorize(), timestamp({ format: 'HH:mm:ss' }), devFormat)
     }),
-    ...(process.env.NODE_ENV === 'production' ? [
+    ...(env.NODE_ENV === 'production' ? [
       new winston.transports.File({
         filename: path.join('logs', 'error.log'),
         level: 'error',

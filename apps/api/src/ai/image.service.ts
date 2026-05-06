@@ -1,9 +1,10 @@
 import { callAI } from './base.service'
 import OpenAI from 'openai'
 import type { AIResult } from './base.service'
+import { env } from '../lib/env'
 
 const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: env.OPENAI_API_KEY,
   timeout: 30_000,
 })
 

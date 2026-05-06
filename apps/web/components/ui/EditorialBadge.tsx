@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '@/lib/utils';
+import { cn } from '../../lib/utils';
 
 type BadgeVariant = 'breaking' | 'exclusive' | 'analysis' | 'live' | 'photo' | 'video' | 'featured' | 'opinion';
 

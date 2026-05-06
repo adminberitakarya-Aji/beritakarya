@@ -27,9 +27,9 @@ import {
   Calendar
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
-import { cn } from '@/lib/utils'
+import { cn } from '../../../lib/utils'
 import { useRouter } from 'next/navigation'
-import NotificationBell from '@/components/dashboard/NotificationBell'
+import NotificationBell from '../../../components/dashboard/NotificationBell'
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()

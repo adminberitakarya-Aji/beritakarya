@@ -7,14 +7,14 @@ import {
   ArrowUpRight, ArrowDownRight, Zap, BookOpen, Target,
   Tag, Settings, MousePointer2
 } from 'lucide-react';
-import TrafficChart from '@/components/dashboard/TrafficChart';
+import TrafficChart from '../../../components/dashboard/TrafficChart';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import Skeleton from '@/components/ui/Skeleton';
-import StatusBadge from '@/components/ui/StatusBadge';
-import { cn } from '@/lib/utils';
-import { api } from '@/lib/api';
+import Skeleton from '../../../components/ui/Skeleton';
+import StatusBadge from '../../../components/ui/StatusBadge';
+import { cn } from '../../../lib/utils';
+import { api } from '../../../lib/api';
 import { useAuthStore } from '../../../store/authStore';
 
 // ─── Types ──────────────────────────────────────────────────────

@@ -1,11 +1,28 @@
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { prisma } from '../../db/client'
+import { env } from '../../lib/env'
 import type { JWTPayload } from '@beritakarya/types'
 
-const ACCESS_SECRET = process.env.JWT_SECRET!
-const ACCESS_EXPIRES = process.env.JWT_ACCESS_EXPIRES || '15m'
+const ACCESS_SECRET = env.JWT_SECRET
+const ACCESS_EXPIRES = env.JWT_ACCESS_EXPIRES
 const REFRESH_EXPIRES_DAYS = 7
+
+export function validatePassword(password: string): boolean {
+  const minLength = 8
+  const hasUpperCase = /[A-Z]/.test(password)
+  const hasLowerCase = /[a-z]/.test(password)
+  const hasNumbers = /\d/.test(password)
+  const hasSpecialChar = /[!@#$%^&*]/.test(password)
+
+  return (
+    password.length >= minLength &&
+    hasUpperCase &&
+    hasLowerCase &&
+    hasNumbers &&
+    hasSpecialChar
+  )
+}
 
 export async function loginUser(email: string, password: string) {
   const user = await prisma.user.findUnique({ where: { email } })
@@ -24,6 +41,10 @@ export async function registerUser(
   const exists = await prisma.user.findUnique({ where: { email } })
   if (exists) throw new Error('Email sudah terdaftar')
 
+  if (!validatePassword(password)) {
+    throw new Error('Password harus minimal 8 karakter, mengandung huruf besar, huruf kecil, angka, dan karakter khusus (!@#$%^&*)')
+  }
+
   const passwordHash = await bcrypt.hash(password, 10)
   const user = await prisma.user.create({
     data: { email, passwordHash, name, role, siteId }
@@ -32,6 +53,13 @@ export async function registerUser(
 }
 
 export async function refreshAccessToken(refreshToken: string) {
+  const isBlacklisted = await prisma.blacklistedToken.findUnique({
+    where: { token: refreshToken }
+  })
+  if (isBlacklisted) {
+    throw new Error('Refresh token tidak valid atau sudah expired')
+  }
+
   const record = await prisma.refreshToken.findUnique({
     where: { token: refreshToken },
     include: { user: true }
@@ -43,9 +71,22 @@ export async function refreshAccessToken(refreshToken: string) {
 }
 
 export async function logoutUser(userId: string, refreshToken: string) {
-  await prisma.refreshToken.deleteMany({
-    where: { userId, token: refreshToken }
+  const refreshTokenRecord = await prisma.refreshToken.findUnique({
+    where: { token: refreshToken, userId }
   })
+
+  if (refreshTokenRecord) {
+    await prisma.blacklistedToken.create({
+      data: {
+        token: refreshToken,
+        expiresAt: refreshTokenRecord.expiresAt
+      }
+    })
+
+    await prisma.refreshToken.delete({
+      where: { id: refreshTokenRecord.id }
+    })
+  }
 }
 
 async function generateTokenPair(user: any) {

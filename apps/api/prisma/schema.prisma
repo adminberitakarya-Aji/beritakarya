@@ -118,6 +118,8 @@ model Article {
   @@index([authorId])
   @@index([categoryId])
   @@index([scheduledAt])
+  @@index([publishedAt, viewCount])
+  @@index([siteId, status, publishedAt])
 }
 
 model RefreshToken {
@@ -130,6 +132,16 @@ model RefreshToken {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+}
+
+model BlacklistedToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([token])
+  @@index([expiresAt])
 }
 
 model AIUsage {

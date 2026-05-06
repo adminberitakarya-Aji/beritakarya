@@ -1,8 +1,9 @@
 import OpenAI from 'openai'
 import { logger } from '../lib/logger'
+import { env } from '../lib/env'
 
 const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: env.OPENAI_API_KEY,
   timeout: 30_000,
 })
 
@@ -51,7 +52,7 @@ export async function chatComplete(
   opts: { maxTokens?: number; temperature?: number } = {}
 ): Promise<string> {
   const res = await client.chat.completions.create({
-    model: process.env.AI_MODEL || 'gpt-4o',
+    model: env.AI_MODEL,
     max_tokens: opts.maxTokens ?? 1000,
     temperature: opts.temperature ?? 0.7,
     messages: [

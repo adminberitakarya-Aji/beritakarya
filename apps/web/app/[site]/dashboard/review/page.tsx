@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { api } from '@/lib/api';
+import { api } from '../../../../lib/api';
 import { useAuthStore } from '../../../../store/authStore';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -11,8 +11,8 @@ import {
   FileText, User as UserIcon, Calendar, MessageSquare, Eye,
   Loader2, RefreshCw
 } from 'lucide-react';
-import StatusBadge from '@/components/ui/StatusBadge';
-import { cn } from '@/lib/utils';
+import StatusBadge from '../../../../components/ui/StatusBadge';
+import { cn } from '../../../../lib/utils';
 
 interface Article {
   id: string;

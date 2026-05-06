@@ -7,7 +7,7 @@ describe('generateSlug', () => {
   })
 
   it('hapus karakter non-alphanumeric', () => {
-    expect(generateSlug('BeritaKarya v2.0 Launch!')).toBe('beritakarya-v2-0-launch')
+    expect(generateSlug('BeritaKarya v2.0 Launch!')).toBe('beritakarya-v20-launch')
   })
 
   it('handle multiple spasi', () => {

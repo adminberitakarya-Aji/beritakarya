@@ -9,8 +9,8 @@ import {
 } from 'lucide-react';
 import { format, addDays, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay, isToday, startOfMonth, endOfMonth } from 'date-fns';
 import { id } from 'date-fns/locale';
-import { api } from '@/lib/api';
-import { cn } from '@/lib/utils';
+import { api } from '../../../../lib/api';
+import { cn } from '../../../../lib/utils';
 import Link from 'next/link';
 
 interface Article {

@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express'
+import { env } from '../lib/env'
 
 /**
  * Middleware for adding security-related HTTP headers
@@ -24,7 +25,7 @@ export function securityHeadersMiddleware(
   )
 
   // Content Security Policy (CSP)
-  const isDev = process.env.NODE_ENV !== 'production'
+  const isDev = env.NODE_ENV !== 'production'
   if (!isDev) {
     res.setHeader(
       'Content-Security-Policy',

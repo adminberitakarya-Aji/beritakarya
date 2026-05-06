@@ -19,7 +19,7 @@ const jurnalisSurabaya: JWTPayload = {
   userId: 'u-2', role: 'journalist', siteId: 'surabaya', iat: 0, exp: 0
 }
 const editorPusat: JWTPayload = {
-  userId: 'u-3', role: 'editor', siteId: null, iat: 0, exp: 0
+  userId: 'u-3', role: 'pimred', siteId: null, iat: 0, exp: 0
 }
 
 const mockArticle = (overrides = {}) => ({
@@ -31,7 +31,9 @@ const mockArticle = (overrides = {}) => ({
 })
 
 describe('getArticleById — multi-site isolation', () => {
-  beforeEach(() => vi.clearAllMocks())
+  beforeEach(async () => {
+    vi.clearAllMocks()
+  })
 
   it('throw 404 jika artikel tidak ditemukan di site', async () => {
     vi.mocked(repo.findArticleById).mockResolvedValue(null)
@@ -48,7 +50,9 @@ describe('getArticleById — multi-site isolation', () => {
 })
 
 describe('createArticle — siteId injection', () => {
-  beforeEach(() => vi.clearAllMocks())
+  beforeEach(async () => {
+    vi.clearAllMocks()
+  })
 
   it('inject siteId dari request, bukan dari body', async () => {
     vi.mocked(repo.slugExists).mockResolvedValue(false)
@@ -77,7 +81,9 @@ describe('createArticle — siteId injection', () => {
 })
 
 describe('updateArticle — ownership', () => {
-  beforeEach(() => vi.clearAllMocks())
+  beforeEach(async () => {
+    vi.clearAllMocks()
+  })
 
   it('journalist hanya bisa edit artikel miliknya', async () => {
     vi.mocked(repo.findArticleById).mockResolvedValue(
@@ -101,7 +107,9 @@ describe('updateArticle — ownership', () => {
 })
 
 describe('publishArticle', () => {
-  beforeEach(() => vi.clearAllMocks())
+  beforeEach(async () => {
+    vi.clearAllMocks()
+  })
 
   it('set status published dan publishedAt', async () => {
     vi.mocked(repo.findArticleById).mockResolvedValue(mockArticle() as any)
@@ -117,7 +125,9 @@ describe('publishArticle', () => {
 })
 
 describe('deleteArticle — permission', () => {
-  beforeEach(() => vi.clearAllMocks())
+  beforeEach(async () => {
+    vi.clearAllMocks()
+  })
 
   it('journalist dari site lain tidak bisa delete', async () => {
     vi.mocked(repo.findArticleById).mockResolvedValue(

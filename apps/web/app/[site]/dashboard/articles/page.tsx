@@ -3,16 +3,16 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
-import { api } from '@/lib/api';
+import { api } from '../../../../lib/api';
 import { useAuthStore } from '../../../../store/authStore';
 import { motion } from 'framer-motion';
 import { 
   Plus, Search, Eye, Edit3, Trash2, Calendar,
   FileText, Loader2, Send, CheckCircle, Clock
 } from 'lucide-react';
-import StatusBadge from '@/components/ui/StatusBadge';
-import EditorialBadge from '@/components/ui/EditorialBadge';
-import { cn } from '@/lib/utils';
+import StatusBadge from '../../../../components/ui/StatusBadge';
+import EditorialBadge from '../../../../components/ui/EditorialBadge';
+import { cn } from '../../../../lib/utils';
 
 const ALL_STATUSES = ['draft','submitted','review','revision','approved','scheduled','published','archived'];
 

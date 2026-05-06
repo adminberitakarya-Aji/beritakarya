@@ -2,7 +2,7 @@
 
 import { Share2, Link as LinkIcon, MessageCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { cn } from '@/lib/utils';
+import { cn } from '../../lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface ShareSidebarProps {

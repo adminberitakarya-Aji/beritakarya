@@ -8,9 +8,9 @@ import {
   ChevronLeft, ChevronRight, AlertCircle, RefreshCw,
   BarChart3, Clock, Activity, Download, Eye, X
 } from 'lucide-react';
-import { api } from '@/lib/api';
+import { api } from '../../../../lib/api';
 import { useAuthStore } from '../../../../store/authStore';
-import { cn } from '@/lib/utils';
+import { cn } from '../../../../lib/utils';
 import { format, formatDistanceToNow } from 'date-fns';
 import { id } from 'date-fns/locale';
 

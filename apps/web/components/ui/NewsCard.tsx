@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { ArrowUpRight, Clock, BookOpen, Bookmark, User, Share2 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { cn } from '@/lib/utils';
+import { cn } from '../../lib/utils';
 import EditorialBadge, { resolveArticleBadge } from './EditorialBadge';
 
 interface NewsCardProps {

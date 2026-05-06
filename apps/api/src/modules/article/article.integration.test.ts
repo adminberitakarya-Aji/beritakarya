@@ -30,7 +30,9 @@ const mockArticles = {
 }
 
 describe('Multi-site isolation — GET /articles', () => {
-  beforeEach(() => vi.clearAllMocks())
+  beforeEach(async () => {
+    vi.clearAllMocks()
+  })
 
   it('journalist bandung BISA akses site bandung', async () => {
     vi.mocked(articleService.getArticles).mockResolvedValue(mockArticles as any)
@@ -67,7 +69,9 @@ describe('Multi-site isolation — GET /articles', () => {
 })
 
 describe('Public article route — GET /articles/slug/:slug', () => {
-  beforeEach(() => vi.clearAllMocks())
+  beforeEach(async () => {
+    vi.clearAllMocks()
+  })
 
   it('mengembalikan artikel published tanpa token', async () => {
     vi.mocked(articleService.getPublishedArticleBySlug).mockResolvedValue({

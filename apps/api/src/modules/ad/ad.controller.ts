@@ -5,7 +5,7 @@ import { requireAuth, requireRole } from '../../middleware/auth.middleware'
 import { siteMiddleware } from '../../middleware/site.middleware'
 import { asyncHandler } from '../../utils/asyncHandler'
 
-export const adRouter = Router()
+export const adRouter: Router = Router()
 
 adRouter.use(siteMiddleware)
 

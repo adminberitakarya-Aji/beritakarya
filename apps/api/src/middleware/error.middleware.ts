@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import { ZodError } from 'zod'
 import { logger } from '../lib/logger'
+import { env } from '../lib/env'
 
 export function errorMiddleware(
   err: any,
@@ -42,7 +43,7 @@ export function errorMiddleware(
   }
 
   const statusCode = err.statusCode || 500
-  const message = process.env.NODE_ENV === 'production'
+  const message = env.NODE_ENV === 'production'
     ? 'Terjadi kesalahan server'
     : err.message
 

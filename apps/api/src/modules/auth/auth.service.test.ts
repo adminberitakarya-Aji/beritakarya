@@ -36,7 +36,9 @@ const mockUser = async (overrides = {}) => {
 }
 
 describe('loginUser', () => {
-  beforeEach(() => vi.clearAllMocks())
+  beforeEach(async () => {
+    vi.clearAllMocks()
+  })
 
   it('berhasil dengan kredensial valid', async () => {
     vi.mocked(prisma.user.findUnique).mockResolvedValue(await mockUser() as any)
@@ -63,7 +65,9 @@ describe('loginUser', () => {
 })
 
 describe('registerUser', () => {
-  beforeEach(() => vi.clearAllMocks())
+  beforeEach(async () => {
+    vi.clearAllMocks()
+  })
 
   it('gagal jika email sudah terdaftar', async () => {
     vi.mocked(prisma.user.findUnique).mockResolvedValue(await mockUser() as any)
@@ -82,7 +86,9 @@ describe('registerUser', () => {
 })
 
 describe('refreshAccessToken', () => {
-  beforeEach(() => vi.clearAllMocks())
+  beforeEach(async () => {
+    vi.clearAllMocks()
+  })
 
   it('gagal jika token tidak ada di DB', async () => {
     vi.mocked(prisma.refreshToken.findUnique).mockResolvedValue(null)

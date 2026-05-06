@@ -19,7 +19,7 @@ vi.mock('../lib/logger', () => ({
 afterAll(async () => {
   // Disconnect Prisma after all tests
   try {
-    const { prisma } = await import('../db/client')
+    const { prisma } = await import('../db/client.js')
     await prisma.$disconnect()
   } catch {}
 })

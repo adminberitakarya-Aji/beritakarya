@@ -1,11 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { api } from '@/lib/api';
+import { api } from '../../../../lib/api';
 import { useParams } from 'next/navigation';
 import { useAuthStore } from '../../../../store/authStore';
 import { Loader2, Shield, User as UserIcon, MoreVertical } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from '../../../../lib/utils';
 
 interface User {
   id: string;

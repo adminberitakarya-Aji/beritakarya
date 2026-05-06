@@ -9,16 +9,28 @@ export async function createNotification(data: {
   link?: string;
 }) {
   const notification = await prisma.notification.create({ data })
-  // We'll trigger the event emitter here in the service/controller layer
   return notification
 }
 
-export async function findUserNotifications(userId: string, siteId: string, limit: number = 20) {
-  return prisma.notification.findMany({
-    where: { userId, siteId },
-    orderBy: { createdAt: 'desc' },
-    take: limit
-  })
+export async function findUserNotifications(
+  userId: string,
+  siteId: string,
+  opts: { page?: number; limit?: number } = {}
+) {
+  const { page = 1, limit = 20 } = opts
+  const where = { userId, siteId }
+  
+  const [items, total] = await Promise.all([
+    prisma.notification.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+      skip: (page - 1) * limit,
+      take: limit
+    }),
+    prisma.notification.count({ where })
+  ])
+  
+  return { items, total, page, limit, totalPages: Math.ceil(total / limit) }
 }
 
 export async function markAsRead(id: string) {

@@ -6,9 +6,10 @@ import { v4 as uuidv4 } from 'uuid'
 import { requireAuth } from '../../middleware/auth.middleware'
 import { asyncHandler } from '../../utils/asyncHandler'
 import { siteMiddleware } from '../../middleware/site.middleware'
+import { env } from '../../lib/env'
 import * as repo from './media.repository'
 
-export const mediaRouter = Router()
+export const mediaRouter: Router = Router()
 
 const UPLOAD_DIR = path.join(process.cwd(), 'uploads')
 const THUMB_DIR  = path.join(process.cwd(), 'uploads', 'thumbs')
@@ -100,7 +101,7 @@ mediaRouter.post(
     const id = uuidv4()
     const processed = await processImage(req.file.buffer, id)
 
-    const baseUrl  = process.env.API_URL || 'http://localhost:4000'
+    const baseUrl  = env.API_URL
     const url      = `${baseUrl}/api/v1/media/uploads/${processed.fullName}`
     const thumbUrl = `${baseUrl}/api/v1/media/uploads/thumbs/${processed.thumbName}`
 

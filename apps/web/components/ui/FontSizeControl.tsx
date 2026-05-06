@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Type, Minus, Plus, RefreshCw } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from '../../lib/utils';
 
 export default function FontSizeControl() {
   const [fontSize, setFontSize] = useState(1); // 1 = normal, 0.8 = small, 1.2 = large, etc.

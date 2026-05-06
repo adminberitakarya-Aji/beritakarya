@@ -7,6 +7,13 @@ node_modules/
 dist/
 build/
 
+# Generated JavaScript files (TypeScript build artifacts)
+**/*.js
+**/*.js.map
+!**/*.config.js
+!**/postcss.config.js
+!**/tailwind.config.js
+
 # Environment
 .env
 .env.local

@@ -1,6 +1,6 @@
 import { Inter, Outfit, Playfair_Display } from 'next/font/google'
 import './globals.css'
-import { constructMetadata } from '@/lib/metadata'
+import { constructMetadata } from '../lib/metadata'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const outfit = Outfit({ subsets: ['latin'], variable: '--font-outfit' })

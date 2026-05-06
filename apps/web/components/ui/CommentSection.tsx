@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { MessageSquare, Send, User, Clock, MoreHorizontal, Reply, ThumbsUp } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from '../../lib/utils';
 
 export default function CommentSection({ articleId }: { articleId: string }) {
   const [comment, setComment] = useState('');

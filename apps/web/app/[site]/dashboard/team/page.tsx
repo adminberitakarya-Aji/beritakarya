@@ -7,8 +7,8 @@ import {
   Search, Filter, Mail, Calendar, Award,
   CheckCircle2, Clock, MoreVertical, Shield
 } from 'lucide-react';
-import { api } from '@/lib/api';
-import { cn } from '@/lib/utils';
+import { api } from '../../../../lib/api';
+import { cn } from '../../../../lib/utils';
 import { motion } from 'framer-motion';
 
 interface TeamMember {

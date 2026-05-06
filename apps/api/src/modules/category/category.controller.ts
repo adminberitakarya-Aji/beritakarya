@@ -5,7 +5,7 @@ import { requireAuth, requireRole } from '../../middleware/auth.middleware'
 import { siteMiddleware } from '../../middleware/site.middleware'
 import { asyncHandler } from '../../utils/asyncHandler'
 
-export const categoryRouter = Router()
+export const categoryRouter: Router = Router()
 
 categoryRouter.use(siteMiddleware)
 
