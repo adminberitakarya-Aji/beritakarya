@@ -25,6 +25,7 @@ export interface EditorState {
   
   // UI State
   isSidebarOpen: boolean
+  isFocusMode: boolean
   activeTab: 'content' | 'settings' | 'seo' | 'history'
   
   // Actions
@@ -43,6 +44,7 @@ export interface EditorState {
   updateArticleData: (data: Partial<EditorState>) => void
   
   toggleSidebar: (isOpen?: boolean) => void
+  toggleFocusMode: (isFocus?: boolean) => void
   setActiveTab: (tab: EditorState['activeTab']) => void
   publishArticle: () => Promise<void>
   reset: () => void
@@ -84,6 +86,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   isFeatured: false,
   
   isSidebarOpen: false,
+  isFocusMode: false,
   activeTab: 'content',
 
   setTitle: (title) => {
@@ -202,6 +205,10 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   },
 
   toggleSidebar: (isOpen) => set((s) => ({ isSidebarOpen: isOpen ?? !s.isSidebarOpen })),
+  toggleFocusMode: (isFocus) => set((s) => ({ 
+    isFocusMode: isFocus ?? !s.isFocusMode,
+    isSidebarOpen: isFocus ? false : s.isSidebarOpen 
+  })),
   setActiveTab: (activeTab) => set({ activeTab }),
 
   publishArticle: async () => {

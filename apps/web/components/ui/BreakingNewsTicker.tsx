@@ -21,15 +21,21 @@ export default function BreakingNewsTicker({
         <Zap size={14} className="fill-white" />
         <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap">Breaking News</span>
       </div>
-      <div className="flex-1 overflow-hidden relative">
+      <div className="flex-1 overflow-hidden relative group">
+        {/* Left Gradient Fade */}
+        <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-brand-black dark:from-slate-900 to-transparent z-10 pointer-events-none" />
+        
+        {/* Right Gradient Fade */}
+        <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-brand-black dark:from-slate-900 to-transparent z-10 pointer-events-none" />
+
         <motion.div 
-          animate={{ x: [0, -1000] }}
+          animate={{ x: ["0%", "-50%"] }}
           transition={{ 
-            duration: 30, 
+            duration: 40, 
             repeat: Infinity, 
             ease: "linear" 
           }}
-          className="flex items-center gap-12 whitespace-nowrap px-6"
+          className="flex items-center gap-12 whitespace-nowrap px-6 w-max"
         >
           {news.map((item, i) => (
             <div key={i} className="flex items-center gap-12">

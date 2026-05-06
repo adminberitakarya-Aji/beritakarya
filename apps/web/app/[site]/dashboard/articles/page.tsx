@@ -12,7 +12,9 @@ import {
 } from 'lucide-react';
 import StatusBadge from '../../../../components/ui/StatusBadge';
 import EditorialBadge from '../../../../components/ui/EditorialBadge';
+import KanbanBoard from '../../../../components/dashboard/KanbanBoard';
 import { cn } from '../../../../lib/utils';
+import { LayoutGrid, List } from 'lucide-react';
 
 const ALL_STATUSES = ['draft','submitted','review','revision','approved','scheduled','published','archived'];
 
@@ -52,6 +54,7 @@ export default function ArticlesPage() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [viewMode, setViewMode] = useState<'list' | 'kanban'>('list');
   const [isCreating, setIsCreating] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
@@ -133,14 +136,30 @@ export default function ArticlesPage() {
             Portal <strong className="text-brand-red uppercase">{site}</strong> — {articles.length} artikel total
           </p>
         </div>
-        <button 
-          onClick={handleNew}
-          disabled={isCreating}
-          className="flex items-center gap-2 px-5 py-2.5 bg-brand-red text-white text-[11px] font-black uppercase tracking-widest rounded-lg hover:bg-red-700 transition-all shadow-lg shadow-brand-red/20 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isCreating ? <Loader2 className="animate-spin" size={14} /> : <Plus size={14} />}
-          {isCreating ? 'Membuat...' : 'Artikel Baru'}
-        </button>
+        <div className="flex items-center gap-3">
+          <div className="bg-gray-100 dark:bg-white/5 p-1 rounded-xl flex items-center gap-1">
+            <button 
+              onClick={() => setViewMode('list')}
+              className={cn("p-2 rounded-lg transition-all", viewMode === 'list' ? "bg-white dark:bg-white/10 text-brand-red shadow-sm" : "text-gray-400 hover:text-brand-black")}
+            >
+              <List size={18} />
+            </button>
+            <button 
+              onClick={() => setViewMode('kanban')}
+              className={cn("p-2 rounded-lg transition-all", viewMode === 'kanban' ? "bg-white dark:bg-white/10 text-brand-red shadow-sm" : "text-gray-400 hover:text-brand-black")}
+            >
+              <LayoutGrid size={18} />
+            </button>
+          </div>
+          <button 
+            onClick={handleNew}
+            disabled={isCreating}
+            className="flex items-center gap-2 px-5 py-2.5 bg-brand-red text-white text-[11px] font-black uppercase tracking-widest rounded-lg hover:bg-red-700 transition-all shadow-lg shadow-brand-red/20 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isCreating ? <Loader2 className="animate-spin" size={14} /> : <Plus size={14} />}
+            {isCreating ? 'Membuat...' : 'Artikel Baru'}
+          </button>
+        </div>
       </div>
 
       {/* Search + Filter */}
@@ -187,14 +206,18 @@ export default function ArticlesPage() {
         </div>
       </div>
 
-      {/* Table */}
-      <div className="dash-card overflow-hidden">
-        {loading ? (
-          <div className="p-16 flex flex-col items-center gap-4">
-            <div className="w-8 h-8 border-4 border-brand-red border-t-transparent rounded-full animate-spin" />
-            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Memuat data...</p>
-          </div>
-        ) : (
+      {/* Main Content View (Table or Kanban) */}
+      {loading ? (
+        <div className="dash-card p-16 flex flex-col items-center gap-4">
+          <div className="w-8 h-8 border-4 border-brand-red border-t-transparent rounded-full animate-spin" />
+          <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Memuat data...</p>
+        </div>
+      ) : viewMode === 'kanban' ? (
+        <div className="animate-fade-in">
+          <KanbanBoard articles={filtered} site={site} />
+        </div>
+      ) : (
+        <div className="dash-card overflow-hidden animate-fade-in">
           <table className="w-full text-left">
             <thead className="bg-gray-50 dark:bg-white/[0.02] border-b border-gray-100 dark:border-white/5">
               <tr>
@@ -350,8 +373,8 @@ export default function ArticlesPage() {
               )}
             </tbody>
           </table>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -78,8 +78,9 @@ export async function SiteHomePage({ siteParam, searchParams }: SiteHomePageProp
 
   const articlesList = await getArticles(siteConfig.id, categoryFilter, searchQuery)
   const leadArticle = articlesList[0]
-  const secondaryStories = articlesList.slice(1, 4)
-  const mainFeed = articlesList.slice(4, 12)
+  const mediumStories = articlesList.slice(1, 3)
+  const minimalStories = articlesList.slice(3, 7)
+  const mainFeed = articlesList.slice(7, 15)
   const popular = articlesList.slice(0, 5)
 
   const defaultTags = ['Politik', 'Ekonomi', 'Investigasi', 'Teknologi', 'Gaya Hidup', 'Hiburan']
@@ -96,20 +97,33 @@ export async function SiteHomePage({ siteParam, searchParams }: SiteHomePageProp
 
         {!searchQuery && categoryFilter === 'Terbaru' && (
           <section className="mb-20">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-              <div className="lg:col-span-8">
-                {leadArticle && (
-                  <NewsCard article={leadArticle} variant="large" site={siteParam} />
-                )}
-              </div>
-              <div className="lg:col-span-4 flex flex-col gap-6">
-                <div className="flex items-center gap-2 mb-2 border-b border-gray-100 dark:border-white/5 pb-2">
-                  <Zap size={16} className="text-brand-red" />
-                  <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-brand-black dark:text-white">Highlights</h3>
-                </div>
-                {secondaryStories.map((article: any) => (
-                  <NewsCard key={article.id} article={article} variant="horizontal" site={siteParam} />
+            {/* 1: Lead Article */}
+            <div className="mb-12">
+              {leadArticle && (
+                <NewsCard article={leadArticle} variant="large" site={siteParam} />
+              )}
+            </div>
+
+            {/* 2 & 4: Medium & Minimal Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+              {/* 2 Medium Stories */}
+              <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                {mediumStories.map((article: any) => (
+                  <NewsCard key={article.id} article={article} variant="medium" site={siteParam} />
                 ))}
+              </div>
+
+              {/* 4 Minimal Stories */}
+              <div className="lg:col-span-4 border-l border-gray-100 dark:border-white/5 pl-0 lg:pl-10">
+                <div className="flex items-center gap-2 mb-6 border-b border-gray-100 dark:border-white/5 pb-2">
+                  <Zap size={16} className="text-brand-red" />
+                  <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-brand-black dark:text-white">Laporan Terbaru</h3>
+                </div>
+                <div className="flex flex-col gap-2">
+                  {minimalStories.map((article: any) => (
+                    <NewsCard key={article.id} article={article} variant="minimal" site={siteParam} />
+                  ))}
+                </div>
               </div>
             </div>
           </section>

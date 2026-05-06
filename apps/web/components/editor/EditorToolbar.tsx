@@ -9,7 +9,9 @@ import {
   CheckCircle2, 
   Clock, 
   History,
-  MoreHorizontal
+  MoreHorizontal,
+  Maximize2,
+  Minimize2
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { useParams, useRouter } from 'next/navigation';
@@ -33,7 +35,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export function EditorToolbar() {
-  const { status, saving, saveArticle, publishArticle, lastSaved, toggleSidebar } = useEditorStore();
+  const { status, saving, saveArticle, publishArticle, lastSaved, toggleSidebar, isFocusMode, toggleFocusMode } = useEditorStore();
   const { site } = useParams<{ site: string }>();
   const router = useRouter();
 
@@ -43,7 +45,10 @@ export function EditorToolbar() {
   };
 
   return (
-    <div className="fixed top-0 left-0 md:left-64 right-0 h-16 bg-white dark:bg-slate-900/80 backdrop-blur-md border-b border-gray-100 dark:border-white/5 z-50 flex items-center justify-between px-8 shadow-sm">
+    <div className={cn(
+      "fixed top-0 right-0 h-16 bg-white dark:bg-slate-900/80 backdrop-blur-md border-b border-gray-100 dark:border-white/5 z-50 flex items-center justify-between px-8 shadow-sm transition-all duration-500",
+      isFocusMode ? "left-0" : "left-0 md:left-64"
+    )}>
       <div className="flex items-center gap-4">
         <button 
           onClick={() => router.back()}
@@ -78,31 +83,51 @@ export function EditorToolbar() {
           )}
         </div>
 
-        <div className="h-6 w-px bg-gray-100 dark:bg-white/5 hidden md:block" />
+        {!isFocusMode && <div className="h-6 w-px bg-gray-100 dark:bg-white/5 hidden md:block" />}
 
         <div className="flex items-center gap-2">
           <button
-            onClick={() => saveArticle()}
-            disabled={saving}
-            className="flex items-center gap-2 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-brand-black dark:text-white hover:bg-gray-50 dark:hover:bg-white/5 transition-all border border-gray-200 dark:border-white/10 rounded-lg disabled:opacity-50"
+            onClick={() => toggleFocusMode()}
+            className={cn(
+              "p-2 rounded-lg transition-all border border-transparent",
+              isFocusMode 
+                ? "bg-brand-red text-white shadow-lg shadow-brand-red/20" 
+                : "bg-gray-50 dark:bg-white/5 text-gray-500 dark:text-gray-400 hover:text-brand-red hover:border-brand-red/20"
+            )}
+            title={isFocusMode ? "Keluar Focus Mode" : "Focus Mode"}
           >
-            <Save size={14} /> Simpan
+            {isFocusMode ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
           </button>
 
-          <button
-            onClick={() => toggleSidebar()}
-            className="p-2 bg-gray-50 dark:bg-white/5 text-gray-500 dark:text-gray-400 hover:text-brand-red rounded-lg transition-all border border-transparent hover:border-brand-red/20"
-            title="Pengaturan Artikel"
-          >
-            <Settings size={18} />
-          </button>
+          {!isFocusMode && (
+            <button
+              onClick={() => saveArticle()}
+              disabled={saving}
+              className="flex items-center gap-2 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-brand-black dark:text-white hover:bg-gray-50 dark:hover:bg-white/5 transition-all border border-gray-200 dark:border-white/10 rounded-lg disabled:opacity-50"
+            >
+              <Save size={14} /> Simpan
+            </button>
+          )}
+
+          {!isFocusMode && (
+            <button
+              onClick={() => toggleSidebar()}
+              className="p-2 bg-gray-50 dark:bg-white/5 text-gray-500 dark:text-gray-400 hover:text-brand-red rounded-lg transition-all border border-transparent hover:border-brand-red/20"
+              title="Pengaturan Artikel"
+            >
+              <Settings size={18} />
+            </button>
+          )}
           
           {status !== 'published' ? (
             <button
               onClick={handlePublish}
-              className="flex items-center gap-2 px-6 py-2 bg-brand-red text-white text-[10px] font-black uppercase tracking-widest hover:bg-red-700 transition-all shadow-lg shadow-brand-red/10 rounded-lg"
+              className={cn(
+                "flex items-center gap-2 px-6 py-2 bg-brand-red text-white text-[10px] font-black uppercase tracking-widest hover:bg-red-700 transition-all shadow-lg shadow-brand-red/10 rounded-lg",
+                isFocusMode && "px-4"
+              )}
             >
-              <Send size={14} /> Terbitkan
+              <Send size={14} /> {isFocusMode ? '' : 'Terbitkan'}
             </button>
           ) : (
             <button

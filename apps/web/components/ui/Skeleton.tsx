@@ -15,9 +15,9 @@ export default function Skeleton({ variant = 'card', className }: SkeletonProps)
   };
 
   const shimmerTransition: any = {
-    duration: 1.5,
+    duration: 2,
     repeat: Infinity,
-    ease: 'linear',
+    ease: [0.4, 0, 0.2, 1], // Cubic-bezier for smoother feel
   };
 
   if (variant === 'hero') {

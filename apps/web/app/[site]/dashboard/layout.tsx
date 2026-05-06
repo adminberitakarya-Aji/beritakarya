@@ -162,17 +162,22 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                       key={item.name} 
                       href={item.href}
                       className={cn(
-                        "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group relative",
+                        "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 group relative overflow-hidden",
                         isActive 
-                          ? 'bg-brand-red text-white shadow-lg shadow-brand-red/20' 
+                          ? 'bg-brand-red text-white shadow-lg shadow-brand-red/30' 
                           : 'text-gray-400 hover:bg-white/5 hover:text-white'
                       )}
                     >
-                      <Icon size={17} strokeWidth={isActive ? 2.5 : 1.8} />
+                      {/* Active Glow Backdrop */}
+                      {isActive && (
+                        <div className="absolute inset-0 bg-gradient-to-r from-brand-red via-red-500 to-brand-red opacity-50 animate-pulse" />
+                      )}
+                      
+                      <Icon size={17} strokeWidth={isActive ? 2.5 : 1.8} className="relative z-10" />
                       {!isSidebarCollapsed && (
                         <>
-                          <span className="text-[11px] font-bold uppercase tracking-wider">{item.name}</span>
-                          {isActive && <ChevronRight size={12} className="ml-auto opacity-60" />}
+                          <span className="text-[11px] font-black uppercase tracking-wider relative z-10">{item.name}</span>
+                          {isActive && <ChevronRight size={12} className="ml-auto opacity-60 relative z-10" />}
                         </>
                       )}
                     </Link>
@@ -185,15 +190,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </nav>
 
       {/* User Footer */}
-      <div className="p-4 border-t border-white/5 bg-black/20">
-        <div className="flex items-center gap-3 mb-4 px-2">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-brand-red to-red-800 flex items-center justify-center text-xs font-black text-white shadow-inner flex-shrink-0">
-            {initials}
+      <div className="p-4 border-t border-white/5 bg-black/40 backdrop-blur-md">
+        <div className="flex items-center gap-3 mb-5 px-2">
+          <div className="relative">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-red to-red-900 flex items-center justify-center text-xs font-black text-white shadow-lg flex-shrink-0">
+              {initials}
+            </div>
+            <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-emerald-500 border-2 border-slate-900 rounded-full" />
           </div>
           {!isSidebarCollapsed && (
             <div className="flex flex-col min-w-0">
-              <span className="text-xs font-black truncate text-white leading-tight">{user?.name}</span>
-              <span className="text-[9px] text-brand-red font-bold uppercase tracking-widest mt-0.5">
+              <span className="text-xs font-black truncate text-white leading-tight tracking-tight">{user?.name}</span>
+              <span className="text-[8px] text-brand-red font-black uppercase tracking-[0.2em] mt-1">
                 {ROLE_LABELS[user?.role || ''] || user?.role}
               </span>
             </div>
@@ -201,10 +209,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
         <button 
           onClick={logout}
-          className="w-full flex items-center justify-center gap-2 px-3 py-2.5 text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-red-400 hover:bg-red-400/5 transition-all rounded-lg border border-transparent hover:border-red-400/10"
+          className="w-full flex items-center justify-center gap-2 px-3 py-3 text-[9px] font-black uppercase tracking-[0.3em] text-gray-500 hover:text-white hover:bg-red-600 transition-all rounded-xl border border-white/5 hover:border-red-500 shadow-sm"
         >
           <LogOut size={14} />
-          {!isSidebarCollapsed && 'Keluar'}
+          {!isSidebarCollapsed && 'Keluar Sistem'}
         </button>
       </div>
     </>

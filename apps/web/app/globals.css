@@ -75,11 +75,19 @@
     @apply max-w-7xl mx-auto px-4;
   }
 
-  /* Premium Article Typography */
+  /* Premium Article Typography (Magazine Feel) */
+  .article-content p {
+    @apply leading-[1.8] md:leading-[1.9] text-brand-text/90 antialiased;
+  }
+
   .article-content p:first-of-type::first-letter {
     font-family: 'Playfair Display', var(--font-playfair), Georgia, serif;
-    font-weight: 900;
-    @apply float-left text-brand-black mr-2 text-7xl leading-[0.8] mt-2;
+    @apply float-left text-brand-red mr-3 text-7xl md:text-8xl font-black leading-[0.7] mt-3;
+    initial-letter: 3; /* Modern CSS property for better drop caps */
+  }
+
+  .article-content h2, .article-content h3 {
+    @apply mt-16 mb-6 font-serif font-black tracking-tighter text-brand-black dark:text-white;
   }
 
   .pull-quote {

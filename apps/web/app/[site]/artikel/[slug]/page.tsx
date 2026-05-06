@@ -344,7 +344,7 @@ export default async function ArticlePage({ params }: Props) {
 function PublicBlock({ block }: { block: Block }) {
   switch (block.type) {
     case 'paragraph':
-      return <p className="font-serif text-xl md:text-2xl leading-[1.8] text-brand-black dark:text-gray-300 antialiased">{block.content}</p>
+      return <p className="font-serif text-xl md:text-2xl antialiased">{block.content}</p>
     case 'heading':
       const Tag = `h${block.level}` as any
       return (
