@@ -6,7 +6,7 @@ export function constructMetadata({
   image = '/logo.png',
   icons = '/favicon.ico',
   noIndex = false,
-  siteParam = 'pusat',
+  siteParam = '',
   slug = '',
 }: {
   title?: string
@@ -19,8 +19,12 @@ export function constructMetadata({
 } = {}): Metadata {
   const baseUrl = process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'
   const url = slug 
-    ? `${baseUrl}/${siteParam}/artikel/${slug}`
-    : `${baseUrl}/${siteParam}`
+    ? siteParam
+      ? `${baseUrl}/${siteParam}/artikel/${slug}`
+      : `${baseUrl}/artikel/${slug}`
+    : siteParam
+      ? `${baseUrl}/${siteParam}`
+      : `${baseUrl}/`
 
   return {
     title,
