@@ -105,6 +105,36 @@ server {
 }
 ```
 
+## 🌐 Cara Mendapatkan & Mengatur API URL
+
+Setelah Anda memiliki VPS, alur untuk mendapatkan API URL sangat sederhana:
+
+### 1. Tentukan Subdomain
+Anda tentukan sendiri namanya, yang paling umum adalah: `api.beritakarya.co`
+
+### 2. Hubungkan ke IP VPS (di Namecheap)
+1. Login ke **Namecheap**.
+2. Buka menu **Advanced DNS**.
+3. Tambahkan **A Record**:
+   - **Host**: `api`
+   - **Value**: Masukkan **IP VPS Anda** (Contoh: `103.22.xx.xx`).
+
+### 3. Aktifkan HTTPS (di VPS)
+Setelah Anda menjalankan perintah Certbot di VPS (`sudo certbot --nginx -d api.beritakarya.co`), maka subdomain tersebut resmi menjadi:
+👉 **`https://api.beritakarya.co`**
+
+---
+
+### Di mana URL ini dimasukkan?
+Anda perlu memasukkan URL `https://api.beritakarya.co` tersebut di **dua tempat**:
+
+1.  **Di Vercel (Frontend)**: Masukkan di Environment Variables sebagai `NEXT_PUBLIC_API_URL`.
+2.  **Di VPS (Backend)**: Masukkan di file `.env.production` sebagai `API_URL`.
+
+**Kesimpulannya**: API URL adalah alamat "pintu masuk" ke backend Anda yang sudah diamankan dengan SSL (HTTPS). Alamat ini Anda buat sendiri lewat Namecheap dan diaktifkan lewat VPS.
+
+---
+
 ## 💰 Kenapa Hemat?
 - **Tanpa Supabase**: Database gratis selamanya di VPS sendiri.
 - **Tanpa S3 Storage**: Foto disimpan langsung di harddisk VPS (volume `uploads_data`).
