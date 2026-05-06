@@ -23,10 +23,6 @@ export default function AdsDashboard() {
   const { site } = useParams() as { site: string }
   const { user } = useAuthStore()
 
-  useEffect(() => {
-    fetchAds()
-  }, [site])
-
   const fetchAds = async () => {
     try {
       const { data } = await api.get(`/ads?site=${site}`)
@@ -35,6 +31,10 @@ export default function AdsDashboard() {
       console.error('Gagal mengambil data iklan', error)
     }
   }
+
+  useEffect(() => {
+    fetchAds()
+  }, [site])
 
   const handleSave = async (slotId: string, code: string, isActive: boolean) => {
     setLoading(true)

@@ -18,10 +18,6 @@ export default function CategoriesDashboard() {
   const { site } = useParams() as { site: string }
   const { user } = useAuthStore()
 
-  useEffect(() => {
-    fetchCategories()
-  }, [site])
-
   const fetchCategories = async () => {
     try {
       const { data } = await api.get(`/categories?site=${site}`)
@@ -30,6 +26,10 @@ export default function CategoriesDashboard() {
       console.error('Gagal mengambil kategori', error)
     }
   }
+
+  useEffect(() => {
+    fetchCategories()
+  }, [site])
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault()

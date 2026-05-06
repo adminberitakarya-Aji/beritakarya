@@ -22,10 +22,6 @@ export default function SettingsPage() {
   
   const [newTag, setNewTag] = useState('')
 
-  useEffect(() => {
-    fetchSettings()
-  }, [site])
-
   const fetchSettings = async () => {
     try {
       const { data } = await api.get('/sites/settings')
@@ -43,6 +39,9 @@ export default function SettingsPage() {
     }
   }
 
+  useEffect(() => {
+    fetchSettings()
+  }, [site])
   const handleSave = async () => {
     setSaving(true)
     setMessage(null)

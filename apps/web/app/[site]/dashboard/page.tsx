@@ -32,9 +32,10 @@ interface Article {
 // ─── Mini Sparkline ──────────────────────────────────────────────
 // ─── Real-time Pulse Indicator ──────────────────────────────────
 function RealTimePulse() {
-  const [count, setCount] = useState(Math.floor(Math.random() * (120 - 80) + 80));
+  const [count, setCount] = useState(100);
   
   useEffect(() => {
+    setCount(Math.floor(Math.random() * (120 - 80) + 80));
     const interval = setInterval(() => {
       setCount(prev => {
         const change = Math.floor(Math.random() * 5) - 2;
@@ -234,6 +235,14 @@ export default function DashboardOverview() {
   const [trafficData, setTrafficData] = useState<any[]>([]);
   const [topContent, setTopContent] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [greeting, setGreeting] = useState('Selamat');
+  const [currentDate, setCurrentDate] = useState('');
+
+  useEffect(() => {
+    const hour = new Date().getHours();
+    setGreeting(hour < 11 ? 'Selamat Pagi' : hour < 15 ? 'Selamat Siang' : hour < 18 ? 'Selamat Sore' : 'Selamat Malam');
+    setCurrentDate(new Date().toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric' }));
+  }, []);
 
   useEffect(() => {
     const loadData = async () => {
@@ -301,8 +310,6 @@ export default function DashboardOverview() {
     journalist: 'Wartawan',
   };
 
-  const hour = new Date().getHours();
-  const greeting = hour < 11 ? 'Selamat Pagi' : hour < 15 ? 'Selamat Siang' : hour < 18 ? 'Selamat Sore' : 'Selamat Malam';
 
   return (
     <div className="space-y-8">
@@ -319,7 +326,7 @@ export default function DashboardOverview() {
             {user?.name || 'Redaktur'}
           </h1>
           <p className="text-xs text-gray-400 mt-1">
-            Portal <strong className="text-brand-red uppercase">{site}</strong> — {new Date().toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric' })}
+            Portal <strong className="text-brand-red uppercase">{site}</strong> — {currentDate}
           </p>
         </div>
         <div className="flex items-center gap-4">

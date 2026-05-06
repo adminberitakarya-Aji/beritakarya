@@ -108,116 +108,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     .toUpperCase()
     .slice(0, 2) || 'U'
 
-  const SidebarContent = () => (
-    <>
-      {/* Logo Section */}
-      <div className="p-6 border-b border-white/5">
-        <Link href={`/${site}/dashboard`} className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-brand-red rounded-lg flex items-center justify-center shadow-lg shadow-brand-red/30">
-            <span className="text-white text-sm font-black">BK</span>
-          </div>
-          {!isSidebarCollapsed && (
-            <div className="flex flex-col">
-              <h2 className="text-sm font-black tracking-tight uppercase leading-none text-white">
-                Berita<span className="text-brand-red">Karya</span>
-              </h2>
-              <p className="text-[8px] text-gray-500 uppercase tracking-[0.2em] font-bold mt-0.5">Admin Center</p>
-            </div>
-          )}
-        </Link>
-      </div>
-
-      {/* Site Indicator */}
-      <div className="mx-4 mt-4 mb-2 px-3 py-2.5 bg-white/5 rounded-lg border border-white/5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Activity size={12} className="text-emerald-400" />
-            <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Portal Aktif</span>
-          </div>
-          <ChevronDown size={12} className="text-gray-500" />
-        </div>
-        {!isSidebarCollapsed && (
-          <p className="text-xs font-black text-white uppercase tracking-tight mt-1">
-            {site === 'pusat' ? 'Pusat (Nasional)' : site.charAt(0).toUpperCase() + site.slice(1)}
-          </p>
-        )}
-      </div>
-      
-      {/* Navigation Sections */}
-      <nav className="flex-1 px-3 pt-4 space-y-6 overflow-y-auto">
-        {navSections.map((section) => {
-          const filteredItems = section.items.filter(item => user && item.roles.includes(user.role))
-          if (filteredItems.length === 0) return null
-          return (
-            <div key={section.label}>
-              {!isSidebarCollapsed && (
-                <p className="px-3 text-[9px] font-black text-gray-600 uppercase tracking-[0.2em] mb-2">{section.label}</p>
-              )}
-              <div className="space-y-0.5">
-                {filteredItems.map((item) => {
-                  const isActive = pathname === item.href || (item.href !== `/${site}/dashboard` && pathname.startsWith(item.href))
-                  const Icon = item.icon
-                  return (
-                    <Link 
-                      key={item.name} 
-                      href={item.href}
-                      className={cn(
-                        "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 group relative overflow-hidden",
-                        isActive 
-                          ? 'bg-brand-red text-white shadow-lg shadow-brand-red/30' 
-                          : 'text-gray-400 hover:bg-white/5 hover:text-white'
-                      )}
-                    >
-                      {/* Active Glow Backdrop */}
-                      {isActive && (
-                        <div className="absolute inset-0 bg-gradient-to-r from-brand-red via-red-500 to-brand-red opacity-50 animate-pulse" />
-                      )}
-                      
-                      <Icon size={17} strokeWidth={isActive ? 2.5 : 1.8} className="relative z-10" />
-                      {!isSidebarCollapsed && (
-                        <>
-                          <span className="text-[11px] font-black uppercase tracking-wider relative z-10">{item.name}</span>
-                          {isActive && <ChevronRight size={12} className="ml-auto opacity-60 relative z-10" />}
-                        </>
-                      )}
-                    </Link>
-                  )
-                })}
-              </div>
-            </div>
-          )
-        })}
-      </nav>
-
-      {/* User Footer */}
-      <div className="p-4 border-t border-white/5 bg-black/40 backdrop-blur-md">
-        <div className="flex items-center gap-3 mb-5 px-2">
-          <div className="relative">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-red to-red-900 flex items-center justify-center text-xs font-black text-white shadow-lg flex-shrink-0">
-              {initials}
-            </div>
-            <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-emerald-500 border-2 border-slate-900 rounded-full" />
-          </div>
-          {!isSidebarCollapsed && (
-            <div className="flex flex-col min-w-0">
-              <span className="text-xs font-black truncate text-white leading-tight tracking-tight">{user?.name}</span>
-              <span className="text-[8px] text-brand-red font-black uppercase tracking-[0.2em] mt-1">
-                {ROLE_LABELS[user?.role || ''] || user?.role}
-              </span>
-            </div>
-          )}
-        </div>
-        <button 
-          onClick={logout}
-          className="w-full flex items-center justify-center gap-2 px-3 py-3 text-[9px] font-black uppercase tracking-[0.3em] text-gray-500 hover:text-white hover:bg-red-600 transition-all rounded-xl border border-white/5 hover:border-red-500 shadow-sm"
-        >
-          <LogOut size={14} />
-          {!isSidebarCollapsed && 'Keluar Sistem'}
-        </button>
-      </div>
-    </>
-  )
-
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#0a0f1a] flex flex-col md:flex-row font-sans text-brand-black dark:text-white transition-colors duration-500">
       
@@ -226,7 +116,111 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         "bg-slate-900 dark:bg-[#050a15] text-white flex-shrink-0 flex-col hidden md:flex border-r border-white/5 transition-all duration-300 sticky top-0 h-screen",
         isSidebarCollapsed ? "w-[72px]" : "w-64"
       )}>
-        <SidebarContent />
+        {/* Logo Section */}
+        <div className="p-6 border-b border-white/5">
+          <Link href={`/${site}/dashboard`} className="flex items-center gap-3">
+            <div className="w-9 h-9 bg-brand-red rounded-lg flex items-center justify-center shadow-lg shadow-brand-red/30">
+              <span className="text-white text-sm font-black">BK</span>
+            </div>
+            {!isSidebarCollapsed && (
+              <div className="flex flex-col">
+                <h2 className="text-sm font-black tracking-tight uppercase leading-none text-white">
+                  Berita<span className="text-brand-red">Karya</span>
+                </h2>
+                <p className="text-[8px] text-gray-500 uppercase tracking-[0.2em] font-bold mt-0.5">Admin Center</p>
+              </div>
+            )}
+          </Link>
+        </div>
+
+        {/* Site Indicator */}
+        <div className="mx-4 mt-4 mb-2 px-3 py-2.5 bg-white/5 rounded-lg border border-white/5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Activity size={12} className="text-emerald-400" />
+              <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Portal Aktif</span>
+            </div>
+            <ChevronDown size={12} className="text-gray-500" />
+          </div>
+          {!isSidebarCollapsed && (
+            <p className="text-xs font-black text-white uppercase tracking-tight mt-1">
+              {site === 'pusat' ? 'Pusat (Nasional)' : site.charAt(0).toUpperCase() + site.slice(1)}
+            </p>
+          )}
+        </div>
+        
+        {/* Navigation Sections */}
+        <nav className="flex-1 px-3 pt-4 space-y-6 overflow-y-auto">
+          {navSections.map((section) => {
+            const filteredItems = section.items.filter(item => user && item.roles.includes(user.role))
+            if (filteredItems.length === 0) return null
+            return (
+              <div key={section.label}>
+                {!isSidebarCollapsed && (
+                  <p className="px-3 text-[9px] font-black text-gray-600 uppercase tracking-[0.2em] mb-2">{section.label}</p>
+                )}
+                <div className="space-y-0.5">
+                  {filteredItems.map((item) => {
+                    const isActive = pathname === item.href || (item.href !== `/${site}/dashboard` && pathname.startsWith(item.href))
+                    const Icon = item.icon
+                    return (
+                      <Link 
+                        key={item.name} 
+                        href={item.href}
+                        className={cn(
+                          "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 group relative overflow-hidden",
+                          isActive 
+                            ? 'bg-brand-red text-white shadow-lg shadow-brand-red/30' 
+                            : 'text-gray-400 hover:bg-white/5 hover:text-white'
+                        )}
+                      >
+                        {/* Active Glow Backdrop */}
+                        {isActive && (
+                          <div className="absolute inset-0 bg-gradient-to-r from-brand-red via-red-500 to-brand-red opacity-50 animate-pulse" />
+                        )}
+                        
+                        <Icon size={17} strokeWidth={isActive ? 2.5 : 1.8} className="relative z-10" />
+                        {!isSidebarCollapsed && (
+                          <>
+                            <span className="text-[11px] font-black uppercase tracking-wider relative z-10">{item.name}</span>
+                            {isActive && <ChevronRight size={12} className="ml-auto opacity-60 relative z-10" />}
+                          </>
+                        )}
+                      </Link>
+                    )
+                  })}
+                </div>
+              </div>
+            )
+          })}
+        </nav>
+
+        {/* User Footer */}
+        <div className="p-4 border-t border-white/5 bg-black/40 backdrop-blur-md">
+          <div className="flex items-center gap-3 mb-5 px-2">
+            <div className="relative">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-red to-red-900 flex items-center justify-center text-xs font-black text-white shadow-lg flex-shrink-0">
+                {initials}
+              </div>
+              <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-emerald-500 border-2 border-slate-900 rounded-full" />
+            </div>
+            {!isSidebarCollapsed && (
+              <div className="flex flex-col min-w-0">
+                <span className="text-xs font-black truncate text-white leading-tight tracking-tight">{user?.name}</span>
+                <span className="text-[8px] text-brand-red font-black uppercase tracking-[0.2em] mt-1">
+                  {ROLE_LABELS[user?.role || ''] || user?.role}
+                </span>
+              </div>
+            )}
+          </div>
+          <button 
+            onClick={logout}
+            className="w-full flex items-center justify-center gap-2 px-3 py-3 text-[9px] font-black uppercase tracking-[0.3em] text-gray-500 hover:text-white hover:bg-red-600 transition-all rounded-xl border border-white/5 hover:border-red-500 shadow-sm"
+          >
+            <LogOut size={14} />
+            {!isSidebarCollapsed && 'Keluar Sistem'}
+          </button>
+        </div>
       </aside>
 
       {/* Mobile Navbar */}
