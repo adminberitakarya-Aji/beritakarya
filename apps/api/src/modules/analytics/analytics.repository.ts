@@ -31,7 +31,7 @@ export async function getTrafficStats(siteId: string, days: number = 7) {
     dailyData[key] = 0
   }
 
-  articles.forEach(art => {
+  articles.forEach((art: any) => {
     if (art.publishedAt) {
       const key = art.publishedAt.toISOString().split('T')[0]
       if (dailyData[key] !== undefined) {

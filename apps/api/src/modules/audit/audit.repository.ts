@@ -30,14 +30,14 @@ export async function findAuditLogs(
   ])
 
   // Enrich with user info in-memory to avoid relation constraint
-  const userIds = [...new Set(items.map(i => i.userId))]
+  const userIds = [...new Set(items.map((i: any) => i.userId))]
   const users = await prisma.user.findMany({
     where: { id: { in: userIds } },
     select: { id: true, name: true, role: true, email: true },
   })
-  const userMap = Object.fromEntries(users.map(u => [u.id, u]))
+  const userMap = Object.fromEntries(users.map((u: any) => [u.id, u]))
 
-  const enriched = items.map(log => ({
+  const enriched = items.map((log: any) => ({
     ...log,
     user: userMap[log.userId] ?? { id: log.userId, name: 'Pengguna Dihapus', role: 'unknown', email: '' },
   }))
@@ -63,6 +63,6 @@ export async function getAuditStats(siteId: string) {
   return {
     total,
     last7d,
-    byAction: byAction.map(a => ({ action: a.action, count: a._count.action })),
+    byAction: byAction.map((a: any) => ({ action: a.action, count: a._count.action })),
   }
 }

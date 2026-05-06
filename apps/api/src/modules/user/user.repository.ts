@@ -18,7 +18,7 @@ export async function getTeamStats(siteId: string) {
   })
 
   // Get total views per user
-  const userStats = await Promise.all(users.map(async (u) => {
+  const userStats = await Promise.all(users.map(async (u: any) => {
     const aggregate = await prisma.article.aggregate({
       where: { authorId: u.id, siteId, status: 'published' },
       _sum: { viewCount: true },
@@ -34,5 +34,5 @@ export async function getTeamStats(siteId: string) {
     }
   }))
 
-  return userStats.sort((a, b) => b.publishedCount - a.publishedCount)
+  return userStats.sort((a: any, b: any) => b.publishedCount - a.publishedCount)
 }
