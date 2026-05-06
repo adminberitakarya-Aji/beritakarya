@@ -220,25 +220,6 @@ export async function SiteHomePage({ siteParam, searchParams }: SiteHomePageProp
           </aside>
         </div>
       </main>
-
-      <section className="bg-brand-black dark:bg-black py-12 border-t border-white/5">
-        <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
-          <div className="text-white/40 text-[10px] font-bold uppercase tracking-widest">
-            © 2026 BeritaKarya Global Media. <br />Jernih Melihat Nusantara.
-          </div>
-          <div className="flex justify-center gap-6">
-            <Link href="#" className="text-white/60 hover:text-white transition-colors"><Share2 size={20} /></Link>
-            <Link href="#" className="text-white/60 hover:text-white transition-colors"><PlayCircle size={20} /></Link>
-            <Link href="#" className="text-white/60 hover:text-white transition-colors"><Camera size={20} /></Link>
-            <Link href="#" className="text-white/60 hover:text-white transition-colors"><MessageCircle size={20} /></Link>
-          </div>
-          <div className="flex justify-end gap-6 text-white/40 text-[10px] font-bold uppercase tracking-widest">
-            <Link href="#" className="hover:text-white transition-colors">Privasi</Link>
-            <Link href="#" className="hover:text-white transition-colors">Syarat</Link>
-            <Link href="#" className="hover:text-white transition-colors">Redaksi</Link>
-          </div>
-        </div>
-      </section>
     </PublicSiteLayout>
   )
 }
