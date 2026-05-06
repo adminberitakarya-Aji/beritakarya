@@ -94,7 +94,7 @@ export const useLayoutStore = create<LayoutState>((set, get) => ({
             // Tambahkan implementasi untuk tipe suggestion lainnya di sini
         })
 
-        editor.setBlocks(blocks)
+        void editor.setBlocks(blocks)
         set({ suggestions: [], selected: new Set(), summary: '' })
     },
 

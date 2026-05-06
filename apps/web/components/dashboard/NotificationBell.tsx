@@ -48,7 +48,7 @@ export default function NotificationBell() {
     fetchNotifications();
 
     // Setup SSE
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
     const token = localStorage.getItem('accessToken');
     const eventSource = new EventSource(`${apiUrl}/api/v1/notifications/stream?site=${site}&token=${token}`);
 

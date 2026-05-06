@@ -21,7 +21,7 @@ type SiteHomePageProps = {
 
 async function getArticles(siteId: string, category?: string, search?: string) {
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
     let url = `${apiUrl}/api/v1/articles/public?site=${siteId}&limit=25`
 
     if (category && category !== 'Terbaru' && category !== 'Saved') {
@@ -43,7 +43,7 @@ async function getArticles(siteId: string, category?: string, search?: string) {
 
 async function getSiteSettings(siteId: string) {
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
     const res = await fetch(`${apiUrl}/api/v1/sites/settings?site=${siteId}`, { cache: 'no-store' })
     if (!res.ok) return null
     const json = await res.json()

@@ -16,7 +16,7 @@ export default function NewsletterForm() {
 
     setStatus('loading')
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
       const res = await fetch(`${apiUrl}/api/v1/newsletter/subscribe?site=${site}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

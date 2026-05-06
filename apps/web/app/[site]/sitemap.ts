@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next'
 
 async function getArticles(site: string) {
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
     const res = await fetch(`${apiUrl}/api/v1/articles/public?site=${site}&limit=100`, { cache: 'no-store' })
     if (!res.ok) return []
     const json = await res.json()
@@ -14,7 +14,7 @@ async function getArticles(site: string) {
 
 async function getCategories(site: string) {
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
     const res = await fetch(`${apiUrl}/api/v1/categories?site=${site}`, { cache: 'no-store' })
     if (!res.ok) return []
     const json = await res.json()

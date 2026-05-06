@@ -3,20 +3,7 @@
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
-    "typeRoots": ["./node_modules/@types", "../../node_modules/@types"],
-    "types": [
-      "node",
-      "express",
-      "cors",
-      "bcryptjs",
-      "jsonwebtoken",
-      "multer",
-      "swagger-ui-express",
-      "swagger-jsdoc",
-      "uuid",
-      "jsdom",
-      "supertest"
-    ]
+    "baseUrl": "."
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]

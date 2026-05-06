@@ -46,8 +46,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 async function getArticle(site: string, slug: string) {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/v1/articles/slug/${slug}?site=${site}`,
+    `${apiUrl}/api/v1/articles/slug/${slug}?site=${site}`,
     { next: { revalidate: 60 } }
   )
   if (!res.ok) return null
@@ -63,8 +64,9 @@ async function getRelatedArticles(site: string, currentSlug: string, category?: 
       limit: '6',
       ...(category && { category })
     })
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/articles?${params.toString()}`,
+      `${apiUrl}/api/v1/articles?${params.toString()}`,
       { next: { revalidate: 60 } }
     )
     if (!res.ok) return []
@@ -78,7 +80,7 @@ async function getRelatedArticles(site: string, currentSlug: string, category?: 
 
 async function getSiteSettings(siteId: string) {
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
     const res = await fetch(`${apiUrl}/api/v1/sites/settings?site=${siteId}`, { cache: 'no-store' });
     if (!res.ok) return null;
     const json = await res.json();

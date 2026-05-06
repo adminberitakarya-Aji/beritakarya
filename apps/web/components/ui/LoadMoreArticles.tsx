@@ -28,7 +28,7 @@ export default function LoadMoreArticles({
     setLoading(true);
     try {
       const nextPage = page + 1;
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
       let url = `${apiUrl}/api/v1/articles/public?site=${siteId}&page=${nextPage}&limit=10`;
       
       if (category && category !== 'Terbaru') {
