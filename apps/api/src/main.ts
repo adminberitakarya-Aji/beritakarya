@@ -68,14 +68,16 @@ app.use('/api/v1/audit', auditRouter)
 app.use('/api/v1/analytics', analyticsRouter)
 app.use('/api/v1/notifications', notificationRouter)
 
+import { asyncHandler } from './utils/asyncHandler'
+
 // ── System Endpoints ───────────────────────────────────────
-app.get('/health', async (_, res) => {
+app.get('/health', asyncHandler(async (_, res) => {
   let databaseHealth = false
   try {
     await prisma.$queryRaw`SELECT 1`
     databaseHealth = true
   } catch (e) {
-    console.error('Database health check failed:', e)
+    logger.error('Database health check failed:', e)
   }
 
   const status = databaseHealth ? 'healthy' : 'unhealthy'
@@ -86,7 +88,7 @@ app.get('/health', async (_, res) => {
       database: databaseHealth ? 'healthy' : 'unhealthy'
     }
   })
-})
+}))
 
 app.get('/metrics', (_, res) => {
   res.json({

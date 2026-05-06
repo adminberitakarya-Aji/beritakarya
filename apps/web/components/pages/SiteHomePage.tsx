@@ -31,7 +31,7 @@ async function getArticles(siteId: string, category?: string, search?: string) {
       url += `&search=${encodeURIComponent(search)}`
     }
 
-    const res = await fetch(url, { cache: 'no-store' })
+    const res = await fetch(url, { next: { revalidate: 60 } })
     if (!res.ok) return []
     const json = await res.json()
     return json?.data?.articles || json?.data?.items || []

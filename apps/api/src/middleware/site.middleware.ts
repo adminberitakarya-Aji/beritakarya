@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from 'express'
 import { KNOWN_SITE_IDS } from '@beritakarya/config'
 import { prisma } from '../db/client'
 
+import { logger } from '../lib/logger'
+
 // In-memory cache for valid site IDs to avoid DB hits on every request
 const validSiteCache = new Set<string>(KNOWN_SITE_IDS)
 let lastCacheUpdate = 0
@@ -13,7 +15,7 @@ async function refreshCache() {
     sites.forEach(s => validSiteCache.add(s.id))
     lastCacheUpdate = Date.now()
   } catch (e) {
-    console.error('Failed to refresh site cache', e)
+    logger.error('Failed to refresh site cache', e)
   }
 }
 

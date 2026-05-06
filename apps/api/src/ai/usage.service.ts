@@ -1,4 +1,5 @@
 import { prisma } from '../db/client'
+import { logger } from '../lib/logger'
 
 export interface UsageLog {
   userId: string
@@ -15,7 +16,7 @@ export async function logUsage(log: UsageLog) {
     await prisma.aIUsage.create({ data: log })
   } catch (error) {
     // logging failure tidak boleh crash aplikasi
-    console.error('[AI Usage Error]', error)
+    logger.error('[AI Usage Error]', error)
   }
 }
 
