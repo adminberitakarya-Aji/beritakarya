@@ -5,7 +5,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
     "type-check": "tsc --noEmit",
     "test": "vitest run",
     "analyze": "ANALYZE=true next build"
@@ -30,6 +30,7 @@
     "zustand": "^4.5.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.29.0",
     "@next/bundle-analyzer": "^14.2.1",
     "@testing-library/jest-dom": "^6.4.2",
     "@testing-library/react": "^15.0.0",
@@ -37,6 +38,8 @@
     "@types/react": "^18.3.0",
     "@types/react-dom": "^18.3.0",
     "@types/uuid": "^9.0.8",
+    "@typescript-eslint/eslint-plugin": "^8.59.2",
+    "@typescript-eslint/parser": "^8.59.2",
     "@vitejs/plugin-react": "^4.2.1",
     "@vitest/coverage-v8": "^1.6.1",
     "autoprefixer": "^10.4.19",
