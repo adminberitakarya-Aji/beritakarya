@@ -12,7 +12,7 @@ export async function getSiteSettings(siteId: string) {
         data: {
           id: siteId,
           name: siteId.charAt(0).toUpperCase() + siteId.slice(1),
-          domain: `${siteId}.beritakarya.com`,
+          domain: `${siteId}.beritakarya.co`,
           trendingTopics: []
         }
       })

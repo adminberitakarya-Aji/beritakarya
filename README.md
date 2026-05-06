@@ -4,8 +4,8 @@ Platform publikasi berita multi-tenant modern kelas dunia dengan asisten AI teri
 
 ## 🚀 Fitur Unggulan
 
-### 🏛️ Arsitektur Multi-Tenant
-Satu core engine untuk mengelola jaringan portal berita (Pusat & Daerah). Konfigurasi domain dinamis dan isolasi data antar portal yang ketat.
+### 🏛️ Arsitektur Multi-Tenant Dinamis
+Satu core engine untuk mengelola jaringan portal berita (Pusat & Daerah). Konfigurasi domain dinamis yang dikelola via database, memungkinkan penambahan situs baru tanpa redeploy aplikasi.
 
 ### ✍️ Editorial Workflow Profesional
 - **Block-based Editor**: Editor artikel fleksibel (teks, gambar, quote, grid).
@@ -28,6 +28,28 @@ Satu core engine untuk mengelola jaringan portal berita (Pusat & Daerah). Konfig
 - **SEO Panel**: Preview OpenGraph (FB) & Twitter Cards secara real-time sebelum publikasi.
 - **Reader Tools**: Font size adjuster, Print-friendly view, dan sistem komentar premium.
 
+## 🛠️ Tech Stack
+
+### Frontend & Dashboard
+- **Next.js 14** (App Router)
+- **React** & **TypeScript**
+- **Tailwind CSS** & **Framer Motion**
+- **TanStack Query** (React Query)
+- **Zustand** (State Management)
+- **Lucide React** (Icons)
+
+### Backend & API
+- **Node.js** & **Express.js**
+- **Prisma ORM** (PostgreSQL)
+- **Server-Sent Events (SSE)** untuk real-time notifications
+- **Sharp** (Image processing)
+- **JWT** (Authentication)
+
+### Infrastructure
+- **GitHub Actions** (CI/CD Pipeline)
+- **Docker** & **Docker Compose**
+- **Turborepo** (Monorepo Management)
+
 ## 📁 Struktur Monorepo
 
 ```text
@@ -39,6 +61,7 @@ beritakarya/
 │   ├── types/        # Shared TypeScript interfaces
 │   ├── config/       # Shared configurations (Site map, AI configs)
 │   └── utils/        # Shared utility functions
+├── .github/          # GitHub Actions CI/CD workflows
 ├── infra/            # Docker, Nginx, & CI/CD configurations
 └── docs/             # Dokumentasi teknis & workflow editorial
 ```
@@ -51,19 +74,25 @@ beritakarya/
    ```
 
 2. **Setup Environment**:
-   Salin `.env.example` di `apps/api` dan `apps/web`. Untuk produksi, gunakan referensi di `.env.production.example`.
+   Salin `.env.example` di `apps/api` dan `apps/web`. Pastikan database PostgreSQL sudah siap.
 
-3. **Database Sync**:
+3. **Database Sync & Generate**:
    ```bash
-   cd apps/api
-   npx prisma db push
-   npx prisma generate
+   # Generate Prisma client and push schema
+   pnpm db:push
    ```
 
 4. **Run Development**:
    ```bash
    pnpm dev
    ```
+
+## 🔄 CI/CD Pipeline
+
+Proyek ini dilengkapi dengan **GitHub Actions** yang secara otomatis:
+- Menjalankan linting dan type-checking pada setiap Pull Request.
+- Melakukan build verifikasi untuk memastikan kode siap produksi.
+- Men-generate Prisma Client secara otomatis di lingkungan CI.
 
 ## 🔐 Keamanan & Akses (RBAC)
 
@@ -77,7 +106,8 @@ beritakarya/
 Lihat folder `docs/` untuk detail lebih mendalam:
 - [Workflow Editorial](./docs/EDITORIAL_WORKFLOW.md)
 - [Skema Database](./docs/DATABASE_SCHEMA.md)
-- [Panduan Produksi](./docs/PRODUCTION_SETUP.md)
+- [Panduan Produksi (VPS/Docker)](./docs/PRODUCTION_SETUP.md)
+- [Deployment ke Vercel (Frontend)](./docs/VERCEL_DEPLOYMENT.md)
 
 ---
 © 2026 BeritaKarya Global Media. *Jernih Melihat Nusantara.*

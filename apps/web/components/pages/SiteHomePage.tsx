@@ -72,7 +72,7 @@ export async function SiteHomePage({ siteParam, searchParams }: SiteHomePageProp
       (siteParam.charAt(0).toUpperCase() + siteParam.slice(1)),
     domain:
       siteSettings?.domain || SITE_MAP[siteParam]?.domain ||
-      `${siteParam}.beritakarya.com`,
+      `${siteParam}.beritakarya.co`,
     devDomain: SITE_MAP[siteParam]?.devDomain || `${siteParam}.localhost:3000`
   }
 

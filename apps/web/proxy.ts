@@ -5,7 +5,7 @@ export function proxy(req: NextRequest) {
   const hostname = req.headers.get('host') || ''
   
   // bandung.localhost:3000 -> bandung
-  // bandung.beritakarya.com -> bandung
+  // bandung.beritakarya.co -> bandung
   // beritakarya.co -> '' (pusat)
   
   const isLocalhost = hostname.includes('localhost') || hostname.includes('127.0.0.1')
@@ -18,7 +18,7 @@ export function proxy(req: NextRequest) {
       subdomain = parts[0]
     }
   } else {
-    // Handle bandung.beritakarya.com or beritakarya.co
+    // Handle bandung.beritakarya.co or beritakarya.co
     const parts = hostname.split('.')
     if (parts.length > 2) {
       subdomain = parts[0]

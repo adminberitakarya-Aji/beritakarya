@@ -24,7 +24,7 @@ services:
     container_name: beritakarya_web
     environment:
       - NODE_ENV=production
-      - NEXT_PUBLIC_API_URL=https://api.beritakarya.com
+      - NEXT_PUBLIC_API_URL=https://api.beritakarya.co
     env_file:
       - ../../.env.production
     expose:

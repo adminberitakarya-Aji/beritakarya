@@ -274,7 +274,7 @@ export function EditorialSidebar() {
                       {metaTitle || title || 'Judul Berita...'}
                     </h4>
                     <p className="text-sm text-green-700 dark:text-green-500/80 line-clamp-1">
-                      beritakarya.com › {categoryId || 'artikel'} › ...
+                      beritakarya.co › {categoryId || 'artikel'} › ...
                     </p>
                     <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2">
                       {metaDescription || 'Tulis deskripsi meta untuk meningkatkan performa pencarian di mesin pencari...'}

@@ -1,54 +1,64 @@
 # Skema Database (Prisma) 🗄️
 
-Struktur data BeritaKarya dirancang untuk mendukung multi-tenancy, skalabilitas media, dan transparansi aksi (auditing).
+Struktur data BeritaKarya dirancang untuk mendukung multi-tenancy, skalabilitas media, transparansi aksi (auditing), dan fitur interaktif (newsletter/iklan).
 
 ## 📊 Entitas Utama
 
 ### 1. `Site` (Multi-tenant Foundation)
-Menyimpan konfigurasi untuk setiap portal berita (Pusat, Bandung, Surabaya, dll).
+Menyimpan konfigurasi untuk setiap portal berita.
 - `id`: Unique identifier (misal: "pusat", "bandung").
-- `domain`: Domain utama produksi.
+- `domain`: Domain utama produksi (digunakan middleware untuk routing).
 - `trendingTopics`: JSON array untuk topik hangat di navigasi.
 
 ### 2. `User` & `Auth`
 Mengelola identitas dan hak akses (RBAC).
 - `role`: `superadmin` | `pimred` | `journalist` | `reader`.
 - `siteId`: Relasi ke `Site` (null untuk superadmin).
+- `refreshTokens`: Token untuk session management yang aman.
 
 ### 3. `Article` (Core Content)
-Menyimpan konten berita utama.
+Menyimpan konten berita utama dengan workflow editorial yang ketat.
 - `blocks`: JSON array berisi struktur artikel (Editor.js compatible).
-- `status`: Enum untuk workflow (draft, review, published, dll).
-- `viewCount`: Counter pembaca real-time.
-- `isBreaking` / `isExclusive`: Flag untuk UI hierarchy.
+- `status`: Enum (`draft`, `submitted`, `review`, `revision`, `approved`, `scheduled`, `published`, `archived`).
+- `scheduledAt`: Waktu publikasi otomatis.
+- `featuredImage`: Gambar utama untuk thumbnail dan OG Meta.
 
 ### 4. `ArticleVersion` (History)
 Menyimpan snapshot konten artikel untuk audit dan pemulihan.
-- `articleId`: Relasi ke artikel induk.
-- `blocks`: Snapshot data blok pada waktu tertentu.
-- `version`: Penomoran versi sekuensial.
 
 ### 5. `Media` (Asset Management)
-Metadata untuk gambar dan dokumen.
-- `url` / `thumbUrl`: Link ke storage.
-- `altText` / `caption` / `credit`: Data SEO dan atribusi.
-- `userId`: Pengunggah media.
+Metadata untuk gambar (WebP/JPEG) dan dokumen.
+- `url` / `thumbUrl`: Link ke storage (local atau S3).
+- `width` / `height` / `size`: Metadata teknis untuk optimasi frontend.
 
-### 6. `AuditLog` (Accountability)
+### 6. `Advertisement` 💰
+Manajemen slot iklan per portal.
+- `slot`: Lokasi iklan (`leaderboard`, `in_feed`, `sidebar`).
+- `code`: Snippet script (AdSense) atau URL image banner.
+
+### 7. `NewsletterSubscriber` 📧
+Daftar langganan email per portal.
+
+### 8. `AIUsage` 🤖
+Logging penggunaan asisten AI untuk audit biaya dan performa.
+- `action`: Fitur yang digunakan (expand, rewrite, headline).
+- `latencyMs`: Monitoring performa AI.
+
+### 9. `AuditLog` (Accountability)
 Mencatat setiap aksi administratif sensitif.
-- `action`: Jenis aksi (misal: `article.publish`, `user.update`).
-- `oldValue` / `newValue`: Perbandingan data JSON sebelum dan sesudah aksi.
-- `ipAddress`: Pelacakan asal request.
+- `oldValue` / `newValue`: Diff data dalam format JSON.
+
+### 10. `Notification` 🔔
+Sistem notifikasi internal untuk workflow redaksi.
 
 ## 🔗 Relasi Penting
 
-- **Site ↔ Article**: Relasi 1:N. Semua artikel terikat pada satu site.
-- **User ↔ Article**: Relasi 1:N (Author).
-- **Article ↔ Category**: Relasi 1:N.
+- **Site ↔ Everything**: Hampir semua entitas (`User`, `Article`, `Category`, `Ad`, `Subscriber`, `AuditLog`) terikat pada `Site`.
 - **Article ↔ ArticleVersion**: Relasi 1:N (Revision History).
+- **Article ↔ Category**: Relasi 1:N.
 
 ## 🛠️ Pemeliharaan
 
 - **Migration**: Gunakan `npx prisma migrate dev` saat pengembangan.
-- **Sync**: Gunakan `npx prisma db push` untuk update schema cepat di staging/prod.
-- **Seed**: Jalankan script seeding untuk inisialisasi data situs default.
+- **Sync**: Gunakan `pnpm db:push` untuk sinkronisasi schema cepat di staging/prod.
+- **Client Generation**: Jalankan `npx prisma generate` untuk memperbarui types di node_modules.

@@ -9,10 +9,11 @@ async function main() {
   // 1. Setup Sites
   const siteConfigs = [
     { id: 'pusat', name: 'BeritaKarya Pusat', domain: 'beritakarya.co' },
-    { id: 'bandung', name: 'BeritaKarya Bandung', domain: 'bandung.beritakarya.com' }
+    { id: 'bandung', name: 'BeritaKarya Bandung', domain: 'bandung.beritakarya.co' },
+    { id: 'surabaya', name: 'BeritaKarya Surabaya', domain: 'surabaya.beritakarya.co' }
   ]
 
-  const siteIdMap: Record<string, string> = { pusat: 'pusat', bandung: 'bandung' }
+  const siteIdMap: Record<string, string> = { pusat: 'pusat', bandung: 'bandung', surabaya: 'surabaya' }
 
   for (const conf of siteConfigs) {
     const existing = await prisma.site.findUnique({ where: { domain: conf.domain } })

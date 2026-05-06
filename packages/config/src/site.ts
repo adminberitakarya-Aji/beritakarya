@@ -9,13 +9,13 @@ export const SITE_MAP: Record<string, SiteConfig> = {
   bandung: {
     id: 'bandung',
     name: 'BeritaKarya Bandung',
-    domain: 'bandung.beritakarya.com',
+    domain: 'bandung.beritakarya.co',
     devDomain: 'bandung.localhost:3000'
   },
   surabaya: {
     id: 'surabaya',
     name: 'BeritaKarya Surabaya',
-    domain: 'surabaya.beritakarya.com',
+    domain: 'surabaya.beritakarya.co',
     devDomain: 'surabaya.localhost:3000'
   },
   pusat: {

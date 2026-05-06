@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-DOMAIN="beritakarya.com"
-EMAIL="admin@beritakarya.com"
+DOMAIN="beritakarya.co"
+EMAIL="admin@beritakarya.co"
 SSL_DIR="/etc/ssl/beritakarya"
 
 echo "🔐 Setting up Wildcard SSL for *.$DOMAIN..."

@@ -104,7 +104,7 @@ export default async function ArticlePage({ params }: Props) {
   const siteConfig = {
     id: siteParam,
     name: siteSettings?.name || SITE_MAP[siteParam]?.name || (siteParam.charAt(0).toUpperCase() + siteParam.slice(1)),
-    domain: siteSettings?.domain || SITE_MAP[siteParam]?.domain || `${siteParam}.beritakarya.com`,
+    domain: siteSettings?.domain || SITE_MAP[siteParam]?.domain || `${siteParam}.beritakarya.co`,
     devDomain: SITE_MAP[siteParam]?.devDomain || `${siteParam}.localhost:3000`
   }
 

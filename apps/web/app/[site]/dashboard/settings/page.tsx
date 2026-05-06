@@ -152,7 +152,7 @@ export default function SettingsPage() {
                   type="text" 
                   value={settings.domain}
                   onChange={(e) => setSettings({...settings, domain: e.target.value})}
-                  placeholder="bandung.beritakarya.com"
+                  placeholder="bandung.beritakarya.co"
                   className="w-full bg-slate-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 px-4 py-3 text-xs text-brand-black dark:text-white outline-none focus:border-brand-red transition-colors font-medium"
                 />
               </div>
