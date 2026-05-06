@@ -2,6 +2,20 @@
 
 Panduan ini ditujukan bagi Anda yang ingin menghemat biaya dengan menggabungkan **Express API** dan **PostgreSQL Database** dalam satu VPS menggunakan Docker Compose.
 
+## 🗺️ Urutan Master Workflow (Lakukan Sesuai Urutan)
+
+Agar proses deployment berjalan mulus tanpa bolak-balik, ikuti urutan ini:
+
+1.  **Sewa VPS**: Dapatkan alamat IP Public server Anda (misal: `103.xx.xx.xx`).
+2.  **Atur DNS di Namecheap**:
+    -   Arahkan `api.beritakarya.co` (A Record) ke **IP VPS**.
+    -   Arahkan `beritakarya.co` (CNAME) ke **Vercel** (`cname.vercel-dns.com`).
+3.  **Setup VPS (Backend)**: Jalankan Docker (API + DB) dan aktifkan SSL (HTTPS). 
+    -   *Hasil akhir: API Anda online di `https://api.beritakarya.co`*
+4.  **Setup Vercel (Frontend)**: Deploy kode ke Vercel dan masukkan URL API yang sudah aktif tadi ke Environment Variables.
+
+---
+
 ## 📋 Persiapan Server (Instalasi Alat)
 
 Sebelum mendeploy, Anda perlu menginstal 4 alat utama di VPS Anda (Ubuntu 22.04):
