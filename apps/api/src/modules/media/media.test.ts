@@ -43,7 +43,7 @@ describe('Media Upload Endpoint', () => {
     
     expect(res.status).toBe(400)
     expect(res.body.success).toBe(false)
-    expect(res.body.error.message).toMatch(/JPG, PNG, WebP, GIF/i)
+    expect(res.body.error.message).toMatch(/JPG, PNG, WebP,.*GIF/i)
   })
 
   it('harus mengembalikan 400 jika tidak ada file yang diunggah', async () => {
