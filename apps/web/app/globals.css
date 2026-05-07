@@ -8,12 +8,19 @@
   :root {
     /* Core Brand */
     --brand-red: #B91C1C;
+    --brand-red-rgb: 185 28 28;
     --brand-black: #0F172A;
+    --brand-black-rgb: 15 23 42;
     --brand-dark: #020617;
+    --brand-dark-rgb: 2 6 23;
     --brand-grey: #F1F5F9;
+    --brand-grey-rgb: 241 245 249;
     --brand-surface: #F8FAFC;
+    --brand-surface-rgb: 248 250 252;
     --brand-text: #0F172A;
+    --brand-text-rgb: 15 23 42;
     --brand-text-muted: #64748B;
+    --brand-text-muted-rgb: 100 116 139;
     --bg-main: #FFFFFF;
 
     /* Editorial Badge Colors */
@@ -41,12 +48,19 @@
 
   .dark {
     --brand-red: #EF4444;
+    --brand-red-rgb: 239 68 68;
     --brand-black: #F8FAFC;
+    --brand-black-rgb: 248 250 252;
     --brand-dark: #F1F5F9;
+    --brand-dark-rgb: 241 245 249;
     --brand-grey: #1E293B;
+    --brand-grey-rgb: 30 41 59;
     --brand-surface: #0F172A;
+    --brand-surface-rgb: 15 23 42;
     --brand-text: #F8FAFC;
+    --brand-text-rgb: 248 250 252;
     --brand-text-muted: #94A3B8;
+    --brand-text-muted-rgb: 148 163 184;
     --bg-main: #020617;
 
     --dash-sidebar: #020617;
