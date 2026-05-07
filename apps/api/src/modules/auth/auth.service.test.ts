@@ -10,7 +10,12 @@ vi.mock('../../db/client', () => ({
     refreshToken: {
       create:     vi.fn(),
       findUnique: vi.fn(),
+      delete:     vi.fn(),
       deleteMany: vi.fn()
+    },
+    blacklistedToken: {
+      findUnique: vi.fn(),
+      create:     vi.fn()
     }
   }
 }))
@@ -80,7 +85,7 @@ describe('registerUser', () => {
     vi.mocked(prisma.user.create).mockResolvedValue(await mockUser() as any)
     vi.mocked(prisma.refreshToken.create).mockResolvedValue({ token: 'rt' } as any)
     
-    const result = await registerUser('baru@bandung.com', 'pass123', 'Baru', 'journalist', 'bandung')
+    const result = await registerUser('baru@bandung.com', 'Pass123!', 'Baru', 'journalist', 'bandung')
     expect(result.accessToken).toBeDefined()
   })
 })
@@ -91,12 +96,14 @@ describe('refreshAccessToken', () => {
   })
 
   it('gagal jika token tidak ada di DB', async () => {
+    vi.mocked(prisma.blacklistedToken.findUnique).mockResolvedValue(null)
     vi.mocked(prisma.refreshToken.findUnique).mockResolvedValue(null)
     await expect(refreshAccessToken('invalid-token'))
       .rejects.toThrow('Refresh token tidak valid atau sudah expired')
   })
 
   it('gagal jika token sudah expired', async () => {
+    vi.mocked(prisma.blacklistedToken.findUnique).mockResolvedValue(null)
     vi.mocked(prisma.refreshToken.findUnique).mockResolvedValue({
       token: 'old', 
       userId: 'u-1',
@@ -110,10 +117,16 @@ describe('refreshAccessToken', () => {
 
 describe('logoutUser', () => {
   it('menghapus refresh token dari DB', async () => {
-    vi.mocked(prisma.refreshToken.deleteMany).mockResolvedValue({ count: 1 })
+    const fakeToken = { id: 'rt-1', token: 'some-refresh-token', userId: 'u-1', expiresAt: new Date() }
+    vi.mocked(prisma.refreshToken.findUnique).mockResolvedValue(fakeToken as any)
+    vi.mocked(prisma.blacklistedToken.create).mockResolvedValue({} as any)
+    vi.mocked(prisma.refreshToken.delete).mockResolvedValue(fakeToken as any)
+
     await logoutUser('u-1', 'some-refresh-token')
-    expect(prisma.refreshToken.deleteMany).toHaveBeenCalledWith({
-      where: { userId: 'u-1', token: 'some-refresh-token' }
+
+    expect(prisma.blacklistedToken.create).toHaveBeenCalled()
+    expect(prisma.refreshToken.delete).toHaveBeenCalledWith({
+      where: { id: 'rt-1' }
     })
   })
 })

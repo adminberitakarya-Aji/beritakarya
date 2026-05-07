@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import { ZodError } from 'zod'
+import multer from 'multer'
 import { logger } from '../lib/logger'
 import { env } from '../lib/env'
 
@@ -30,6 +31,22 @@ export function errorMiddleware(
           message: e.message
         }))
       }
+    })
+  }
+
+  // Multer errors (file size limit, unexpected field, etc.)
+  if (err instanceof multer.MulterError) {
+    return res.status(400).json({
+      success: false,
+      error: { code: 'FILE_ERROR', message: err.message }
+    })
+  }
+
+  // File type rejection from fileFilter callback
+  if (err?.message?.includes('Tipe file tidak didukung')) {
+    return res.status(400).json({
+      success: false,
+      error: { code: 'INVALID_FILE_TYPE', message: err.message }
     })
   }
 

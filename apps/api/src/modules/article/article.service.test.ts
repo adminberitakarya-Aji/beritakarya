@@ -4,6 +4,14 @@ vi.mock('./article.repository')
 vi.mock('@beritakarya/utils', () => ({
   generateSlug: (t: string) => t.toLowerCase().replace(/\s+/g, '-')
 }))
+vi.mock('../../modules/notification/notification.controller', () => ({
+  sendNotification: vi.fn().mockResolvedValue({})
+}))
+vi.mock('../../db/client', () => ({
+  prisma: {
+    user: { findUnique: vi.fn(), findMany: vi.fn() }
+  }
+}))
 
 import * as repo from './article.repository'
 import {
@@ -116,7 +124,7 @@ describe('publishArticle', () => {
     vi.mocked(repo.updateArticle).mockResolvedValue(
       mockArticle({ status: 'published' }) as any
     )
-    await publishArticle('art-1', 'bandung', jurnalisBandung)
+    await publishArticle('art-1', 'bandung', editorPusat)
     expect(repo.updateArticle).toHaveBeenCalledWith(
       'art-1', 'bandung',
       expect.objectContaining({ status: 'published', publishedAt: expect.any(Date) })

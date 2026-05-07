@@ -9,6 +9,14 @@ vi.mock('../../middleware/auth.middleware', () => ({
   requireAuth: (_: any, __: any, next: any) => next()
 }))
 
+// Mock site middleware so we don't need a real site header
+vi.mock('../../middleware/site.middleware', () => ({
+  siteMiddleware: (_: any, __: any, next: any) => {
+    _.site = 'bandung'
+    next()
+  }
+}))
+
 // Mock sharp so we don't need real images or binary dependencies in test
 vi.mock('sharp', () => ({
   default: vi.fn(() => ({

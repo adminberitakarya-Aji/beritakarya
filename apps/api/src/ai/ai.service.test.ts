@@ -7,13 +7,15 @@ const { mockCreate } = vi.hoisted(() => ({
 // Mock OpenAI
 vi.mock('openai', () => {
   return {
-    default: vi.fn().mockImplementation(() => ({
-      chat: {
-        completions: {
-          create: mockCreate
+    default: vi.fn().mockImplementation(function () {
+      return {
+        chat: {
+          completions: {
+            create: mockCreate
+          }
         }
       }
-    }))
+    })
   }
 })
 

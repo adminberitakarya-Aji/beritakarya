@@ -9,6 +9,32 @@ vi.mock('./article.service')
 vi.mock('../../lib/rateLimit', () => ({
   apiLimiter: (_: any, __: any, n: any) => n()
 }))
+vi.mock('../../middleware/site.middleware', () => ({
+  siteMiddleware: (req: any, _: any, next: any) => {
+    req.site = (req.query.site as string) || 'bandung'
+    next()
+  },
+  requireSiteAccess: (req: any, res: any, next: any) => {
+    if (!req.user) return next()
+    if (['journalist', 'pimred'].includes(req.user.role) && req.user.siteId !== req.site) {
+      return res.status(403).json({ success: false, error: { code: 'SITE_FORBIDDEN', message: 'Akses ditolak' } })
+    }
+    next()
+  }
+}))
+vi.mock('../../middleware/auth.middleware', () => ({
+  requireAuth: (req: any, res: any, next: any) => {
+    const auth = req.headers.authorization
+    if (!auth) {
+      return res.status(401).json({ success: false, error: { code: 'UNAUTHORIZED' } })
+    }
+    const token = auth.replace('Bearer ', '')
+    // Decode without verification for test isolation
+    const parts = token.split('.')
+    req.user = JSON.parse(Buffer.from(parts[1], 'base64').toString())
+    next()
+  }
+}))
 
 import * as articleService from './article.service'
 

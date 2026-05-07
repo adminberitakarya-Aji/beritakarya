@@ -1,6 +1,15 @@
 import { describe, it, expect, vi } from 'vitest'
 import request from 'supertest'
 import express from 'express'
+
+// Must be mocked before any import that transitively loads base.service.ts,
+// because OpenAI is instantiated at module level (not inside a function).
+vi.mock('openai', () => ({
+  default: vi.fn().mockImplementation(function () {
+    return { chat: { completions: { create: vi.fn() } } }
+  })
+}))
+
 import { aiRouter } from './ai.controller'
 import { errorMiddleware } from '../middleware/error.middleware'
 
