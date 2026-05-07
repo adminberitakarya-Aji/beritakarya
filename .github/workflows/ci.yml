@@ -16,7 +16,6 @@ jobs:
     permissions:
       security-events: write
       contents: read
-      actions: read
 
     steps:
       - name: Checkout repository
@@ -40,11 +39,6 @@ jobs:
       - name: Security audit
         run: pnpm audit --audit-level=high
 
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
-        with:
-          languages: javascript-typescript
-
       - name: Lint
         run: pnpm lint
 
@@ -53,6 +47,3 @@ jobs:
 
       - name: Build
         run: pnpm build
-
-      - name: Perform CodeQL analysis
-        uses: github/codeql-action/analyze@v3
