@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express'
 import { z } from 'zod'
 import * as authService from './auth.service'
 import { asyncHandler } from '../../utils/asyncHandler'
+import { checkAccountLockout, recordFailedAttempt, resetFailedAttempts } from '../../lib/accountLockout'
 
 export const authRouter: Router = Router()
 
@@ -12,15 +13,37 @@ const loginSchema = z.object({
 
 const registerSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(8, 'Password minimal 8 karakter'),
+  password: z.string()
+    .min(8, 'Password minimal 8 karakter')
+    .regex(/[A-Z]/, 'Harus mengandung huruf kapital')
+    .regex(/[0-9]/, 'Harus mengandung angka')
+    .regex(/[^A-Za-z0-9]/, 'Harus mengandung karakter spesial'),
   name: z.string().min(2),
   siteId: z.string().nullable().default(null)
 })
 
 authRouter.post('/login', asyncHandler(async (req: Request, res: Response) => {
   const { email, password } = loginSchema.parse(req.body)
-  const result = await authService.loginUser(email, password)
-  res.json({ success: true, data: result })
+  
+  // Check account lockout
+  if (checkAccountLockout(email)) {
+    return res.status(429).json({
+      success: false,
+      error: {
+        code: 'ACCOUNT_LOCKED',
+        message: 'Akun terkunci sementara. Coba lagi dalam 15 menit.'
+      }
+    })
+  }
+  
+  try {
+    const result = await authService.loginUser(email, password)
+    resetFailedAttempts(email)
+    res.json({ success: true, data: result })
+  } catch (error) {
+    recordFailedAttempt(email)
+    throw error
+  }
 }))
 
 authRouter.post('/register', asyncHandler(async (req: Request, res: Response) => {

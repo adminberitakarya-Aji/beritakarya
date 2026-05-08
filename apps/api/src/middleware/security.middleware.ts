@@ -24,6 +24,15 @@ export function securityHeadersMiddleware(
     'camera=(), microphone=(), geolocation=(), payment=()'
   )
 
+  // Add HSTS
+  res.setHeader(
+    'Strict-Transport-Security',
+    'max-age=31536000; includeSubDomains; preload'
+  )
+
+  // Add XSS Protection
+  res.setHeader('X-XSS-Protection', '1; mode=block')
+
   // Content Security Policy (CSP)
   const isDev = env.NODE_ENV !== 'production'
   if (!isDev) {
