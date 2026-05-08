@@ -40,9 +40,9 @@ COPY --from=builder --chown=apiuser:nodejs /app/apps/api/prisma       ./prisma
 RUN mkdir -p /app/uploads/thumbs && chown -R apiuser:nodejs /app/uploads
 
 USER apiuser
-EXPOSE 4000
+EXPOSE 3001
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-  CMD wget -qO- http://localhost:4000/health || exit 1
+  CMD wget -qO- http://localhost:3001/health || exit 1
 
 CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main.js"]

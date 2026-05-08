@@ -4,7 +4,7 @@ import { vi, afterAll } from 'vitest'
 ;(process.env as any).NODE_ENV      = 'test'
 process.env.JWT_SECRET    = 'test-secret-key-minimal-32-chars-long'
 process.env.DATABASE_URL  = 'postgresql://postgres:postgres@localhost:5432/beritakarya_test'
-process.env.API_URL       = 'http://localhost:4000'
+process.env.API_URL       = 'http://localhost:3001'
 
 // Mock logger to keep test output clean
 vi.mock('../lib/logger', () => ({
