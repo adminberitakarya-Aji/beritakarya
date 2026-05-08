@@ -15,14 +15,15 @@ RUN npm install -g pnpm && pnpm install --frozen-lockfile
 FROM node:20-alpine AS builder
 WORKDIR /app
 
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/apps/web/node_modules ./apps/web/node_modules
-COPY . .
-
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
 RUN npm install -g pnpm turbo
+COPY . .
+COPY --from=deps /app/node_modules ./node_modules
+# Pastikan semua node_modules workspace ter-link dengan benar
+RUN pnpm install --frozen-lockfile
+
 RUN pnpm turbo run build --filter=@beritakarya/web
 
 # Stage 3: Runner
