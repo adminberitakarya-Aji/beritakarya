@@ -32,24 +32,26 @@ const PORT = env.PORT
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs))
 
-// ── Security & Core Middlewares ────────────────────────────
+// ── 1. CORS (Gerbang Utama) ────────────────────────────────
+app.use(cors({
+  origin: [
+    'https://www.beritakarya.co',
+    'https://beritakarya.co',
+    'https://beritakarya.com',
+    /\.vercel\.app$/,
+    'http://localhost:3000'
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
+}))
+
+// Handle preflight untuk semua route
+app.options('*', cors())
+
+// ── 2. Security & Core Middlewares ────────────────────────────
 app.use(helmet())
 app.use(securityHeadersMiddleware)
-app.use(cors({
-  origin: (origin, callback) => {
-    // Izinkan beritakarya.co, beritakarya.com, localhost, dan vercel
-    const allowed = [
-      /beritakarya\.co$/, 
-      /beritakarya\.com$/, 
-      /\.vercel\.app$/,
-      /localhost/, 
-      /127\.0\.0\.1/
-    ]
-    if (!origin || allowed.some(r => r.test(origin))) callback(null, true)
-    else callback(new Error('CORS: origin tidak diizinkan'))
-  },
-  credentials: true
-}))
 
 app.use(express.json({ limit: '10mb' }))
 app.use(sanitizeMiddleware)
