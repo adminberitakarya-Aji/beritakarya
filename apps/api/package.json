@@ -9,6 +9,7 @@
     "lint": "cross-env ESLINT_USE_FLAT_CONFIG=false eslint src --ext .ts",
     "type-check": "tsc --noEmit",
     "db:migrate": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
     "db:generate": "prisma generate",
     "db:studio": "prisma studio",
     "db:seed": "ts-node src/db/seed.ts"

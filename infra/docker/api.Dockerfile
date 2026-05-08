@@ -20,7 +20,7 @@ COPY . .
 COPY --from=deps /app/node_modules ./node_modules
 # Pastikan semua node_modules workspace ter-link dengan benar
 RUN pnpm install --frozen-lockfile
-RUN pnpm exec prisma generate --schema=apps/api/prisma/schema.prisma
+RUN pnpm turbo run db:generate --filter=@beritakarya/api
 RUN pnpm turbo run build --filter=@beritakarya/api
 
 # Stage 3: Runner
@@ -46,4 +46,4 @@ EXPOSE 3001
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
   CMD wget -qO- http://localhost:3001/health || exit 1
 
-CMD ["sh", "-c", "pnpm exec prisma migrate deploy && node dist/main.js"]
+CMD ["sh", "-c", "pnpm turbo run db:migrate:deploy --filter=@beritakarya/api && node dist/main.js"]
