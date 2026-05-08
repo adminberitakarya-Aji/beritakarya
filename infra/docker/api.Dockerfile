@@ -32,6 +32,9 @@ ENV NODE_ENV=production
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser  --system --uid 1001 apiuser
 
+# Instal Prisma CLI secara global agar bisa jalan di tahap runner tanpa symlink monorepo
+RUN npm install -g prisma@5.12.0
+
 # Copy compiled output
 COPY --from=builder --chown=apiuser:nodejs /app/apps/api/dist         ./dist
 COPY --from=builder --chown=apiuser:nodejs /app/apps/api/node_modules ./node_modules
@@ -46,4 +49,4 @@ EXPOSE 3001
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
   CMD wget -qO- http://localhost:3001/health || exit 1
 
-CMD ["sh", "-c", "npx prisma migrate deploy --schema=./prisma/schema.prisma && node dist/main.js"]
+CMD ["sh", "-c", "prisma migrate deploy --schema=./prisma/schema.prisma && node dist/main.js"]
