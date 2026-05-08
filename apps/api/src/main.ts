@@ -37,10 +37,10 @@ app.use(helmet())
 app.use(securityHeadersMiddleware)
 app.use(cors({
   origin: (origin, callback) => {
-    // Izinkan .co, .com, localhost, dan preview vercel
+    // Izinkan beritakarya.co, beritakarya.com, localhost, dan vercel
     const allowed = [
-      /\.beritakarya\.co$/, 
-      /\.beritakarya\.com$/, 
+      /beritakarya\.co$/, 
+      /beritakarya\.com$/, 
       /\.vercel\.app$/,
       /localhost/, 
       /127\.0\.0\.1/
