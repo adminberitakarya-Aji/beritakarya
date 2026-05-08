@@ -33,10 +33,11 @@ ENV NODE_ENV=production
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser  --system --uid 1001 apiuser
 
-# Copy compiled output
-COPY --from=builder --chown=apiuser:nodejs /app/apps/api/dist         ./dist
-COPY --from=builder --chown=apiuser:nodejs /app/apps/api/node_modules ./node_modules
-COPY --from=builder --chown=apiuser:nodejs /app/apps/api/prisma       ./prisma
+# Salin seluruh struktur folder /app agar symlink pnpm tidak putus
+COPY --from=builder --chown=apiuser:nodejs /app /app
+
+# Berikan izin akses ke apiuser
+RUN chown -R apiuser:nodejs /app/apps/api/uploads || true
 
 # Berikan izin akses ke apiuser
 RUN chown -R apiuser:nodejs /app
@@ -47,5 +48,6 @@ EXPOSE 3001
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
   CMD wget -qO- http://localhost:3001/health || exit 1
 
-# Jalankan migrasi dan aplikasi
-CMD ["sh", "-c", "./node_modules/.bin/prisma migrate deploy --schema=./prisma/schema.prisma && node dist/main.js"]
+# Jalankan dari folder apps/api agar path-nya sesuai
+WORKDIR /app/apps/api
+CMD ["sh", "-c", "../../node_modules/.bin/prisma migrate deploy && node dist/main.js"]
