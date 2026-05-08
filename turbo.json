@@ -19,7 +19,9 @@
       "outputs": ["coverage/**"]
     },
     "lint": {},
-    "type-check": {},
+    "type-check": {
+      "dependsOn": ["^build"]
+    },
     "clean": {
       "cache": false
     }

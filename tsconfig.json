@@ -11,7 +11,14 @@
     "resolveJsonModule": true,
     "declaration": true,
     "declarationMap": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "baseUrl": ".",
+    "paths": {
+      "@beritakarya/config": ["packages/config/src"],
+      "@beritakarya/types": ["packages/types/src"],
+      "@beritakarya/utils": ["packages/utils/src"]
+    }
+
   },
   "exclude": ["node_modules", "dist", ".next", "coverage"]
 }
