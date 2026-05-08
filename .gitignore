@@ -45,3 +45,6 @@ out/
 # Dependencies
 node_modules/
 .pnpm-store/
+
+# Turbo
+.turbo/
