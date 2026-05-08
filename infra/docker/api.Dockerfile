@@ -20,7 +20,7 @@ COPY . .
 COPY --from=deps /app/node_modules ./node_modules
 # Pastikan semua node_modules workspace ter-link dengan benar
 RUN pnpm install --frozen-lockfile
-
+RUN npx prisma generate --schema=apps/api/prisma/schema.prisma
 RUN pnpm turbo run build --filter=@beritakarya/api
 
 # Stage 3: Runner
