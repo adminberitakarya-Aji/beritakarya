@@ -8,14 +8,14 @@ services:
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-beritakarya}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ganti_password_ini}
-      POSTGRES_DB: ${POSTGRES_DB:-beritakarya_prod}
+      POSTGRES_DB: ${POSTGRES_DB:-beritakarya}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-beritakarya}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-beritakarya} -d ${POSTGRES_DB:-beritakarya}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -29,8 +29,8 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3001
-      - DATABASE_URL=postgresql://${POSTGRES_USER:-beritakarya}:${POSTGRES_PASSWORD:-ganti_password_ini}@postgres:5432/${POSTGRES_DB:-beritakarya_prod}
-      - DIRECT_URL=postgresql://${POSTGRES_USER:-beritakarya}:${POSTGRES_PASSWORD:-ganti_password_ini}@postgres:5432/${POSTGRES_DB:-beritakarya_prod}
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-beritakarya}:${POSTGRES_PASSWORD:-ganti_password_ini}@postgres:5432/${POSTGRES_DB:-beritakarya}
+      - DIRECT_URL=postgresql://${POSTGRES_USER:-beritakarya}:${POSTGRES_PASSWORD:-ganti_password_ini}@postgres:5432/${POSTGRES_DB:-beritakarya}
     env_file:
       - ../../.env.production
     ports:
