@@ -29,7 +29,7 @@ describe('POST /api/v1/auth/login', () => {
     vi.mocked(authService.loginUser).mockResolvedValue(mockTokens)
     const res = await request(app)
       .post('/api/v1/auth/login')
-      .send({ email: 'test@test.com', password: 'password123' })
+      .send({ email: 'test@test.com', password: 'P@ssword123' })
     
     expect(res.status).toBe(200)
     expect(res.body.success).toBe(true)
@@ -41,7 +41,7 @@ describe('POST /api/v1/auth/login', () => {
   it('400 dengan email format salah', async () => {
     const res = await request(app)
       .post('/api/v1/auth/login')
-      .send({ email: 'bukan-email', password: 'password123' })
+      .send({ email: 'bukan-email', password: 'P@ssword123' })
     
     expect(res.status).toBe(400)
     expect(res.body.success).toBe(false)
@@ -69,7 +69,7 @@ describe('POST /api/v1/auth/register', () => {
       .post('/api/v1/auth/register')
       .send({
         email: 'editor@test.com',
-        password: 'password123',
+        password: 'P@ssword123',
         name: 'User Baru',
         role: 'editor',
         siteId: 'bandung'
@@ -78,7 +78,7 @@ describe('POST /api/v1/auth/register', () => {
     expect(res.status).toBe(201)
     expect(authService.registerUser).toHaveBeenCalledWith(
       'editor@test.com',
-      'password123',
+      'P@ssword123',
       'User Baru',
       'journalist',
       'bandung'
