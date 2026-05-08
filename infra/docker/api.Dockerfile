@@ -26,18 +26,16 @@ RUN pnpm turbo run build --filter=@beritakarya/api
 # Stage 3: Runner
 FROM node:20-alpine AS runner
 RUN apk add --no-cache openssl libc6-compat
-WORKDIR /app
+# Instal pnpm di tahap runner agar semua perintah monorepo bisa dipanggil dengan benar
+RUN npm install -g pnpm
 
-ENV NODE_ENV=production
+WORKDIR /app
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser  --system --uid 1001 apiuser
 
 # Salin seluruh struktur folder /app agar symlink pnpm tidak putus
 COPY --from=builder --chown=apiuser:nodejs /app /app
-
-# Berikan izin akses ke apiuser
-RUN chown -R apiuser:nodejs /app/apps/api/uploads || true
 
 # Berikan izin akses ke apiuser
 RUN chown -R apiuser:nodejs /app
@@ -48,6 +46,6 @@ EXPOSE 3001
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
   CMD wget -qO- http://localhost:3001/health || exit 1
 
-# Jalankan dari folder apps/api agar path-nya sesuai
+# Jalankan dari folder apps/api menggunakan pnpm
 WORKDIR /app/apps/api
-CMD ["sh", "-c", "../../node_modules/.bin/prisma migrate deploy && node dist/main.js"]
+CMD ["sh", "-c", "pnpm run db:migrate:deploy && node dist/main.js"]
