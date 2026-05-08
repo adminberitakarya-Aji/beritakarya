@@ -41,6 +41,8 @@ dist/
 build/
 .next/
 out/
+*.tsbuildinfo
+
 
 # Dependencies
 node_modules/
