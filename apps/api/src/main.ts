@@ -37,8 +37,14 @@ app.use(helmet())
 app.use(securityHeadersMiddleware)
 app.use(cors({
   origin: (origin, callback) => {
-    // In production, tighten this to your actual domains
-    const allowed = [/\.beritakarya\.com$/, /localhost/, /127\.0\.0\.1/]
+    // Izinkan .co, .com, localhost, dan preview vercel
+    const allowed = [
+      /\.beritakarya\.co$/, 
+      /\.beritakarya\.com$/, 
+      /\.vercel\.app$/,
+      /localhost/, 
+      /127\.0\.0\.1/
+    ]
     if (!origin || allowed.some(r => r.test(origin))) callback(null, true)
     else callback(new Error('CORS: origin tidak diizinkan'))
   },
