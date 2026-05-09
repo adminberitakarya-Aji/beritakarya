@@ -13,9 +13,13 @@ export const mediaRouter: Router = Router()
 
 const UPLOAD_DIR = path.join(process.cwd(), 'uploads')
 const THUMB_DIR  = path.join(process.cwd(), 'uploads', 'thumbs')
-;[UPLOAD_DIR, THUMB_DIR].forEach(d => {
-  if (!fs.existsSync(d)) fs.mkdirSync(d, { recursive: true })
-})
+try {
+  ;[UPLOAD_DIR, THUMB_DIR].forEach(d => {
+    if (!fs.existsSync(d)) fs.mkdirSync(d, { recursive: true })
+  })
+} catch (err) {
+  console.error('[Media] Failed to create upload directories:', err)
+}
 
 const storage = multer.memoryStorage()
 

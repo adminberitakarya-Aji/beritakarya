@@ -38,7 +38,8 @@ RUN adduser  --system --uid 1001 apiuser
 COPY --from=builder --chown=apiuser:nodejs /app /app
 
 # Berikan izin akses ke apiuser
-RUN chown -R apiuser:nodejs /app
+# Pastikan folder uploads ada dan punya izin yang benar
+RUN mkdir -p /app/apps/api/uploads && chown -R apiuser:nodejs /app/apps/api/uploads
 
 USER apiuser
 EXPOSE 3001
