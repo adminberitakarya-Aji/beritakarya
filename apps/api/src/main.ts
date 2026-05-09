@@ -33,7 +33,7 @@ const PORT = env.PORT
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs))
 
 // ── 1. CORS (Gerbang Utama) ────────────────────────────────
-app.use(cors({
+const corsOptions = {
   origin: [
     'https://www.beritakarya.co',
     'https://beritakarya.co',
@@ -44,11 +44,12 @@ app.use(cors({
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
-}))
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'X-Site-ID']
+}
+app.use(cors(corsOptions))
 
-// Handle preflight untuk semua route
-app.options('*', cors())
+// Handle preflight untuk semua route (gunakan config yang sama)
+app.options('*', cors(corsOptions))
 
 // ── 2. Security & Core Middlewares ────────────────────────────
 app.use(helmet())
