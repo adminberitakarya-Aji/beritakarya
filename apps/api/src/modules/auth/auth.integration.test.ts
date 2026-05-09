@@ -62,7 +62,7 @@ describe('POST /api/v1/auth/login', () => {
 })
 
 describe('POST /api/v1/auth/register', () => {
-  it('memaksa role journalist walau payload mengirim editor', async () => {
+  it('memaksa role reader walau payload mengirim editor', async () => {
     vi.mocked(authService.registerUser).mockResolvedValue(mockTokens as any)
 
     const res = await request(app)
@@ -80,7 +80,7 @@ describe('POST /api/v1/auth/register', () => {
       'editor@test.com',
       'P@ssword123',
       'User Baru',
-      'journalist',
+      'reader',
       'bandung'
     )
   })
