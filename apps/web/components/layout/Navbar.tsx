@@ -17,6 +17,8 @@ interface NavbarProps {
   setSelectedCategory: (cat: string) => void;
 }
 
+import { useAuthStore } from '../../store/authStore';
+
 export default function Navbar({
   siteConfig,
   categories,
@@ -26,8 +28,11 @@ export default function Navbar({
   const router = useRouter();
   const pathname = usePathname();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  
+  const { user, logout } = useAuthStore();
 
   // Load theme on mount
   useEffect(() => {
@@ -136,13 +141,65 @@ export default function Navbar({
             <Bell size={20} strokeWidth={1.2} />
           </button>
             
-          <Link 
-            href={`/${pathname.split('/')[1] || 'pusat'}/dashboard`}
-            className="flex items-center gap-2 p-2 text-brand-text-muted hover:text-brand-black transition-colors"
-          >
-            <UserIcon size={20} strokeWidth={1.2} />
-            <span className="text-[10px] font-bold uppercase tracking-wider hidden sm:inline">Masuk</span>
-          </Link>
+          {user ? (
+            <div className="relative">
+              <button 
+                onClick={() => setIsProfileOpen(!isProfileOpen)}
+                className="flex items-center gap-2 p-2 text-brand-text-muted hover:text-brand-black transition-colors"
+              >
+                <div className="w-6 h-6 rounded-full bg-brand-red text-white flex items-center justify-center text-[10px] font-bold">
+                  {user.name.charAt(0).toUpperCase()}
+                </div>
+                <span className="text-[10px] font-bold uppercase tracking-wider hidden sm:inline truncate max-w-[80px]">
+                  {user.name.split(' ')[0]}
+                </span>
+              </button>
+
+              <AnimatePresence>
+                {isProfileOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-900 border border-gray-100 dark:border-white/5 rounded-lg shadow-xl overflow-hidden z-50"
+                  >
+                    <div className="p-4 border-b border-gray-50 dark:border-white/5">
+                      <p className="text-xs font-bold text-brand-black dark:text-white truncate">{user.name}</p>
+                      <p className="text-[10px] text-gray-500 truncate">{user.email}</p>
+                    </div>
+                    <div className="p-2">
+                      {['superadmin', 'pimred', 'journalist'].includes(user.role) && (
+                        <Link 
+                          href={`/${pathname.split('/')[1] || 'pusat'}/dashboard`}
+                          className="block px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-gray-600 hover:text-brand-red hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/5 rounded-md transition-colors"
+                          onClick={() => setIsProfileOpen(false)}
+                        >
+                          Dashboard
+                        </Link>
+                      )}
+                      <button 
+                        onClick={() => {
+                          setIsProfileOpen(false);
+                          logout();
+                        }}
+                        className="w-full text-left px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-brand-red hover:bg-red-50 dark:hover:bg-red-500/10 rounded-md transition-colors mt-1"
+                      >
+                        Keluar
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ) : (
+            <Link 
+              href="/login"
+              className="flex items-center gap-2 p-2 text-brand-text-muted hover:text-brand-black transition-colors"
+            >
+              <UserIcon size={20} strokeWidth={1.2} />
+              <span className="text-[10px] font-bold uppercase tracking-wider hidden sm:inline">Masuk</span>
+            </Link>
+          )}
           
           <div className="w-px h-6 bg-gray-200 hidden md:block" />
 

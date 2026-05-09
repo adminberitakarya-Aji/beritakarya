@@ -50,7 +50,11 @@ export default function RegisterPage() {
     }
 
     try {
-      await register(name, email, password);
+      const siteId = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('siteId='))
+        ?.split('=')[1] || 'pusat';
+      await register(name, email, password, siteId);
       // Let the useEffect handle the redirect once user is set
     } catch (err) {
       // Error is handled by the store
