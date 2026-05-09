@@ -98,8 +98,18 @@ mediaRouter.post(
       })
     }
 
+    console.log(`[Media] Uploading file: ${req.file.originalname} (${req.file.size} bytes)`)
     const id = uuidv4()
-    const processed = await processImage(req.file.buffer, id)
+    let processed;
+    try {
+      processed = await processImage(req.file.buffer, id)
+    } catch (err: any) {
+      console.error('[Media] Image processing failed:', err)
+      return res.status(500).json({
+        success: false,
+        error: { message: `Gagal memproses gambar: ${err.message}` }
+      })
+    }
 
     const baseUrl  = env.API_URL
     const url      = `${baseUrl}/api/v1/media/uploads/${processed.fullName}`

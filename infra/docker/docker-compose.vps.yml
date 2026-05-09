@@ -44,7 +44,7 @@ services:
     expose:
       - "3001"
     volumes:
-      - uploads_data:/app/uploads
+      - uploads_data:/app/apps/api/uploads
     depends_on:
       postgres:
         condition: service_healthy
