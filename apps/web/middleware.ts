@@ -1,6 +1,0 @@
-// apps/web/middleware.ts
-// Mengaktifkan wildcard multi-tenant routing
-// bandung.beritakarya.co -> /bandung/...
-// beritakarya.co -> /pusat/...
-
-export { proxy as middleware, config } from './proxy'
