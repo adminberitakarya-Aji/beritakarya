@@ -10,7 +10,7 @@ async function main() {
     create: { id: 'pusat', name: 'BeritaKarya Pusat', domain: 'beritakarya.co' }
   })
 
-  const hash = await bcrypt.hash('Admin123!', 10)
+  const hash = await bcrypt.hash('6669Pusat%Karya', 10)
 
   await prisma.user.upsert({
     where: { email: 'sabdakarya77@gmail.com' },
