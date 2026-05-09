@@ -9,6 +9,7 @@ const envSchema = z.object({
   OPENAI_API_KEY: z.string().optional(),
   AI_MODEL: z.string().default('gpt-4-turbo-preview'),
   API_URL: z.string().default('http://localhost:3001'),
+  CORS_ORIGIN: z.string().optional(), // Comma-separated list of extra allowed origins
 })
 
 const parsed = envSchema.safeParse(process.env)
