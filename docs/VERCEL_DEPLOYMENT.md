@@ -30,9 +30,11 @@ Buka tab **Environment Variables** dan tambahkan variabel berikut:
 
 | Key | Value (Contoh) | Deskripsi |
 |---|---|---|
-| `NEXT_PUBLIC_API_URL` | `https://api.beritakarya.co/api/v1` | URL API Backend di VPS |
+| `NEXT_PUBLIC_API_URL` | `https://api.beritakarya.co` | URL API Backend di VPS (TANPA /api/v1) |
 | `NEXT_PUBLIC_URL` | `https://beritakarya.co` | URL utama frontend |
 | `NODE_ENV` | `production` | Environment mode |
+
+> ⚠️ **Penting**: Nilai `NEXT_PUBLIC_API_URL` adalah base URL **tanpa** suffix `/api/v1`. Kode di `lib/api.ts` sudah otomatis menambahkan `/api/v1`.
 
 **Catatan:** Frontend di Vercel hanya membutuhkan URL API backend. Database berada di VPS dan diakses melalui backend API.
 

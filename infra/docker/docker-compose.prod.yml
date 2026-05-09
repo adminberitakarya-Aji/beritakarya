@@ -1,5 +1,19 @@
 version: '3.9'
 
+# ─────────────────────────────────────────────────────────
+# ⚠️  DEPRECATED — Jangan digunakan untuk deployment saat ini!
+# 
+# File ini berisi konfigurasi full-stack (Web + API + DB + Nginx)
+# untuk skenario ALL-IN-ONE tanpa Vercel.
+#
+# Setup saat ini menggunakan:
+# - Frontend: Vercel (apps/web)
+# - Backend:  docker-compose.backend.yml (api + postgres)
+# - Nginx:    Host-level Nginx di VPS
+#
+# File ini HANYA berguna jika Anda ingin pindah ke
+# full self-hosted di masa depan.
+# ─────────────────────────────────────────────────────────
 services:
   nginx:
     image: nginx:1.25-alpine
