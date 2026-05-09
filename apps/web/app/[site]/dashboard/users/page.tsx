@@ -27,7 +27,7 @@ export default function UsersPage() {
     setIsLoading(true);
     try {
       const { data } = await api.get('/users', { params: { site } });
-      setUsers(data.data || []);
+      setUsers(data.data?.items || []);
     } catch (err: any) {
       setError(err.response?.data?.error?.message || 'Gagal mengambil data pengguna');
     } finally {
