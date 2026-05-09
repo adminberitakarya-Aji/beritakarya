@@ -18,7 +18,9 @@ export function Editor({ articleId, siteId }: EditorProps) {
   const { loadArticle, saveArticle, undo, saving, lastSaved, isDirty, isFocusMode } = useEditorStore()
 
   useEffect(() => {
-    loadArticle(articleId, siteId)
+    if (articleId && articleId !== 'new') {
+      loadArticle(articleId, siteId)
+    }
   }, [articleId, siteId, loadArticle])
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {

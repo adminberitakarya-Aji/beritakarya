@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import {
   AreaChart,
   Area,
@@ -18,7 +19,13 @@ interface TrafficData {
 }
 
 export default function TrafficChart({ data }: { data: TrafficData[] }) {
-  if (!data || data.length === 0) {
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted || !data || data.length === 0) {
     return (
       <div className="h-[300px] flex items-center justify-center text-gray-400 text-xs uppercase tracking-widest font-bold">
         Data tidak tersedia
