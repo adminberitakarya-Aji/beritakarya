@@ -20,6 +20,7 @@ export function ImageBlock({ block }: { block: TImageBlock }) {
     setProgress(10)
     try {
       const { data } = await api.post('/media/upload', form, {
+        headers: { 'Content-Type': 'multipart/form-data' }, // Re-added because the base client has application/json default
         onUploadProgress: (e) => {
           if (e.total) setProgress(Math.round((e.loaded / e.total) * 90))
         }

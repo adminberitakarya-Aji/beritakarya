@@ -156,7 +156,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   },
 
   loadArticle: async (id, siteId) => {
-    const { data } = await api.get(`/articles/${id}?site=${siteId}`)
+    const { data } = await api.get(`/articles/${id}`)
     const article = data.data
     set({
       articleId: article.id,
