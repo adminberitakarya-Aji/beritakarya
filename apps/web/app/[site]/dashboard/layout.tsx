@@ -53,7 +53,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       } else if (user) {
         const allowedRoles = ['superadmin', 'pimred', 'journalist']
         if (!allowedRoles.includes(user.role)) {
-          router.push('/')
+          router.push(`/${site}`)
         }
       }
     }

@@ -50,7 +50,7 @@ authRouter.post('/register', asyncHandler(async (req: Request, res: Response) =>
   const input = registerSchema.parse(req.body)
   const result = await authService.registerUser(
     input.email, input.password, input.name,
-    'journalist', input.siteId
+    'reader', input.siteId
   )
   res.status(201).json({ success: true, data: result })
 }))

@@ -18,6 +18,7 @@ notificationRouter.get('/stream', ...withSite, (req: Request, res: Response) => 
   res.setHeader('Content-Type', 'text/event-stream')
   res.setHeader('Cache-Control', 'no-cache')
   res.setHeader('Connection', 'keep-alive')
+  res.setHeader('X-Accel-Buffering', 'no') // Disable Nginx proxy buffering
   res.flushHeaders()
 
   const onNotification = (notification: any) => {
@@ -28,8 +29,14 @@ notificationRouter.get('/stream', ...withSite, (req: Request, res: Response) => 
 
   notificationEvents.on('new_notification', onNotification)
 
+  // Send a heartbeat comment every 30 seconds to keep connection open
+  const heartbeat = setInterval(() => {
+    res.write(':\n\n')
+  }, 30000)
+
   req.on('close', () => {
     notificationEvents.off('new_notification', onNotification)
+    clearInterval(heartbeat)
   })
 })
 
