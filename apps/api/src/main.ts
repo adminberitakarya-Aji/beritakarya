@@ -28,6 +28,7 @@ import { logger, httpLogger } from './lib/logger'
 import { metrics } from './lib/monitoring'
 
 const app = express()
+app.set('trust proxy', 1) // Wajib untuk reverse proxy (Nginx) agar rate limit membaca IP asli client, bukan IP container Nginx
 const PORT = env.PORT
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs))
