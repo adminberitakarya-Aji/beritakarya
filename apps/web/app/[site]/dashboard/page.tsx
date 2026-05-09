@@ -93,7 +93,7 @@ function KPICard({ title, value, sub, trend, icon: Icon, accent, sparkData, dela
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay }}
       whileHover={{ y: -4, transition: { duration: 0.2 } }}
-      className="group relative"
+      className="group relative h-full"
     >
       {/* Hover Glow Effect */}
       <div className={cn(
@@ -103,11 +103,11 @@ function KPICard({ title, value, sub, trend, icon: Icon, accent, sparkData, dela
         accent.includes('red') ? 'bg-red-500' : 'bg-brand-red'
       )} />
       
-      <div className="relative dash-card p-5 bg-white/70 dark:bg-slate-900/40 backdrop-blur-xl border border-white/20 dark:border-white/5 shadow-xl hover:shadow-2xl transition-all duration-300 rounded-2xl overflow-hidden">
+      <div className="relative dash-card p-5 bg-white/70 dark:bg-slate-900/40 backdrop-blur-xl border border-white/20 dark:border-white/5 shadow-xl hover:shadow-2xl transition-all duration-300 rounded-2xl overflow-hidden h-full flex flex-col">
         {/* Subtle Decorative Gradient */}
         <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-white/5 to-transparent -mr-16 -mt-16 rounded-full" />
         
-        <div className="flex items-start justify-between mb-4 relative z-10">
+        <div className="flex items-start justify-between mb-4 relative z-10 shrink-0">
           <div className={cn('w-10 h-10 rounded-xl flex items-center justify-center shadow-inner', accent)}>
             <Icon size={18} />
           </div>
@@ -123,13 +123,13 @@ function KPICard({ title, value, sub, trend, icon: Icon, accent, sparkData, dela
           )}
         </div>
         
-        <div className="relative z-10">
+        <div className="relative z-10 flex flex-col flex-1">
           <p className="dash-label mb-1 opacity-60">{title}</p>
           <p className="text-3xl font-black text-brand-black dark:text-white tabular-nums tracking-tighter">
             {value}
           </p>
-          <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100/50 dark:border-white/5">
-            {sub && <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{sub}</p>}
+          <div className="flex items-end justify-between mt-auto pt-4 border-t border-gray-100/50 dark:border-white/5 min-h-8">
+            {sub && <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">{sub}</p>}
             {sparkData && <Sparkline values={sparkData} color={isUp ? '#10B981' : '#EF4444'} />}
           </div>
         </div>
