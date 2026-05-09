@@ -1,7 +1,6 @@
 'use client'
 import { useState, type ReactNode } from 'react'
 import { useEditorStore } from '../../store/editorStore'
-import { AddBlockMenu } from './AddBlockMenu'
 import type { Block } from '@beritakarya/types'
 
 interface Props {
@@ -45,12 +44,6 @@ export function BlockWrapper({ block, index, children }: Props) {
       <div className="rounded-lg transition-colors hover:bg-gray-50/50 px-2 py-1">
         {children}
       </div>
-
-      {hovered && (
-        <div className="mt-1">
-          <AddBlockMenu afterId={block.id} compact />
-        </div>
-      )}
     </div>
   )
 }
