@@ -11,8 +11,10 @@ import * as repo from './media.repository'
 
 export const mediaRouter: Router = Router()
 
-const UPLOAD_DIR = path.join(process.cwd(), 'uploads')
-const THUMB_DIR  = path.join(process.cwd(), 'uploads', 'thumbs')
+const UPLOAD_DIR = process.env.NODE_ENV === 'production' 
+  ? '/app/uploads' 
+  : path.join(process.cwd(), 'uploads')
+const THUMB_DIR  = path.join(UPLOAD_DIR, 'thumbs')
 try {
   ;[UPLOAD_DIR, THUMB_DIR].forEach(d => {
     if (!fs.existsSync(d)) fs.mkdirSync(d, { recursive: true })

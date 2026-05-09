@@ -24,6 +24,7 @@ services:
     volumes:
       - ../nginx/nginx.prod.conf:/etc/nginx/nginx.conf:ro
       - /etc/ssl/beritakarya:/etc/ssl/beritakarya:ro
+      - uploads_data:/app/uploads:ro
       - nginx_logs:/var/log/nginx
     depends_on:
       api:
@@ -44,7 +45,7 @@ services:
     expose:
       - "3001"
     volumes:
-      - uploads_data:/app/apps/api/uploads
+      - uploads_data:/app/uploads
     depends_on:
       postgres:
         condition: service_healthy
