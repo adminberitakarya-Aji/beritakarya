@@ -187,7 +187,7 @@ export default function ArticlesPage() {
                 className={cn(
                   'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border transition-all whitespace-nowrap',
                   filter === s
-                    ? 'bg-brand-black dark:bg-white text-white dark:text-brand-black border-brand-black dark:border-white'
+                    ? 'bg-brand-black dark:bg-white text-white dark:text-slate-900 border-brand-black dark:border-white'
                     : 'bg-transparent text-gray-400 border-gray-200 dark:border-white/10 hover:border-brand-red hover:text-brand-red'
                 )}
               >
