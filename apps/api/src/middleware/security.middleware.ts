@@ -43,10 +43,15 @@ export function securityHeadersMiddleware(
         "script-src 'self'",
         "style-src 'self' 'unsafe-inline'",
         "img-src 'self' data: https:",
-        "connect-src 'self'",
+        "connect-src 'self' https://*.beritakarya.co https://beritakarya.co",
         "frame-ancestors 'none'"
       ].join('; ')
     )
+  }
+
+  // Handle CORS Preflight - Don't add CSP to OPTIONS requests
+  if (_req.method === 'OPTIONS') {
+    return next()
   }
 
   next()
