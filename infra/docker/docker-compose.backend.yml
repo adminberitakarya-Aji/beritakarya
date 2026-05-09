@@ -33,10 +33,12 @@ services:
       - DIRECT_URL=postgresql://${POSTGRES_USER:-beritakarya}:${POSTGRES_PASSWORD:-ganti_password_ini}@postgres:5432/${POSTGRES_DB:-beritakarya}
     env_file:
       - ../../.env.production
+    expose:
+      - "3001"
     ports:
-      - "3001:3001"
+      - "127.0.0.1:3001:3001"
     volumes:
-      - uploads_data:/app/uploads
+      - uploads_data:/app/apps/api/uploads
     depends_on:
       postgres:
         condition: service_healthy
