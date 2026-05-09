@@ -38,13 +38,17 @@ Buka tab **Environment Variables** dan tambahkan variabel berikut:
 
 ### 3. Konfigurasi Multi-Tenancy (Wildcard Domain)
 Agar portal daerah (misal: `bandung.beritakarya.co`) dapat berjalan:
-1. Buka **Settings > Domains** di project Vercel
-2. Tambahkan domain utama: `beritakarya.co`
-3. Tambahkan **Wildcard Domain**: `*.beritakarya.co`
-4. Di panel DNS penyedia domain Anda, tambahkan record:
-   - **Type**: `CNAME`
-   - **Name**: `*`
-   - **Value**: `cname.vercel-dns.com`
+1. Di sidebar kiri dashboard proyek Vercel, pilih menu **Domains** (di bawah Environment Variables).
+2. Klik **Add Existing** dan tambahkan domain utama: `beritakarya.co`.
+3. Klik **Add Existing** lagi dan tambahkan **Wildcard Domain**: `*.beritakarya.co`.
+4. **PENTING (DNS Setup):** 
+   - Karena menggunakan Wildcard, Anda wajib menggunakan **Vercel Nameservers**.
+   - Di panel provider domain (misal: Namecheap), ganti Nameservers menjadi: `ns1.vercel-dns.com` dan `ns2.vercel-dns.com`.
+5. **PENTING (Re-add API Record):**
+   - Setelah pindah ke Nameserver Vercel, record DNS lama akan hilang.
+   - Buka **Dashboard Utama Vercel > Domains > beritakarya.co**.
+   - Tambahkan record: Type `A`, Name `api`, Value `152.42.185.222` (IP VPS Backend).
+
 
 ### 4. Aktivasi Middleware Multi-Tenant
 Pastikan file `apps/web/proxy.ts` digunakan sebagai middleware utama. Jika belum ada file `apps/web/middleware.ts`, Anda bisa membuatnya dengan isi:

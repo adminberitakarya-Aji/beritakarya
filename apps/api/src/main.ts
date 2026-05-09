@@ -37,6 +37,7 @@ app.use(cors({
   origin: [
     'https://www.beritakarya.co',
     'https://beritakarya.co',
+    /\.beritakarya\.co$/,
     'https://beritakarya.com',
     /\.vercel\.app$/,
     'http://localhost:3000'
