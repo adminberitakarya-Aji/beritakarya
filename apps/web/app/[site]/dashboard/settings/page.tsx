@@ -20,6 +20,9 @@ export default function SettingsPage() {
     description: '',
     logoUrl: '',
     footerText: '',
+    address: '',
+    contactEmail: '',
+    phone: '',
     socialLinks: {
       facebook: '',
       twitter: '',
@@ -44,6 +47,9 @@ export default function SettingsPage() {
           description: data.data.description || '',
           logoUrl: data.data.logoUrl || '',
           footerText: data.data.footerText || '',
+          address: data.data.address || '',
+          contactEmail: data.data.contactEmail || '',
+          phone: data.data.phone || '',
           socialLinks: data.data.socialLinks || { facebook: '', twitter: '', instagram: '', youtube: '' },
           appearance: data.data.appearance || { primaryColor: '#e11d48' },
           trendingTopics: data.data.trendingTopics || []
@@ -231,10 +237,10 @@ export default function SettingsPage() {
             </div>
           </section>
 
-          {/* Footer & Sosial Media */}
+          {/* Footer & Kontak */}
           <section className="bg-white dark:bg-black/20 p-8 border border-gray-100 dark:border-white/5 rounded-sm shadow-sm">
             <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-black dark:text-white mb-8 flex items-center gap-2">
-              <span className="w-2 h-2 bg-brand-red rounded-full"></span> Footer & Sosial Media
+              <span className="w-2 h-2 bg-brand-red rounded-full"></span> Footer & Informasi Kontak
             </h2>
             
             <div className="space-y-8">
@@ -249,7 +255,42 @@ export default function SettingsPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-2">
+                  <label className="text-[9px] font-black uppercase tracking-widest text-gray-500">Alamat Kantor</label>
+                  <input 
+                    type="text" 
+                    value={settings.address}
+                    onChange={(e) => setSettings({...settings, address: e.target.value})}
+                    placeholder="Jl. Merdeka No. 123, Jakarta"
+                    className="w-full bg-slate-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 px-4 py-3 text-xs text-brand-black dark:text-white outline-none focus:border-brand-red transition-colors font-medium"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[9px] font-black uppercase tracking-widest text-gray-500">Email Kontak</label>
+                  <input 
+                    type="email" 
+                    value={settings.contactEmail}
+                    onChange={(e) => setSettings({...settings, contactEmail: e.target.value})}
+                    placeholder="support@beritakarya.co"
+                    className="w-full bg-slate-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 px-4 py-3 text-xs text-brand-black dark:text-white outline-none focus:border-brand-red transition-colors font-medium"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[9px] font-black uppercase tracking-widest text-gray-500">Nomor Telepon/WA</label>
+                  <input 
+                    type="text" 
+                    value={settings.phone}
+                    onChange={(e) => setSettings({...settings, phone: e.target.value})}
+                    placeholder="+62 812 3456 7890"
+                    className="w-full bg-slate-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 px-4 py-3 text-xs text-brand-black dark:text-white outline-none focus:border-brand-red transition-colors font-medium"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-gray-100 dark:border-white/5">
                 {Object.keys(settings.socialLinks).map((key) => (
                   <div key={key} className="space-y-2">
                     <label className="text-[9px] font-black uppercase tracking-widest text-gray-500 capitalize">{key} URL</label>

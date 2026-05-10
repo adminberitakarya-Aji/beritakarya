@@ -28,11 +28,18 @@ export default function SiteFooter({ siteConfig, categories }: SiteFooterProps) 
             <div className="mb-6 space-y-3">
               <p className="text-brand-text-muted text-xs flex items-start gap-2 leading-relaxed">
                 <MapPin size={14} className="shrink-0 mt-0.5 text-brand-red" />
-                <span>Jl. Merdeka No. 123, Jakarta Pusat, Indonesia</span>
+                <span>{siteConfig?.address || "Jl. Merdeka No. 123, Jakarta Pusat, Indonesia"}</span>
               </p>
-              <p className="text-brand-text-muted text-xs flex items-center gap-2">
-                <Mail size={14} className="text-brand-text-muted opacity-60" /> support.beritakarya@gmail.com
-              </p>
+              {siteConfig?.contactEmail && (
+                <p className="text-brand-text-muted text-xs flex items-center gap-2">
+                  <Mail size={14} className="text-brand-text-muted opacity-60" /> {siteConfig.contactEmail}
+                </p>
+              )}
+              {siteConfig?.phone && (
+                <p className="text-brand-text-muted text-xs flex items-center gap-2">
+                  <MessageCircle size={14} className="text-brand-text-muted opacity-60" /> {siteConfig.phone}
+                </p>
+              )}
             </div>
             <div className="flex gap-3">
               {siteConfig?.socialLinks?.facebook && (

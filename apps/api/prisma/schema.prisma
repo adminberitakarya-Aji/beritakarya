@@ -16,6 +16,9 @@ model Site {
   description String?
   logoUrl     String?
   footerText  String?
+  address     String?
+  contactEmail String?
+  phone       String?
   socialLinks Json?    @default("{}")
   appearance  Json?    @default("{\"primaryColor\":\"#e11d48\"}")
   trendingTopics Json?    @default("[]")

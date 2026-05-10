@@ -34,6 +34,9 @@ export async function updateSiteSettings(siteId: string, data: any) {
       description: data.description,
       logoUrl: data.logoUrl,
       footerText: data.footerText,
+      address: data.address,
+      contactEmail: data.contactEmail,
+      phone: data.phone,
       socialLinks: data.socialLinks,
       appearance: data.appearance,
       trendingTopics: data.trendingTopics

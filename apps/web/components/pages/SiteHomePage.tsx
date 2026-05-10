@@ -76,6 +76,9 @@ export async function SiteHomePage({ siteParam, searchParams }: SiteHomePageProp
     description: siteSettings?.description || (SITE_MAP[siteParam] as any)?.description || `Portal berita resmi ${siteParam}. Menyajikan informasi terbaru, investigasi, dan analisis tajam dari seluruh Nusantara.`,
     logoUrl: siteSettings?.logoUrl || (SITE_MAP[siteParam] as any)?.logoUrl || null,
     footerText: siteSettings?.footerText || (SITE_MAP[siteParam] as any)?.footerText || `© ${new Date().getFullYear()} BERITA KARYA. ALL RIGHTS RESERVED.`,
+    address: siteSettings?.address || (SITE_MAP[siteParam] as any)?.address || "Jl. Merdeka No. 123, Jakarta Pusat, Indonesia",
+    contactEmail: siteSettings?.contactEmail || (SITE_MAP[siteParam] as any)?.contactEmail || "support.beritakarya@gmail.com",
+    phone: siteSettings?.phone || (SITE_MAP[siteParam] as any)?.phone || null,
     socialLinks: siteSettings?.socialLinks || (SITE_MAP[siteParam] as any)?.socialLinks || { facebook: '', twitter: '', instagram: '', youtube: '' },
     appearance: siteSettings?.appearance || (SITE_MAP[siteParam] as any)?.appearance || { primaryColor: '#e11d48' },
     devDomain: (SITE_MAP[siteParam] as any)?.devDomain || `${siteParam}.localhost:3000`

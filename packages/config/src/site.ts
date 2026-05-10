@@ -11,6 +11,9 @@ export interface SiteConfig {
     instagram?: string
     youtube?: string
   }
+  address?: string
+  contactEmail?: string
+  phone?: string
   appearance?: {
     primaryColor: string
   }
