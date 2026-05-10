@@ -9,7 +9,12 @@ const envSchema = z.object({
   OPENAI_API_KEY: z.string().optional(),
   AI_MODEL: z.string().default('gpt-4-turbo-preview'),
   API_URL: z.string().default('http://localhost:3001'),
-  CORS_ORIGIN: z.string().optional(), // Comma-separated list of extra allowed origins
+  CORS_ORIGIN: z.string().optional(),
+  REDIS_HOST: z.string().default('localhost'),
+  REDIS_PORT: z.string().default('6379'),
+  REDIS_PASSWORD: z.string().optional(),
+  MEILISEARCH_HOST: z.string().default('http://localhost:7700'),
+  MEILISEARCH_KEY: z.string().default(''),
 })
 
 const parsed = envSchema.safeParse(process.env)

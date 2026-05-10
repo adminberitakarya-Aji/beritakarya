@@ -1,9 +1,9 @@
 import { MeiliSearch } from 'meilisearch'
-import { config } from '@beritakarya/config'
+import { env } from '../../lib/env'
 
 const client = new MeiliSearch({
-  host: process.env.MEILISEARCH_HOST || 'http://localhost:7700',
-  apiKey: process.env.MEILISEARCH_KEY || '',
+  host: env.MEILISEARCH_HOST,
+  apiKey: env.MEILISEARCH_KEY,
 })
 
 const index = client.index('articles')

@@ -47,6 +47,31 @@ export function requireAuth(
   }
 }
 
+export function optionalAuth(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const authHeader = req.headers.authorization
+  const token = authHeader?.startsWith('Bearer ') 
+    ? authHeader.slice(7) 
+    : (req.query.token as string)
+
+  if (!token) return next()
+
+  try {
+    const payload = jwt.verify(
+      token,
+      env.JWT_SECRET
+    ) as JWTPayload
+    req.user = payload
+    next()
+  } catch (err: any) {
+    // If token is invalid, just proceed as guest
+    next()
+  }
+}
+
 export function requireRole(...roles: string[]) {
   return (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {

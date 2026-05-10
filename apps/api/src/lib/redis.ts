@@ -8,12 +8,12 @@ export const redis = new Redis({
   host: redisHost,
   port: redisPort,
   password: redisPassword,
-  retryStrategy: (times) => {
+  retryStrategy: (times: number) => {
     return Math.min(times * 50, 2000)
   }
 })
 
-redis.on('error', (err) => {
+redis.on('error', (err: Error) => {
   console.error('Redis Error:', err)
 })
 
