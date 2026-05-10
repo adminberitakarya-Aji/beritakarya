@@ -200,8 +200,47 @@ model Media {
   siteId         String?
   createdAt      DateTime @default(now())
 
-  @@index([userId])
   @@index([siteId])
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  content   String   @db.Text
+  articleId String
+  siteId    String
+  authorId  String?  // Optional: if logged in
+  authorName String? // If guest
+  authorEmail String?
+  status    String   @default("pending") // pending | approved | spam
+  parentId  String?  // For nested replies
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  site      Site     @relation(fields: [siteId], references: [id])
+  user      User?    @relation(fields: [authorId], references: [id])
+  parent    Comment? @relation("CommentReplies", fields: [parentId], references: [id])
+  replies   Comment[] @relation("CommentReplies")
+
+  @@index([articleId])
+  @@index([siteId, status])
+}
+
+model PageView {
+  id        String   @id @default(uuid())
+  siteId    String
+  articleId String?
+  path      String   // e.g. /artikel/slug atau /
+  referrer  String?
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  site      Site     @relation(fields: [siteId], references: [id])
+  article   Article? @relation(fields: [articleId], references: [id])
+
+  @@index([siteId, createdAt])
+  @@index([articleId, createdAt])
 }
 
 model ArticleVersion {

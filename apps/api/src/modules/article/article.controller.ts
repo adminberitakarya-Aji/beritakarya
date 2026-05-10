@@ -10,7 +10,11 @@ export const articleRouter: Router = Router()
 const withSite = [requireAuth, siteMiddleware, requireSiteAccess]
 
 articleRouter.get('/slug/:slug', siteMiddleware, asyncHandler(async (req: Request, res: Response) => {
-  const article = await service.getPublishedArticleBySlug(req.params.slug, req.site!)
+  const article = await service.getPublishedArticleBySlug(req.params.slug, req.site!, {
+    ipAddress: req.ip,
+    userAgent: req.headers['user-agent'],
+    referrer: req.headers['referer'] as string
+  })
   res.json({ success: true, data: article })
 }))
 

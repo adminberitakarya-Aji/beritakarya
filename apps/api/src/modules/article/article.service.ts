@@ -3,12 +3,35 @@ import { generateSlug } from '@beritakarya/utils'
 import type { JWTPayload } from '@beritakarya/types'
 import { sendNotification } from '../notification/notification.controller'
 import { prisma } from '../../db/client'
+import { recordView } from '../analytics/analytics.service'
+import * as searchService from './search.service'
+import { getCache, setCache, deleteCache } from '../../lib/redis'
 
 export async function getArticles(
   siteId: string,
   query: { status?: string; search?: string; category?: string; page?: number; limit?: number },
   user?: JWTPayload
 ) {
+  // If search is provided, use Meilisearch
+  if (query.search) {
+    const searchResult = await searchService.searchArticles(query.search, {
+      siteId,
+      status: query.status
+    })
+    
+    if (searchResult) {
+      // In a real app, we'd fetch full objects from DB using IDs from search results
+      // or ensure Meilisearch has all needed fields. 
+      // For now, we'll return the search hits directly as articles.
+      return {
+        items: searchResult.hits,
+        total: searchResult.estimatedTotalHits,
+        page: 1,
+        limit: query.limit || 20
+      }
+    }
+  }
+
   const opts: any = { ...query }
   
   // If user is a journalist, they can only see their own articles
@@ -37,12 +60,28 @@ export async function getArticleBySlug(slug: string, siteId: string) {
   return article
 }
 
-export async function getPublishedArticleBySlug(slug: string, siteId: string) {
-  const article = await repo.findPublishedArticleBySlug(slug, siteId)
-  if (!article) throw Object.assign(new Error('Artikel tidak ditemukan'), { statusCode: 404 })
+export async function getPublishedArticleBySlug(
+  slug: string, 
+  siteId: string, 
+  meta?: { ipAddress?: string; userAgent?: string; referrer?: string }
+) {
+  const cacheKey = `article:${siteId}:${slug}`
+  const cached = await getCache<any>(cacheKey)
   
-  // Async increment (don't block the response)
-  repo.incrementViewCount(article.id).catch(err => console.error('Failed to increment view count:', err))
+  let article = cached
+  if (!article) {
+    article = await repo.findPublishedArticleBySlug(slug, siteId)
+    if (!article) throw Object.assign(new Error('Artikel tidak ditemukan'), { statusCode: 404 })
+    await setCache(cacheKey, article, 3600) // Cache for 1 hour
+  }
+  
+  // Async recording (don't block the response)
+  recordView({
+    siteId,
+    articleId: article.id,
+    path: `/artikel/${slug}`,
+    ...meta
+  }).catch(err => console.error('Failed to record view:', err))
   
   return article
 }
@@ -74,6 +113,9 @@ export async function createArticle(
     entityId: article.id,
     newValue: article
   })
+
+  // Indexing
+  searchService.indexArticle(article).catch(err => console.error('Failed to index article:', err))
 
   return article
 }
@@ -176,6 +218,12 @@ export async function updateArticle(
     newValue: updated
   })
 
+  // Re-indexing
+  searchService.indexArticle(updated).catch(err => console.error('Failed to index article:', err))
+
+  // Invalidate cache
+  deleteCache(`article:${siteId}:${updated.slug}`).catch(() => {})
+
   return updated
 }
 
@@ -234,6 +282,9 @@ export async function deleteArticle(id: string, siteId: string, user: JWTPayload
     entityId: id,
     oldValue: article
   })
+
+  // Remove from index
+  searchService.deleteIndexedArticle(id).catch(err => console.error('Failed to delete indexed article:', err))
 
   return repo.deleteArticle(id)
 }

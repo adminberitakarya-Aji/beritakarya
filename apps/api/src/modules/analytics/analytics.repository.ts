@@ -3,48 +3,42 @@ import { prisma } from '../../db/client'
 export async function getTrafficStats(siteId: string, days: number = 7) {
   const startDate = new Date()
   startDate.setDate(startDate.getDate() - days)
+  startDate.setHours(0, 0, 0, 0)
 
-  // In a real app, we'd query a 'Views' table. 
-  // Here we simulate daily traffic based on article views and publish dates 
-  // to provide a realistic-looking chart without complex tracking logic yet.
-  
-  const articles = await prisma.article.findMany({
+  const views = await prisma.pageView.groupBy({
+    by: ['createdAt'],
     where: {
       siteId,
-      status: 'published',
-      publishedAt: { gte: startDate }
+      createdAt: { gte: startDate }
     },
-    select: {
-      publishedAt: true,
-      viewCount: true
+    _count: {
+      id: true
     }
   })
 
-  // Group by day
+  // Group by day since createdAt is a full timestamp
   const dailyData: Record<string, number> = {}
   
   // Initialize last X days
-  for (let i = 0; i <= days; i++) {
+  for (let i = 0; i < days; i++) {
     const d = new Date()
     d.setDate(d.getDate() - i)
     const key = d.toISOString().split('T')[0]
     dailyData[key] = 0
   }
 
-  articles.forEach((art: any) => {
-    if (art.publishedAt) {
-      const key = art.publishedAt.toISOString().split('T')[0]
-      if (dailyData[key] !== undefined) {
-        dailyData[key] += art.viewCount
-      }
+  views.forEach((v: any) => {
+    const key = v.createdAt.toISOString().split('T')[0]
+    if (dailyData[key] !== undefined) {
+      dailyData[key] += v._count.id
     }
   })
 
   // Convert to array for Recharts
   return Object.entries(dailyData)
-    .map(([date, views]) => ({
+    .map(([date, count]) => ({
       date,
-      views: views
+      views: count
     }))
     .sort((a, b) => a.date.localeCompare(b.date))
 }
