@@ -113,8 +113,7 @@ export async function SiteHomePage({ siteParam, searchParams }: SiteHomePageProp
             {leadArticle && (
               <PremiumHero article={leadArticle} site={siteParam} />
             )}
-          </div>
-        )}
+
 
             {/* 2 & 4: Medium & Minimal Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
@@ -138,7 +137,7 @@ export async function SiteHomePage({ siteParam, searchParams }: SiteHomePageProp
                 </div>
               </div>
             </div>
-          </section>
+          </div>
         )}
 
         <section className="mb-16 py-8 border-y border-gray-100 dark:border-white/5 bg-gray-50/50 dark:bg-white/[0.01]">
