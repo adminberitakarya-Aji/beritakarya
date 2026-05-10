@@ -7,6 +7,7 @@ import { ArrowRight, Share2, PlayCircle, Camera, MessageCircle, TrendingUp, Zap,
 import LoadMoreArticles from '../ui/LoadMoreArticles'
 import VideoWidget from '../ui/VideoWidget'
 import NewsletterForm from '../ui/NewsletterForm'
+import { PremiumHero } from '../berita/PremiumHero'
 import { notFound } from 'next/navigation'
 
 type SearchParams = {
@@ -108,13 +109,12 @@ export async function SiteHomePage({ siteParam, searchParams }: SiteHomePageProp
         </div>
 
         {!searchQuery && categoryFilter === 'Terbaru' && (
-          <section className="mb-20">
-            {/* 1: Lead Article */}
-            <div className="mb-12">
-              {leadArticle && (
-                <NewsCard article={leadArticle} variant="large" site={siteParam} />
-              )}
-            </div>
+          <div className="mb-24 -mx-4 lg:-mx-10 border-b border-gray-100 dark:border-white/5 pb-24 bg-gray-50/30 dark:bg-white/[0.01]">
+            {leadArticle && (
+              <PremiumHero article={leadArticle} site={siteParam} />
+            )}
+          </div>
+        )}
 
             {/* 2 & 4: Medium & Minimal Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
@@ -141,17 +141,17 @@ export async function SiteHomePage({ siteParam, searchParams }: SiteHomePageProp
           </section>
         )}
 
-        <section className="mb-16 py-6 border-y border-gray-100 dark:border-white/5">
-          <div className="flex items-center gap-4 overflow-x-auto no-scrollbar">
-            <div className="flex items-center gap-2 shrink-0 bg-brand-red text-white px-4 py-1.5 rounded-sm">
+        <section className="mb-16 py-8 border-y border-gray-100 dark:border-white/5 bg-gray-50/50 dark:bg-white/[0.01]">
+          <div className="flex items-center gap-6 overflow-x-auto no-scrollbar px-4">
+            <div className="flex items-center gap-2 shrink-0 bg-brand-black dark:bg-white text-white dark:text-brand-black px-4 py-2 rounded-sm shadow-lg">
               <TrendingUp size={14} />
-              <span className="text-[10px] font-black uppercase tracking-widest">Trending</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.2em]">Trending</span>
             </div>
             {tags.map(tag => (
               <Link
                 key={tag}
                 href={`/${siteParam}?q=${encodeURIComponent(tag)}`}
-                className="shrink-0 px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest text-brand-text-muted hover:text-brand-red transition-colors"
+                className="shrink-0 px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 hover:text-brand-red transition-all hover:scale-105"
               >
                 #{tag}
               </Link>
@@ -161,14 +161,14 @@ export async function SiteHomePage({ siteParam, searchParams }: SiteHomePageProp
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
           <div className="lg:col-span-8">
-            <div className="flex items-center justify-between mb-12 border-b-4 border-brand-black dark:border-white pb-4">
-              <h3 className="text-lg font-serif font-black uppercase tracking-tight text-brand-black dark:text-white flex items-center gap-3">
-                <span className="w-4 h-4 bg-brand-red"></span>
+            <div className="flex items-center justify-between mb-12 border-b-8 border-brand-black dark:border-white pb-6">
+              <h3 className="text-3xl font-serif font-black uppercase tracking-tighter text-brand-black dark:text-white flex items-center gap-4">
+                <span className="w-6 h-6 bg-brand-red shadow-lg shadow-brand-red/20"></span>
                 {searchQuery ? `Hasil Pencarian: ${searchQuery}` : `Berita ${categoryFilter}`}
               </h3>
-              <div className="flex items-center gap-4 text-[10px] font-black uppercase tracking-widest text-brand-text-muted">
-                <span className="text-brand-red cursor-pointer">Terbaru</span>
-                <span className="cursor-pointer hover:text-brand-black transition-colors">Populer</span>
+              <div className="hidden md:flex items-center gap-6 text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">
+                <span className="text-brand-red cursor-pointer border-b-2 border-brand-red pb-1">Terbaru</span>
+                <span className="cursor-pointer hover:text-brand-black dark:hover:text-white transition-colors">Populer</span>
               </div>
             </div>
 

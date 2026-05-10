@@ -36,7 +36,7 @@ export default function NewsCard({ article, variant = 'medium', site = 'pusat' }
             src={imageUrl} 
             alt={article.title} 
             fill
-            className="object-cover object-center opacity-60 group-hover:scale-105 transition-transform duration-1000 ease-out"
+            className="object-cover object-center opacity-70 group-hover:opacity-60 group-hover:scale-105 transition-all duration-[1.5s] ease-out"
             priority
           />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
@@ -48,7 +48,7 @@ export default function NewsCard({ article, variant = 'medium', site = 'pusat' }
                 {article.category?.name || 'UMUM'}
               </span>
             </div>
-            <h2 className="text-4xl md:text-7xl text-white font-serif font-black leading-[1.05] mb-8 tracking-tighter text-balance">
+            <h2 className="text-4xl md:text-6xl lg:text-7xl text-white font-serif font-black leading-[1.05] mb-8 tracking-tighter text-balance group-hover:text-brand-red transition-colors duration-500">
               {article.title}
             </h2>
             <p className="text-gray-300 text-lg md:text-2xl font-light mb-10 line-clamp-2 max-w-3xl leading-relaxed opacity-90">
@@ -87,7 +87,7 @@ export default function NewsCard({ article, variant = 'medium', site = 'pusat' }
                 {article.category?.name || 'UMUM'}
               </span>
             </div>
-            <h3 className="font-serif text-xl font-bold leading-tight text-brand-black dark:text-white group-hover:text-brand-red transition-colors tracking-tight">
+            <h3 className="font-serif text-xl font-black leading-tight text-brand-black dark:text-white group-hover:text-brand-red transition-colors tracking-tight">
               {article.title}
             </h3>
             <div className="flex items-center gap-3 mt-3 text-[10px] text-brand-text-muted font-bold uppercase tracking-widest">
@@ -123,7 +123,7 @@ export default function NewsCard({ article, variant = 'medium', site = 'pusat' }
                 {article.category?.name || 'UMUM'}
               </span>
             </div>
-            <h3 className="font-serif text-xl font-bold leading-tight text-brand-black dark:text-white group-hover:text-brand-red transition-colors tracking-tight">
+            <h3 className="font-serif text-xl font-black leading-tight text-brand-black dark:text-white group-hover:text-brand-red transition-colors tracking-tight">
               {article.title}
             </h3>
             <div className="hidden md:flex items-center gap-4 mt-1 text-[10px] font-bold uppercase tracking-widest text-brand-text-muted">
@@ -163,7 +163,7 @@ export default function NewsCard({ article, variant = 'medium', site = 'pusat' }
               <button className="text-gray-400 hover:text-brand-red"><Bookmark size={14}/></button>
             </div>
           </div>
-          <h3 className="font-serif text-2xl font-black leading-[1.2] text-brand-black dark:text-white group-hover:underline decoration-brand-red underline-offset-4 decoration-2 tracking-tight">
+          <h3 className="font-serif text-2xl font-black leading-[1.1] text-brand-black dark:text-white group-hover:text-brand-red transition-colors tracking-tight">
             {article.title}
           </h3>
           <p className="text-brand-text-muted dark:text-gray-400 text-sm line-clamp-2 leading-relaxed font-normal opacity-80">
