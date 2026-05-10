@@ -40,6 +40,10 @@ export async function getArticleBySlug(slug: string, siteId: string) {
 export async function getPublishedArticleBySlug(slug: string, siteId: string) {
   const article = await repo.findPublishedArticleBySlug(slug, siteId)
   if (!article) throw Object.assign(new Error('Artikel tidak ditemukan'), { statusCode: 404 })
+  
+  // Async increment (don't block the response)
+  repo.incrementViewCount(article.id).catch(err => console.error('Failed to increment view count:', err))
+  
   return article
 }
 

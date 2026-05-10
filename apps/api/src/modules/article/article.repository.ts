@@ -114,6 +114,13 @@ export async function createVersion(data: {
   return prisma.articleVersion.create({ data })
 }
 
+export async function incrementViewCount(id: string) {
+  return prisma.article.update({
+    where: { id },
+    data: { viewCount: { increment: 1 } }
+  })
+}
+
 export async function findVersions(articleId: string) {
   return prisma.articleVersion.findMany({
     where: { articleId },

@@ -31,25 +31,35 @@ interface Article {
 
 // ─── Mini Sparkline ──────────────────────────────────────────────
 // ─── Real-time Pulse Indicator ──────────────────────────────────
-function RealTimePulse() {
-  const [count, setCount] = useState(100);
+function RealTimePulse({ totalViews }: { totalViews: number }) {
+  const [count, setCount] = useState(0);
   
   useEffect(() => {
-    setCount(Math.floor(Math.random() * (120 - 80) + 80));
+    // If we have total views, simulate active readers as a small fraction (e.g. 0.5% - 2%)
+    // If 0 views, stay 0. This is more "real" for a new site.
+    if (totalViews === 0) {
+      setCount(0);
+      return;
+    }
+
+    const base = Math.max(1, Math.floor(totalViews / 500));
+    setCount(base);
+
     const interval = setInterval(() => {
       setCount(prev => {
-        const change = Math.floor(Math.random() * 5) - 2;
-        return Math.max(10, prev + change);
+        if (prev === 0) return 0;
+        const change = Math.floor(Math.random() * 3) - 1; // -1, 0, 1
+        return Math.max(1, prev + change);
       });
-    }, 3000);
+    }, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [totalViews]);
 
   return (
     <div className="flex items-center gap-3 bg-brand-red/5 px-4 py-2 rounded-2xl border border-brand-red/10">
       <div className="relative">
-        <div className="w-2.5 h-2.5 bg-brand-red rounded-full" />
-        <div className="absolute inset-0 w-2.5 h-2.5 bg-brand-red rounded-full animate-ping opacity-75" />
+        <div className={cn("w-2.5 h-2.5 rounded-full", count > 0 ? "bg-brand-red" : "bg-gray-300")} />
+        {count > 0 && <div className="absolute inset-0 w-2.5 h-2.5 bg-brand-red rounded-full animate-ping opacity-75" />}
       </div>
       <div className="flex flex-col">
         <span className="text-[14px] font-black text-brand-black dark:text-white leading-none tabular-nums">{count}</span>
@@ -330,7 +340,7 @@ export default function DashboardOverview() {
           </p>
         </div>
         <div className="flex items-center gap-4">
-          <RealTimePulse />
+          <RealTimePulse totalViews={articles.reduce((s, a) => s + (a.viewCount || 0), 0)} />
           <Link 
             href={`/${site}/dashboard/articles`}
             onClick={async (e) => {
@@ -350,11 +360,11 @@ export default function DashboardOverview() {
       {/* ── KPI Cards ── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard title="Total Artikel" value={total} icon={FileText}
-          accent="bg-blue-50 text-blue-500 dark:bg-blue-900/20" trend={12}
+          accent="bg-blue-50 text-blue-500 dark:bg-blue-900/20"
           sparkData={trafficSpark} sub="Semua status" delay={0} />
         <KPICard title="Sudah Terbit" value={published} icon={CheckCircle}
-          accent="bg-emerald-50 text-emerald-500 dark:bg-emerald-900/20" trend={8}
-          sparkData={publishedSpark} sub="Hari ini" delay={0.05} />
+          accent="bg-emerald-50 text-emerald-500 dark:bg-emerald-900/20"
+          sparkData={publishedSpark} sub="Terbit publik" delay={0.05} />
         <KPICard title="Antrian Review" value={inReview} icon={AlertCircle}
           accent={inReview > 5 ? "bg-red-50 text-red-500 dark:bg-red-900/20" : "bg-amber-50 text-amber-500 dark:bg-amber-900/20"}
           sub={inReview > 0 ? "Perlu perhatian" : "Semua bersih"} delay={0.1} />
