@@ -7,24 +7,24 @@ import { prisma } from '../../db/client'
 export async function getArticles(
   siteId: string,
   query: { status?: string; search?: string; category?: string; page?: number; limit?: number },
-  user: JWTPayload
+  user?: JWTPayload
 ) {
   const opts: any = { ...query }
   
   // If user is a journalist, they can only see their own articles
-  if (user.role === 'journalist') {
+  if (user?.role === 'journalist') {
     opts.authorId = user.userId
   }
 
   return repo.findArticlesBySite(siteId, opts)
 }
 
-export async function getArticleById(id: string, siteId: string, user: JWTPayload) {
+export async function getArticleById(id: string, siteId: string, user?: JWTPayload) {
   const article = await repo.findArticleById(id, siteId)
   if (!article) throw Object.assign(new Error('Artikel tidak ditemukan'), { statusCode: 404 })
   
   // Authorization: Journalists can only view their own articles (unless published, but dashboard usually shows drafts)
-  if (!['superadmin', 'pimred'].includes(user.role) && article.authorId !== user.userId) {
+  if (user && !['superadmin', 'pimred'].includes(user.role) && article.authorId !== user.userId) {
     throw Object.assign(new Error('Anda tidak punya akses ke artikel ini'), { statusCode: 403 })
   }
 
