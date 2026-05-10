@@ -34,6 +34,8 @@ model Site {
   categories     Category[]
   advertisements Advertisement[]
   newsletterSubscribers NewsletterSubscriber[]
+  comments              Comment[]
+  pageViews             PageView[]
 }
 
 model User {
@@ -50,6 +52,7 @@ model User {
   site          Site?          @relation(fields: [siteId], references: [id])
   articles      Article[]
   refreshTokens RefreshToken[]
+  comments      Comment[]
 
   @@index([siteId])
   @@index([email])
@@ -125,6 +128,8 @@ model Article {
   site     Site      @relation(fields: [siteId], references: [id])
   author   User      @relation(fields: [authorId], references: [id])
   category Category? @relation(fields: [categoryId], references: [id])
+  comments Comment[]
+  pageViews PageView[]
 
   @@unique([siteId, slug])
   @@index([siteId, status])
