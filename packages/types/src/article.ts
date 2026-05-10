@@ -1,6 +1,6 @@
 import type { Block } from './block'
 
-export type ArticleStatus = 'draft' | 'review' | 'published'
+export type ArticleStatus = 'draft' | 'submitted' | 'review' | 'revision' | 'approved' | 'scheduled' | 'published' | 'archived'
 
 export interface Article {
   id: string
