@@ -122,12 +122,24 @@ export default function Navbar({
           className="flex-shrink-0"
         >
           <Link href="/" className="flex flex-col items-center group">
-            <h1 className="font-serif text-2xl sm:text-4xl md:text-5xl font-black tracking-[-0.04em] leading-none text-center">
-              <span className="text-brand-red group-hover:text-brand-red/90 transition-colors">BERITA</span>
-              <span className="text-brand-black group-hover:opacity-90 transition-opacity">KARYA</span>
-            </h1>
+            {siteConfig?.logoUrl ? (
+              <div className="relative h-12 w-48 mb-1">
+                <Image 
+                  src={siteConfig.logoUrl} 
+                  alt={siteConfig.name} 
+                  fill 
+                  className="object-contain"
+                  priority
+                />
+              </div>
+            ) : (
+              <h1 className="font-serif text-2xl sm:text-4xl md:text-5xl font-black tracking-[-0.04em] leading-none text-center">
+                <span className="text-brand-red group-hover:text-brand-red/90 transition-colors">BERITA</span>
+                <span className="text-brand-black group-hover:opacity-90 transition-opacity">KARYA</span>
+              </h1>
+            )}
             <span className="text-[8px] sm:text-[9px] tracking-[0.35em] sm:tracking-[0.5em] font-bold text-brand-text-muted mt-1 uppercase transition-all group-hover:tracking-[0.6em]">
-              {siteConfig?.tagline || "Jernih Melihat Nusantara"}
+              {siteConfig?.description?.slice(0, 40) + (siteConfig?.description?.length > 40 ? '...' : '') || "Jernih Melihat Nusantara"}
             </span>
           </Link>
         </motion.div>

@@ -15,13 +15,15 @@ export default function SiteFooter({ siteConfig, categories }: SiteFooterProps) 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
           <div className="col-span-1">
             <Link href="/" className="flex flex-col mb-6">
-              <span className="font-serif text-3xl font-black tracking-tighter">
+              <span className="font-serif text-3xl font-black tracking-tighter uppercase">
                 <span className="text-brand-red">BERITA</span>
-                <span className="text-brand-black dark:text-white">KARYA</span>
+                <span className="text-brand-black dark:text-white">
+                  {siteConfig?.name?.split(' ')[1] || 'KARYA'}
+                </span>
               </span>
             </Link>
             <p className="text-brand-text-muted text-sm leading-relaxed font-light mb-8 max-w-xs opacity-80">
-              Portal berita independen yang berfokus pada kedalaman investigasi dan kejernihan melihat realitas Nusantara.
+              {siteConfig?.description || "Portal berita independen yang berfokus pada kedalaman investigasi dan kejernihan melihat realitas Nusantara."}
             </p>
             <div className="mb-6 space-y-3">
               <p className="text-brand-text-muted text-xs flex items-start gap-2 leading-relaxed">
@@ -33,11 +35,26 @@ export default function SiteFooter({ siteConfig, categories }: SiteFooterProps) 
               </p>
             </div>
             <div className="flex gap-3">
-              {[Share2, MessageCircle, Camera, PlayCircle].map((Icon, i) => (
-                <button key={i} className="w-10 h-10 flex items-center justify-center bg-gray-100 dark:bg-white/5 hover:bg-brand-red transition-colors rounded-sm group">
-                  <Icon size={16} className="text-brand-text-muted group-hover:text-white" />
-                </button>
-              ))}
+              {siteConfig?.socialLinks?.facebook && (
+                <a href={siteConfig.socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="w-10 h-10 flex items-center justify-center bg-gray-100 dark:bg-white/5 hover:bg-brand-red transition-colors rounded-sm group">
+                  <Share2 size={16} className="text-brand-text-muted group-hover:text-white" />
+                </a>
+              )}
+              {siteConfig?.socialLinks?.twitter && (
+                <a href={siteConfig.socialLinks.twitter} target="_blank" rel="noopener noreferrer" className="w-10 h-10 flex items-center justify-center bg-gray-100 dark:bg-white/5 hover:bg-brand-red transition-colors rounded-sm group">
+                  <span className="text-brand-text-muted group-hover:text-white font-black text-sm italic">X</span>
+                </a>
+              )}
+              {siteConfig?.socialLinks?.instagram && (
+                <a href={siteConfig.socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="w-10 h-10 flex items-center justify-center bg-gray-100 dark:bg-white/5 hover:bg-brand-red transition-colors rounded-sm group">
+                  <Camera size={16} className="text-brand-text-muted group-hover:text-white" />
+                </a>
+              )}
+              {siteConfig?.socialLinks?.youtube && (
+                <a href={siteConfig.socialLinks.youtube} target="_blank" rel="noopener noreferrer" className="w-10 h-10 flex items-center justify-center bg-gray-100 dark:bg-white/5 hover:bg-brand-red transition-colors rounded-sm group">
+                  <PlayCircle size={16} className="text-brand-text-muted group-hover:text-white" />
+                </a>
+              )}
             </div>
           </div>
 
@@ -80,7 +97,7 @@ export default function SiteFooter({ siteConfig, categories }: SiteFooterProps) 
 
         <div className="border-t border-gray-100 dark:border-white/5 pt-10 flex flex-col md:flex-row justify-between items-center gap-6">
           <span suppressHydrationWarning className="text-[10px] uppercase font-bold tracking-[0.3em] text-brand-text-muted opacity-60">
-            © {new Date().getFullYear()} BERITA KARYA. ALL RIGHTS RESERVED.
+            {siteConfig?.footerText || `© ${new Date().getFullYear()} BERITA KARYA. ALL RIGHTS RESERVED.`}
           </span>
           <div className="flex gap-8 text-[10px] uppercase font-bold tracking-widest text-brand-text-muted opacity-60">
             <Link href="/privacy" className="hover:text-brand-red">Privacy Policy</Link>

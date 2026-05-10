@@ -3,12 +3,13 @@ import type { Prisma } from '@prisma/client'
 
 export async function findArticlesBySite(
   siteId: string,
-  opts: { status?: string; search?: string; category?: string; page?: number; limit?: number } = {}
+  opts: { status?: string; search?: string; category?: string; page?: number; limit?: number; authorId?: string } = {}
 ) {
-  const { status, search, category, page = 1, limit = 20 } = opts
+  const { status, search, category, page = 1, limit = 20, authorId } = opts
   const where: Prisma.ArticleWhereInput = {
     siteId,
     ...(status && { status }),
+    ...(authorId && { authorId }),
     ...(category && { category: { name: { equals: category, mode: 'insensitive' } } }),
     ...(search && { 
       OR: [

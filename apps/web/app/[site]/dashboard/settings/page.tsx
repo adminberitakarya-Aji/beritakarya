@@ -17,6 +17,18 @@ export default function SettingsPage() {
   const [settings, setSettings] = useState({
     name: '',
     domain: '',
+    description: '',
+    logoUrl: '',
+    footerText: '',
+    socialLinks: {
+      facebook: '',
+      twitter: '',
+      instagram: '',
+      youtube: ''
+    },
+    appearance: {
+      primaryColor: '#e11d48'
+    },
     trendingTopics: [] as string[]
   })
   
@@ -29,6 +41,11 @@ export default function SettingsPage() {
         setSettings({
           name: data.data.name || '',
           domain: data.data.domain || '',
+          description: data.data.description || '',
+          logoUrl: data.data.logoUrl || '',
+          footerText: data.data.footerText || '',
+          socialLinks: data.data.socialLinks || { facebook: '', twitter: '', instagram: '', youtube: '' },
+          appearance: data.data.appearance || { primaryColor: '#e11d48' },
           trendingTopics: data.data.trendingTopics || []
         })
       }
@@ -155,6 +172,99 @@ export default function SettingsPage() {
                   placeholder="bandung.beritakarya.co"
                   className="w-full bg-slate-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 px-4 py-3 text-xs text-brand-black dark:text-white outline-none focus:border-brand-red transition-colors font-medium"
                 />
+              </div>
+
+              <div className="md:col-span-2 space-y-2">
+                <label className="text-[9px] font-black uppercase tracking-widest text-gray-500">Deskripsi Situs (SEO)</label>
+                <textarea 
+                  value={settings.description}
+                  onChange={(e) => setSettings({...settings, description: e.target.value})}
+                  placeholder="Deskripsi singkat portal Anda untuk hasil pencarian Google..."
+                  rows={3}
+                  className="w-full bg-slate-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 px-4 py-3 text-xs text-brand-black dark:text-white outline-none focus:border-brand-red transition-colors font-medium resize-none"
+                />
+              </div>
+            </div>
+          </section>
+
+          {/* Branding & Visual */}
+          <section className="bg-white dark:bg-black/20 p-8 border border-gray-100 dark:border-white/5 rounded-sm shadow-sm">
+            <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-black dark:text-white mb-8 flex items-center gap-2">
+              <span className="w-2 h-2 bg-brand-red rounded-full"></span> Branding & Visual
+            </h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-2">
+                <label className="text-[9px] font-black uppercase tracking-widest text-gray-500">URL Logo Situs</label>
+                <input 
+                  type="text" 
+                  value={settings.logoUrl}
+                  onChange={(e) => setSettings({...settings, logoUrl: e.target.value})}
+                  placeholder="https://.../logo.png"
+                  className="w-full bg-slate-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 px-4 py-3 text-xs text-brand-black dark:text-white outline-none focus:border-brand-red transition-colors font-medium"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[9px] font-black uppercase tracking-widest text-gray-500">Warna Utama (Brand Color)</label>
+                <div className="flex gap-3">
+                  <input 
+                    type="color" 
+                    value={settings.appearance.primaryColor}
+                    onChange={(e) => setSettings({
+                      ...settings, 
+                      appearance: { ...settings.appearance, primaryColor: e.target.value }
+                    })}
+                    className="w-12 h-10 bg-transparent border-none outline-none cursor-pointer"
+                  />
+                  <input 
+                    type="text" 
+                    value={settings.appearance.primaryColor}
+                    onChange={(e) => setSettings({
+                      ...settings, 
+                      appearance: { ...settings.appearance, primaryColor: e.target.value }
+                    })}
+                    className="flex-1 bg-slate-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 px-4 py-3 text-[10px] text-brand-black dark:text-white outline-none focus:border-brand-red transition-colors font-mono"
+                  />
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Footer & Sosial Media */}
+          <section className="bg-white dark:bg-black/20 p-8 border border-gray-100 dark:border-white/5 rounded-sm shadow-sm">
+            <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-black dark:text-white mb-8 flex items-center gap-2">
+              <span className="w-2 h-2 bg-brand-red rounded-full"></span> Footer & Sosial Media
+            </h2>
+            
+            <div className="space-y-8">
+              <div className="space-y-2">
+                <label className="text-[9px] font-black uppercase tracking-widest text-gray-500">Teks Footer (Copyright/Info)</label>
+                <input 
+                  type="text" 
+                  value={settings.footerText}
+                  onChange={(e) => setSettings({...settings, footerText: e.target.value})}
+                  placeholder="© 2024 BeritaKarya. All rights reserved."
+                  className="w-full bg-slate-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 px-4 py-3 text-xs text-brand-black dark:text-white outline-none focus:border-brand-red transition-colors font-medium"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {Object.keys(settings.socialLinks).map((key) => (
+                  <div key={key} className="space-y-2">
+                    <label className="text-[9px] font-black uppercase tracking-widest text-gray-500 capitalize">{key} URL</label>
+                    <input 
+                      type="text" 
+                      value={(settings.socialLinks as any)[key]}
+                      onChange={(e) => setSettings({
+                        ...settings, 
+                        socialLinks: { ...settings.socialLinks, [key]: e.target.value }
+                      })}
+                      placeholder={`https://${key}.com/yourprofile`}
+                      className="w-full bg-slate-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 px-4 py-2 text-[10px] text-brand-black dark:text-white outline-none focus:border-brand-red transition-colors font-medium"
+                    />
+                  </div>
+                ))}
               </div>
             </div>
           </section>

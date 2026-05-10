@@ -17,7 +17,10 @@ export default function PublicSiteLayout({ children, siteConfig, initialCategory
   const categories = ['Terbaru', 'Nasional', 'Daerah', 'Politik', 'Ekonomi', 'Teknologi', 'Hukum', 'Saved'];
 
   return (
-    <div className="min-h-screen transition-colors duration-500">
+    <div 
+      className="min-h-screen transition-colors duration-500"
+      style={{ '--brand-red': siteConfig.appearance?.primaryColor || '#e11d48' } as React.CSSProperties}
+    >
       <Navbar 
         siteConfig={siteConfig}
         categories={categories}

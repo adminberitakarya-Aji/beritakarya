@@ -31,6 +31,11 @@ export async function updateSiteSettings(siteId: string, data: any) {
     data: {
       name: data.name,
       domain: data.domain,
+      description: data.description,
+      logoUrl: data.logoUrl,
+      footerText: data.footerText,
+      socialLinks: data.socialLinks,
+      appearance: data.appearance,
       trendingTopics: data.trendingTopics
     }
   })

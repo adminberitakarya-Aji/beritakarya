@@ -13,6 +13,11 @@ model Site {
   id        String   @id
   name      String
   domain    String   @unique
+  description String?
+  logoUrl     String?
+  footerText  String?
+  socialLinks Json?    @default("{}")
+  appearance  Json?    @default("{\"primaryColor\":\"#e11d48\"}")
   trendingTopics Json?    @default("[]")
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt

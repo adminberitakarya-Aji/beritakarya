@@ -46,7 +46,7 @@ pm2 start "pnpm run start" --name "bk-web" --cwd "./apps/web"
 Tersedia konfigurasi `docker-compose.yml` di folder `infra/`.
 
 ```bash
-docker-compose -f infra/docker/docker-compose.prod.yml up -d
+docker-compose -f infra/docker/docker-compose.backend.yml up -d
 ```
 
 ## 🔄 CI/CD & Auto-Deployment

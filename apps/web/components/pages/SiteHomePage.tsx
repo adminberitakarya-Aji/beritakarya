@@ -68,12 +68,17 @@ export async function SiteHomePage({ siteParam, searchParams }: SiteHomePageProp
   const siteConfig = {
     id: siteParam,
     name:
-      siteSettings?.name || SITE_MAP[siteParam]?.name ||
+      siteSettings?.name || (SITE_MAP[siteParam] as any)?.name ||
       (siteParam.charAt(0).toUpperCase() + siteParam.slice(1)),
     domain:
-      siteSettings?.domain || SITE_MAP[siteParam]?.domain ||
+      siteSettings?.domain || (SITE_MAP[siteParam] as any)?.domain ||
       `${siteParam}.beritakarya.co`,
-    devDomain: SITE_MAP[siteParam]?.devDomain || `${siteParam}.localhost:3000`
+    description: siteSettings?.description || (SITE_MAP[siteParam] as any)?.description || `Portal berita resmi ${siteParam}. Menyajikan informasi terbaru, investigasi, dan analisis tajam dari seluruh Nusantara.`,
+    logoUrl: siteSettings?.logoUrl || (SITE_MAP[siteParam] as any)?.logoUrl || null,
+    footerText: siteSettings?.footerText || (SITE_MAP[siteParam] as any)?.footerText || `© ${new Date().getFullYear()} BERITA KARYA. ALL RIGHTS RESERVED.`,
+    socialLinks: siteSettings?.socialLinks || (SITE_MAP[siteParam] as any)?.socialLinks || { facebook: '', twitter: '', instagram: '', youtube: '' },
+    appearance: siteSettings?.appearance || (SITE_MAP[siteParam] as any)?.appearance || { primaryColor: '#e11d48' },
+    devDomain: (SITE_MAP[siteParam] as any)?.devDomain || `${siteParam}.localhost:3000`
   }
 
   const articlesList = await getArticles(siteConfig.id, categoryFilter, searchQuery)

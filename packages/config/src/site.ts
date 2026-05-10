@@ -2,6 +2,18 @@ export interface SiteConfig {
   id: string
   name: string
   domain: string
+  description?: string
+  logoUrl?: string
+  footerText?: string
+  socialLinks?: {
+    facebook?: string
+    twitter?: string
+    instagram?: string
+    youtube?: string
+  }
+  appearance?: {
+    primaryColor: string
+  }
   devDomain: string
 }
 

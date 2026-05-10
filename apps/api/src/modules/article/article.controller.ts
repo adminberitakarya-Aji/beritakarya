@@ -22,12 +22,12 @@ articleRouter.get('/public', siteMiddleware, asyncHandler(async (req: Request, r
 
 articleRouter.get('/', ...withSite, asyncHandler(async (req: Request, res: Response) => {
   const query = articleQuerySchema.parse(req.query)
-  const result = await service.getArticles(req.site!, query)
+  const result = await service.getArticles(req.site!, query, req.user!)
   res.json({ success: true, data: result })
 }))
 
 articleRouter.get('/:id', ...withSite, asyncHandler(async (req: Request, res: Response) => {
-  const article = await service.getArticleById(req.params.id, req.site!)
+  const article = await service.getArticleById(req.params.id, req.site!, req.user!)
   res.json({ success: true, data: article })
 }))
 
