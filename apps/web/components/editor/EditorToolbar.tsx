@@ -1,6 +1,7 @@
 'use client';
 
 import { useEditorStore } from '../../store/editorStore';
+import { useAuthStore } from '../../store/authStore';
 import { 
   Save, 
   Send, 
@@ -36,12 +37,23 @@ const STATUS_COLORS: Record<string, string> = {
 
 export function EditorToolbar() {
   const { status, saving, saveArticle, publishArticle, lastSaved, toggleSidebar, isFocusMode, toggleFocusMode } = useEditorStore();
+  const { user } = useAuthStore();
   const { site } = useParams<{ site: string }>();
   const router = useRouter();
 
+  const isEditor = user?.role === 'superadmin' || user?.role === 'pimred';
+
   const handlePublish = async () => {
-    if (!confirm('Apakah bapak yakin ingin mempublikasikan artikel ini?')) return;
-    await publishArticle();
+    if (isEditor) {
+      if (!confirm('Apakah bapak yakin ingin mempublikasikan artikel ini?')) return;
+      await publishArticle();
+    } else {
+      if (!confirm('Kirim artikel ini untuk di-review oleh redaksi?')) return;
+      // For journalists, we update status to 'submitted'
+      const { submitForReview } = useEditorStore.getState();
+      await submitForReview();
+      router.push(`/${site}/dashboard/articles`);
+    }
   };
 
   return (
@@ -127,7 +139,7 @@ export function EditorToolbar() {
                 isFocusMode && "px-4"
               )}
             >
-              <Send size={14} /> {isFocusMode ? '' : 'Terbitkan'}
+              <Send size={14} /> {isFocusMode ? '' : (isEditor ? 'Terbitkan' : 'Kirim Review')}
             </button>
           ) : (
             <button

@@ -68,15 +68,19 @@ export default function ReviewQueuePage() {
     { key: 'approved',  label: 'Disetujui',        color: 'text-emerald-500' },
   ] as const;
 
-  const handleAction = async (articleId: string, action: 'approve' | 'reject' | 'request_revision') => {
+  const handleAction = async (articleId: string, action: 'approve' | 'reject' | 'request_revision' | 'publish') => {
     setActionLoading(articleId + action);
     try {
-      const newStatus = action === 'approve' ? 'approved' : action === 'reject' ? 'archived' : 'revision';
-      await api.patch(`/articles/${articleId}`, {
-        status: newStatus,
-        reviewNotes: reviewNotes || undefined,
-        reviewedBy: user?.id,
-      });
+      if (action === 'publish') {
+        await api.post(`/articles/${articleId}/publish`);
+      } else {
+        const newStatus = action === 'approve' ? 'approved' : action === 'reject' ? 'archived' : 'revision';
+        await api.patch(`/articles/${articleId}`, {
+          status: newStatus,
+          reviewNotes: reviewNotes || undefined,
+          reviewedBy: user?.id,
+        });
+      }
       setReviewModal(null);
       setReviewNotes('');
       await load();
@@ -274,10 +278,11 @@ export default function ReviewQueuePage() {
                     )}
                     {activeTab === 'approved' && (
                       <button
-                        onClick={() => handleAction(article.id, 'approve')}
+                        onClick={() => handleAction(article.id, 'publish')}
                         disabled={!!actionLoading}
                         className="flex items-center gap-1.5 px-3 py-2 bg-brand-red text-white text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-red-700 transition-all disabled:opacity-50"
                       >
+                        {actionLoading === article.id + 'publish' ? <Loader2 size={12} className="animate-spin" /> : <CheckCircle size={12} />}
                         Terbitkan
                       </button>
                     )}

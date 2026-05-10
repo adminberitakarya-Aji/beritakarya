@@ -2,8 +2,10 @@
 import { type ReactNode } from 'react'
 import { useEditorStore } from '../../store/editorStore'
 import type { Block } from '@beritakarya/types'
-import { ChevronUp, ChevronDown, Trash2 } from 'lucide-react'
+import { ChevronUp, ChevronDown, Trash2, Plus } from 'lucide-react'
 import { cn } from '../../lib/utils'
+import { AddBlockMenu } from './AddBlockMenu'
+import { useState } from 'react'
 
 interface Props {
   block: Block
@@ -13,6 +15,7 @@ interface Props {
 
 export function BlockWrapper({ block, index, children }: Props) {
   const { moveBlock, removeBlock, blocks, isFocusMode } = useEditorStore()
+  const [showAddMenu, setShowAddMenu] = useState(false)
 
   if (isFocusMode) {
     return <div className="py-1">{children}</div>
@@ -58,7 +61,6 @@ export function BlockWrapper({ block, index, children }: Props) {
         </div>
       </div>
 
-      {/* Subtle background highlight on hover */}
       <div className={cn(
         "rounded-2xl transition-all duration-300",
         "group-hover:bg-gray-50/40 dark:group-hover:bg-white/[0.02]",
@@ -66,6 +68,25 @@ export function BlockWrapper({ block, index, children }: Props) {
       )}>
         {children}
       </div>
+
+      {/* Inline Add Block Menu Trigger */}
+      <div className="h-4 relative mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-full h-px bg-gray-100 dark:bg-white/5" />
+          <button 
+            onClick={() => setShowAddMenu(!showAddMenu)}
+            className="absolute bg-white dark:bg-slate-900 border border-gray-100 dark:border-white/10 w-6 h-6 rounded-full flex items-center justify-center text-gray-300 hover:text-brand-red hover:border-brand-red transition-all shadow-sm"
+          >
+            <Plus size={14} className={cn("transition-transform", showAddMenu && "rotate-45")} />
+          </button>
+        </div>
+      </div>
+      
+      {showAddMenu && (
+        <div className="my-4 animate-in fade-in slide-in-from-top-2">
+          <AddBlockMenu afterId={block.id} onClose={() => setShowAddMenu(false)} />
+        </div>
+      )}
     </div>
   )
 }

@@ -24,7 +24,8 @@ import {
   Shield,
   Activity,
   ChevronDown,
-  Calendar
+  Calendar,
+  MessageSquare
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { cn } from '../../../lib/utils'
@@ -83,6 +84,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         { name: 'Kalender', href: `/${site}/dashboard/calendar`, icon: Calendar, roles: ['superadmin', 'pimred'] },
         { name: 'Kategori', href: `/${site}/dashboard/categories`, icon: Tag, roles: ['superadmin', 'pimred'] },
         { name: 'Iklan & Banner', href: `/${site}/dashboard/ads`, icon: ImageIcon, roles: ['superadmin', 'pimred'] },
+        { name: 'Komentar', href: `/${site}/dashboard/comments`, icon: MessageSquare, roles: ['superadmin', 'pimred'] },
       ]
     },
     {

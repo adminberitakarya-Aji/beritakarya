@@ -47,6 +47,7 @@ export interface EditorState {
   toggleFocusMode: (isFocus?: boolean) => void
   setActiveTab: (tab: EditorState['activeTab']) => void
   publishArticle: () => Promise<void>
+  submitForReview: () => Promise<void>
   reset: () => void
 }
 
@@ -243,6 +244,18 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     set({ status: 'published' })
   },
 
+  submitForReview: async () => {
+    const { articleId } = get()
+    if (!articleId) {
+      await get().saveArticle()
+    }
+    const freshId = get().articleId
+    if (!freshId) return
+
+    await api.put(`/articles/${freshId}`, { status: 'submitted' })
+    set({ status: 'submitted' })
+  },
+
   reset: () => set({
     articleId: null, title: '', status: 'draft',
     blocks: [{ id: uuidv4(), type: 'paragraph', content: '' }],
@@ -256,6 +269,9 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 function scheduleAutoSave(get: () => EditorState) {
   if (saveTimer) clearTimeout(saveTimer)
   saveTimer = setTimeout(() => {
-    if (get().isDirty) get().saveArticle()
+    const state = get()
+    if (state.isDirty && state.articleId) {
+      state.saveArticle()
+    }
   }, 5000)
 }

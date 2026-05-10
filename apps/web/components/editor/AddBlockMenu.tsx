@@ -18,15 +18,17 @@ const BLOCK_TYPES: { type: Block['type']; label: string; desc: string }[] = [
 interface Props {
   afterId?: string
   compact?: boolean
+  onClose?: () => void
 }
 
-export function AddBlockMenu({ afterId, compact }: Props) {
+export function AddBlockMenu({ afterId, compact, onClose }: Props) {
   const [open, setOpen] = useState(false)
   const { addBlock } = useEditorStore()
 
   const handleAdd = (type: Block['type']) => {
     addBlock(type, afterId)
     setOpen(false)
+    onClose?.()
   }
 
   if (compact && !open) {

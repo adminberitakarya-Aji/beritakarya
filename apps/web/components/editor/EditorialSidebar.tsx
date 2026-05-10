@@ -16,7 +16,7 @@ export function EditorialSidebar() {
   const { 
     isSidebarOpen, toggleSidebar, activeTab, setActiveTab,
     categoryId, tags, featuredImage, isBreaking, isExclusive, isFeatured,
-    metaTitle, metaDescription, updateArticleData, title
+    metaTitle, metaDescription, updateArticleData, title, articleId
   } = useEditorStore();
 
   const [categories, setCategories] = useState<{id: string, name: string}[]>([]);
@@ -36,16 +36,16 @@ export function EditorialSidebar() {
 
   useEffect(() => {
     const loadVersions = async () => {
-      if (!useEditorStore.getState().articleId) return;
+      if (!articleId || articleId === 'new') return;
       setLoadingVersions(true);
       try {
-        const { data } = await api.get(`/articles/${useEditorStore.getState().articleId}/versions`);
+        const { data } = await api.get(`/articles/${articleId}/versions`);
         setVersions(data.data || []);
       } catch (e) { console.error(e); }
       finally { setLoadingVersions(false); }
     };
-    if (activeTab === 'history') loadVersions();
-  }, [activeTab, isSidebarOpen]);
+    if (activeTab === 'history' && isSidebarOpen) loadVersions();
+  }, [activeTab, isSidebarOpen, articleId]);
 
   const restoreVersion = async (versionId: string) => {
     if (!confirm('Kembalikan konten ke versi ini? Perubahan saat ini yang belum disimpan akan hilang.')) return;
@@ -313,9 +313,13 @@ export function EditorialSidebar() {
                   <div className="flex items-center justify-between">
                     <label className="dash-label">Riwayat Perubahan</label>
                     <button 
-                      onClick={() => {
-                        const id = useEditorStore.getState().articleId;
-                        if (id) api.get(`/articles/${id}/versions`).then(res => setVersions(res.data.data));
+                      onClick={async () => {
+                        if (!articleId) return;
+                        setLoadingVersions(true);
+                        try {
+                          const { data } = await api.get(`/articles/${articleId}/versions`);
+                          setVersions(data.data || []);
+                        } finally { setLoadingVersions(false); }
                       }}
                       className="p-1.5 hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg text-gray-400 transition-colors"
                     >
