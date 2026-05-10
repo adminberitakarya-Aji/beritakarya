@@ -178,11 +178,14 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 
   saveArticle: async () => {
     const s = get()
-    if (!s.articleId) return
+    // Don't save if it's a new article with no title and no content in the first block
+    const firstBlock = s.blocks[0] as any
+    if (!s.articleId && !s.title.trim() && s.blocks.length <= 1 && (!firstBlock || !firstBlock.content)) return
+
     set({ saving: true })
     try {
-      await api.put(`/articles/${s.articleId}`, {
-        title: s.title, 
+      const payload = {
+        title: s.title || 'Tanpa Judul', 
         blocks: s.blocks, 
         metaTitle: s.metaTitle, 
         metaDescription: s.metaDescription,
@@ -192,9 +195,28 @@ export const useEditorStore = create<EditorState>((set, get) => ({
         isBreaking: s.isBreaking,
         isExclusive: s.isExclusive,
         isFeatured: s.isFeatured
-      })
-      set({ saving: false, lastSaved: new Date(), isDirty: false })
-    } catch {
+      }
+
+      if (s.articleId) {
+        await api.put(`/articles/${s.articleId}`, payload)
+        set({ saving: false, lastSaved: new Date(), isDirty: false })
+      } else {
+        // Create new article
+        const { data } = await api.post('/articles', payload)
+        const newArticle = data.data
+        set({ 
+          articleId: newArticle.id, 
+          saving: false, 
+          lastSaved: new Date(), 
+          isDirty: false 
+        })
+        
+        // Update URL to reflect new ID without full reload
+        const newUrl = window.location.pathname.replace('/new', `/${newArticle.id}`)
+        window.history.replaceState(null, '', newUrl)
+      }
+    } catch (err) {
+      console.error('Failed to save article:', err)
       set({ saving: false })
     }
   },
@@ -232,6 +254,6 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 function scheduleAutoSave(get: () => EditorState) {
   if (saveTimer) clearTimeout(saveTimer)
   saveTimer = setTimeout(() => {
-    if (get().isDirty && get().articleId) get().saveArticle()
-  }, 3000)
+    if (get().isDirty) get().saveArticle()
+  }, 5000)
 }

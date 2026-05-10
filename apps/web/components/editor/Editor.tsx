@@ -15,13 +15,15 @@ interface EditorProps {
 }
 
 export function Editor({ articleId, siteId }: EditorProps) {
-  const { loadArticle, saveArticle, undo, saving, lastSaved, isDirty, isFocusMode } = useEditorStore()
+  const { loadArticle, saveArticle, undo, saving, lastSaved, isDirty, isFocusMode, reset } = useEditorStore()
 
   useEffect(() => {
     if (articleId && articleId !== 'new') {
       loadArticle(articleId, siteId)
+    } else if (articleId === 'new') {
+      reset()
     }
-  }, [articleId, siteId, loadArticle])
+  }, [articleId, siteId, loadArticle, reset])
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'z') {

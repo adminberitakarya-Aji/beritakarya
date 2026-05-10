@@ -342,14 +342,7 @@ export default function DashboardOverview() {
         <div className="flex items-center gap-4">
           <RealTimePulse totalViews={articles.reduce((s, a) => s + (a.viewCount || 0), 0)} />
           <Link 
-            href={`/${site}/dashboard/articles`}
-            onClick={async (e) => {
-              e.preventDefault();
-              try {
-                const { data } = await api.post('/articles', { title: `Draft — ${new Date().toLocaleTimeString('id-ID')}`, blocks: [], tags: [] });
-                window.location.href = `/${site}/dashboard/articles/${data.data.id}`;
-              } catch { window.location.href = `/${site}/dashboard/articles`; }
-            }}
+            href={`/${site}/dashboard/articles/new`}
             className="flex items-center gap-2 px-5 py-2.5 bg-brand-red text-white text-[11px] font-black uppercase tracking-widest rounded-lg hover:bg-red-700 transition-all shadow-lg shadow-brand-red/20"
           >
             <Plus size={15} /> Tulis Artikel
