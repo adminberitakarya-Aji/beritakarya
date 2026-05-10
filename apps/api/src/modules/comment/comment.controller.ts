@@ -4,7 +4,7 @@ import { asyncHandler } from '../../utils/asyncHandler'
 import { siteMiddleware, requireSiteAccess } from '../../middleware/site.middleware'
 import { requireAuth, optionalAuth } from '../../middleware/auth.middleware'
 
-export const commentRouter = Router()
+export const commentRouter: Router = Router()
 
 // Public: Get comments for an article
 commentRouter.get('/article/:articleId', siteMiddleware, asyncHandler(async (req: Request, res: Response) => {
