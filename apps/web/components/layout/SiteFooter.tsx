@@ -81,11 +81,10 @@ export default function SiteFooter({ siteConfig, categories }: SiteFooterProps) 
           <div>
             <h5 className="text-xs font-bold uppercase tracking-[0.2em] mb-8 text-brand-red">Informasi</h5>
             <ul className="text-brand-text-muted text-sm space-y-4 font-light">
-              {['Tentang Kami', 'Kode Etik', 'Redaksi', 'Iklan'].map((item) => (
-                <li key={item}>
-                  <Link href="#" className="hover:text-brand-red transition-colors">{item}</Link>
-                </li>
-              ))}
+              <li><Link href={`/${siteConfig.id}/p/about`} className="hover:text-brand-red transition-colors">Tentang Kami</Link></li>
+              <li><Link href={`/${siteConfig.id}/p/ethics`} className="hover:text-brand-red transition-colors">Kode Etik</Link></li>
+              <li><Link href={`/${siteConfig.id}/p/editorial`} className="hover:text-brand-red transition-colors">Redaksi</Link></li>
+              <li><Link href={`/${siteConfig.id}/p/ads`} className="hover:text-brand-red transition-colors">Iklan</Link></li>
             </ul>
           </div>
 

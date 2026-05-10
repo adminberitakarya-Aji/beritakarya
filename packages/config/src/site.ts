@@ -14,6 +14,10 @@ export interface SiteConfig {
   address?: string
   contactEmail?: string
   phone?: string
+  aboutUs?: string
+  codeOfEthics?: string
+  editorial?: string
+  advertising?: string
   appearance?: {
     primaryColor: string
   }

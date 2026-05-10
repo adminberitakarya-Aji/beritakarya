@@ -23,6 +23,10 @@ export default function SettingsPage() {
     address: '',
     contactEmail: '',
     phone: '',
+    aboutUs: '',
+    codeOfEthics: '',
+    editorial: '',
+    advertising: '',
     socialLinks: {
       facebook: '',
       twitter: '',
@@ -50,6 +54,10 @@ export default function SettingsPage() {
           address: data.data.address || '',
           contactEmail: data.data.contactEmail || '',
           phone: data.data.phone || '',
+          aboutUs: data.data.aboutUs || '',
+          codeOfEthics: data.data.codeOfEthics || '',
+          editorial: data.data.editorial || '',
+          advertising: data.data.advertising || '',
           socialLinks: data.data.socialLinks || { facebook: '', twitter: '', instagram: '', youtube: '' },
           appearance: data.data.appearance || { primaryColor: '#e11d48' },
           trendingTopics: data.data.trendingTopics || []
@@ -306,6 +314,59 @@ export default function SettingsPage() {
                     />
                   </div>
                 ))}
+              </div>
+            </div>
+          </section>
+
+          {/* Halaman Informasi Portal */}
+          <section className="bg-white dark:bg-black/20 p-8 border border-gray-100 dark:border-white/5 rounded-sm shadow-sm">
+            <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-black dark:text-white mb-8 flex items-center gap-2">
+              <span className="w-2 h-2 bg-brand-red rounded-full"></span> Halaman Informasi Portal
+            </h2>
+            
+            <div className="space-y-8">
+              <div className="space-y-2">
+                <label className="text-[9px] font-black uppercase tracking-widest text-gray-500">Tentang Kami</label>
+                <textarea 
+                  value={settings.aboutUs}
+                  onChange={(e) => setSettings({...settings, aboutUs: e.target.value})}
+                  placeholder="Ceritakan sejarah dan visi misi portal Anda..."
+                  rows={4}
+                  className="w-full bg-slate-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 px-4 py-3 text-xs text-brand-black dark:text-white outline-none focus:border-brand-red transition-colors font-medium"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[9px] font-black uppercase tracking-widest text-gray-500">Kode Etik</label>
+                <textarea 
+                  value={settings.codeOfEthics}
+                  onChange={(e) => setSettings({...settings, codeOfEthics: e.target.value})}
+                  placeholder="Standar jurnalisme dan etika profesi di portal Anda..."
+                  rows={4}
+                  className="w-full bg-slate-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 px-4 py-3 text-xs text-brand-black dark:text-white outline-none focus:border-brand-red transition-colors font-medium"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[9px] font-black uppercase tracking-widest text-gray-500">Redaksi</label>
+                <textarea 
+                  value={settings.editorial}
+                  onChange={(e) => setSettings({...settings, editorial: e.target.value})}
+                  placeholder="Daftar tim redaksi dan penanggung jawab..."
+                  rows={4}
+                  className="w-full bg-slate-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 px-4 py-3 text-xs text-brand-black dark:text-white outline-none focus:border-brand-red transition-colors font-medium"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[9px] font-black uppercase tracking-widest text-gray-500">Informasi Iklan</label>
+                <textarea 
+                  value={settings.advertising}
+                  onChange={(e) => setSettings({...settings, advertising: e.target.value})}
+                  placeholder="Informasi tarif dan cara beriklan di portal Anda..."
+                  rows={4}
+                  className="w-full bg-slate-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 px-4 py-3 text-xs text-brand-black dark:text-white outline-none focus:border-brand-red transition-colors font-medium"
+                />
               </div>
             </div>
           </section>

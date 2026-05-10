@@ -79,6 +79,10 @@ export async function SiteHomePage({ siteParam, searchParams }: SiteHomePageProp
     address: siteSettings?.address || (SITE_MAP[siteParam] as any)?.address || "Jl. Merdeka No. 123, Jakarta Pusat, Indonesia",
     contactEmail: siteSettings?.contactEmail || (SITE_MAP[siteParam] as any)?.contactEmail || "support.beritakarya@gmail.com",
     phone: siteSettings?.phone || (SITE_MAP[siteParam] as any)?.phone || null,
+    aboutUs: siteSettings?.aboutUs || (SITE_MAP[siteParam] as any)?.aboutUs || null,
+    codeOfEthics: siteSettings?.codeOfEthics || (SITE_MAP[siteParam] as any)?.codeOfEthics || null,
+    editorial: siteSettings?.editorial || (SITE_MAP[siteParam] as any)?.editorial || null,
+    advertising: siteSettings?.advertising || (SITE_MAP[siteParam] as any)?.advertising || null,
     socialLinks: siteSettings?.socialLinks || (SITE_MAP[siteParam] as any)?.socialLinks || { facebook: '', twitter: '', instagram: '', youtube: '' },
     appearance: siteSettings?.appearance || (SITE_MAP[siteParam] as any)?.appearance || { primaryColor: '#e11d48' },
     devDomain: (SITE_MAP[siteParam] as any)?.devDomain || `${siteParam}.localhost:3000`
