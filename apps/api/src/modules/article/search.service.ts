@@ -1,14 +1,17 @@
 import { MeiliSearch } from 'meilisearch'
 import { env } from '../../lib/env'
 
-const client = new MeiliSearch({
+const isEnabled = !!env.MEILISEARCH_KEY && !!env.MEILISEARCH_HOST
+
+const client = isEnabled ? new MeiliSearch({
   host: env.MEILISEARCH_HOST,
   apiKey: env.MEILISEARCH_KEY,
-})
+}) : null
 
-const index = client.index('articles')
+const index = client ? client.index('articles') : null
 
 export async function indexArticle(article: any) {
+  if (!index) return
   try {
     await index.addDocuments([{
       id: article.id,
@@ -18,7 +21,7 @@ export async function indexArticle(article: any) {
       categoryId: article.categoryId,
       authorId: article.authorId,
       status: article.status,
-      blocks: article.blocks, // You might want to strip HTML or keep text only
+      blocks: article.blocks,
       tags: article.tags,
       featuredImage: article.featuredImage,
       publishedAt: article.publishedAt,
@@ -30,6 +33,7 @@ export async function indexArticle(article: any) {
 }
 
 export async function deleteIndexedArticle(id: string) {
+  if (!index) return
   try {
     await index.deleteDocument(id)
   } catch (error) {
@@ -38,6 +42,7 @@ export async function deleteIndexedArticle(id: string) {
 }
 
 export async function searchArticles(query: string, filters: { siteId: string; status?: string }) {
+  if (!index) return null
   try {
     let filter = `siteId = "${filters.siteId}"`
     if (filters.status) {
