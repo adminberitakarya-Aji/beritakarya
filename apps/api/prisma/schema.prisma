@@ -19,6 +19,10 @@ model Site {
   address     String?
   contactEmail String?
   phone       String?
+  aboutUs     String? @db.Text
+  codeOfEthics String? @db.Text
+  editorial   String? @db.Text
+  advertising String? @db.Text
   socialLinks Json?    @default("{}")
   appearance  Json?    @default("{\"primaryColor\":\"#e11d48\"}")
   trendingTopics Json?    @default("[]")
