@@ -61,7 +61,10 @@ export default function ArticlesPage() {
   const load = async () => {
     setLoading(true);
     try {
-      const params: any = { site };
+      const params: any = { 
+        site,
+        search: searchQuery // Tambahkan parameter search ke API
+      };
       if (filter) params.status = filter;
       const { data } = await api.get('/articles', { params });
       setArticles(data.data.articles || data.data.items || []);
@@ -72,7 +75,13 @@ export default function ArticlesPage() {
     }
   };
 
-  useEffect(() => { load(); }, [site, filter]);
+  // Debounce search agar tidak hit API setiap ketikan huruf
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      load();
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [site, filter, searchQuery]);
 
   const handleNew = async () => {
     setIsCreating(true);
@@ -114,9 +123,7 @@ export default function ArticlesPage() {
     }
   };
 
-  const filtered = articles.filter(a =>
-    a.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filtered = articles; // Sekarang data sudah difilter di sisi Server
 
   // Count per status for tab badges
   const countByStatus = (s: string) => articles.filter(a => a.status === s).length;
@@ -165,15 +172,23 @@ export default function ArticlesPage() {
       {/* Search + Filter */}
       <div className="dash-card p-4 space-y-4">
         {/* Search */}
-        <div className="relative">
-          <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-300" />
+        <div className="relative group">
+          <Search size={15} className={cn(
+            "absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors",
+            loading ? "text-brand-red animate-pulse" : "text-gray-300 group-focus-within:text-brand-red"
+          )} />
           <input 
             type="text"
-            placeholder="Cari judul artikel..."
+            placeholder="Cari judul artikel di seluruh database..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-white/5 border border-transparent focus:border-brand-red/30 rounded-lg text-sm outline-none transition-all text-brand-black dark:text-white placeholder:text-gray-300"
+            className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-white/5 border border-transparent focus:border-brand-red/30 focus:bg-white dark:focus:bg-white/[0.08] rounded-xl text-sm outline-none transition-all text-brand-black dark:text-white placeholder:text-gray-300 shadow-sm"
           />
+          {loading && searchQuery && (
+            <div className="absolute right-4 top-1/2 -translate-y-1/2">
+              <Loader2 size={14} className="animate-spin text-brand-red opacity-50" />
+            </div>
+          )}
         </div>
 
         {/* Status Tabs */}

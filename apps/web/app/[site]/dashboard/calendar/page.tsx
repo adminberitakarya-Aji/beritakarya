@@ -83,22 +83,31 @@ export default function EditorialCalendar() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 bg-white dark:bg-slate-900 p-1.5 rounded-xl border border-gray-100 dark:border-white/5">
+        <div className="flex items-center gap-3">
           <button 
-            onClick={prevMonth}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg transition-colors text-gray-500"
+            onClick={() => setCurrentDate(new Date())}
+            className="px-4 py-2 bg-white dark:bg-slate-900 border border-gray-100 dark:border-white/5 rounded-xl text-[10px] font-black uppercase tracking-widest text-brand-black dark:text-white hover:bg-gray-50 transition-all shadow-sm"
           >
-            <ChevronLeft size={18} />
+            Hari Ini
           </button>
-          <div className="px-4 text-xs font-black uppercase tracking-widest text-brand-black dark:text-white min-w-[140px] text-center">
-            {format(currentDate, 'MMMM yyyy', { locale: id })}
+          
+          <div className="flex items-center gap-2 bg-white dark:bg-slate-900 p-1.5 rounded-xl border border-gray-100 dark:border-white/5">
+            <button 
+              onClick={prevMonth}
+              className="p-2 hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg transition-colors text-gray-500"
+            >
+              <ChevronLeft size={18} />
+            </button>
+            <div className="px-4 text-xs font-black uppercase tracking-widest text-brand-black dark:text-white min-w-[140px] text-center">
+              {format(currentDate, 'MMMM yyyy', { locale: id })}
+            </div>
+            <button 
+              onClick={nextMonth}
+              className="p-2 hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg transition-colors text-gray-500"
+            >
+              <ChevronRight size={18} />
+            </button>
           </div>
-          <button 
-            onClick={nextMonth}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg transition-colors text-gray-500"
-          >
-            <ChevronRight size={18} />
-          </button>
         </div>
       </div>
 
@@ -107,7 +116,11 @@ export default function EditorialCalendar() {
         <div className="dash-card p-5">
           <p className="dash-label mb-1">Terbit Bulan Ini</p>
           <p className="text-3xl font-black text-brand-black dark:text-white">
-            {articles.filter(a => a.status === 'published' && isSameDay(new Date(a.publishedAt!), monthStart)).length}
+            {articles.filter(a => {
+              if (a.status !== 'published' || !a.publishedAt) return false;
+              const date = new Date(a.publishedAt);
+              return date >= monthStart && date <= monthEnd;
+            }).length}
           </p>
         </div>
         <div className="dash-card p-5">
@@ -160,13 +173,18 @@ export default function EditorialCalendar() {
                       key={art.id}
                       href={`/${site}/dashboard/articles/${art.id}`}
                       className={cn(
-                        "block px-2 py-1 rounded text-[9px] font-bold truncate transition-all border",
+                        "block px-2 py-1.5 rounded text-[9px] font-bold truncate transition-all border group/art",
                         art.status === 'scheduled' 
                           ? "bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border-amber-100 dark:border-amber-900/40"
                           : "bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 border-emerald-100 dark:border-emerald-900/40"
                       )}
                     >
-                      {art.title}
+                      <div className="flex items-center gap-1">
+                        <Clock size={8} className="opacity-50" />
+                        <span>{format(new Date(art.scheduledAt || art.publishedAt!), 'HH:mm')}</span>
+                        <span className="opacity-30">•</span>
+                        <span className="truncate">{art.title}</span>
+                      </div>
                     </Link>
                   ))}
                   {dayArticles.length > 3 && (

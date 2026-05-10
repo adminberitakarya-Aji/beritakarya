@@ -197,31 +197,31 @@ export function EditorialSidebar() {
                     <label className="dash-label">Status Editorial</label>
                     <div className="space-y-3">
                       {[
-                        { id: 'isBreaking', label: 'Breaking News', icon: ShieldAlert, color: 'text-red-500', bg: 'bg-red-50 dark:bg-red-900/10' },
-                        { id: 'isExclusive', label: 'Eksklusif', icon: Award, color: 'text-violet-500', bg: 'bg-violet-50 dark:bg-violet-900/10' },
-                        { id: 'isFeatured', label: 'Headline / Featured', icon: Star, color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-900/10' },
+                        { id: 'isBreaking', value: isBreaking, label: 'Breaking News', icon: ShieldAlert, color: 'text-red-500', bg: 'bg-red-50 dark:bg-red-900/10' },
+                        { id: 'isExclusive', value: isExclusive, label: 'Eksklusif', icon: Award, color: 'text-violet-500', bg: 'bg-violet-50 dark:bg-violet-900/10' },
+                        { id: 'isFeatured', value: isFeatured, label: 'Headline / Featured', icon: Star, color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-900/10' },
                       ].map(flag => (
                         <button
                           key={flag.id}
-                          onClick={() => updateArticleData({ [flag.id]: !(get() as any)[flag.id] })}
+                          onClick={() => updateArticleData({ [flag.id]: !flag.value })}
                           className={cn(
                             'w-full flex items-center justify-between p-3.5 rounded-xl border transition-all',
-                            (get() as any)[flag.id]
+                            flag.value
                               ? `${flag.bg} border-transparent shadow-sm ring-1 ring-inset ring-current/10`
                               : 'bg-transparent border-gray-100 dark:border-white/5 opacity-60 grayscale'
                           )}
                         >
                           <div className="flex items-center gap-3">
-                            <flag.icon size={16} className={(get() as any)[flag.id] ? flag.color : 'text-gray-300'} />
-                            <span className={cn('text-[11px] font-black uppercase tracking-widest', (get() as any)[flag.id] ? flag.color : 'text-gray-400')}>
+                            <flag.icon size={16} className={flag.value ? flag.color : 'text-gray-300'} />
+                            <span className={cn('text-[11px] font-black uppercase tracking-widest', flag.value ? flag.color : 'text-gray-400')}>
                               {flag.label}
                             </span>
                           </div>
                           <div className={cn(
                             'w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all',
-                            (get() as any)[flag.id] ? `bg-current border-transparent` : 'border-gray-200'
+                            flag.value ? `bg-current border-transparent` : 'border-gray-200'
                           )}>
-                            {(get() as any)[flag.id] && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
+                            {flag.value && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
                           </div>
                         </button>
                       ))}
@@ -389,5 +389,4 @@ export function EditorialSidebar() {
   );
 }
 
-// Helper to access state inside components that don't want to subscribe to everything
-const get = () => useEditorStore.getState();
+// EditorialSidebar component implementation ends here
