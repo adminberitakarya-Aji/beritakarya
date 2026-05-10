@@ -6,6 +6,7 @@ export interface BaseBlock {
 export interface ParagraphBlock extends BaseBlock {
   type: 'paragraph'
   content: string
+  dropCap?: boolean
 }
 
 export interface HeadingBlock extends BaseBlock {
@@ -18,6 +19,19 @@ export interface QuoteBlock extends BaseBlock {
   type: 'quote'
   content: string
   attribution?: string
+}
+
+export interface ListBlock extends BaseBlock {
+  type: 'list'
+  items: string[]
+  ordered: boolean
+}
+
+export interface CalloutBlock extends BaseBlock {
+  type: 'callout'
+  content: string
+  icon?: string
+  variant: 'info' | 'warning' | 'error' | 'success' | 'editorial'
 }
 
 export interface ImageItem {
@@ -59,6 +73,8 @@ export type Block =
   | ParagraphBlock
   | HeadingBlock
   | QuoteBlock
+  | ListBlock
+  | CalloutBlock
   | ImageBlock
   | ImageGridBlock
   | GalleryBlock

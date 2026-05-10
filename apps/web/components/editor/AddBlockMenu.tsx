@@ -6,7 +6,9 @@ import type { Block } from '@beritakarya/types'
 const BLOCK_TYPES: { type: Block['type']; label: string; desc: string }[] = [
   { type: 'paragraph', label: 'Paragraf', desc: 'Teks biasa' },
   { type: 'heading', label: 'Judul', desc: 'H2, H3, H4...' },
+  { type: 'list', label: 'Daftar', desc: 'Poin-poin fakta' },
   { type: 'quote', label: 'Kutipan', desc: 'Blockquote' },
+  { type: 'callout', label: 'Highlight', desc: 'Kotak info penting' },
   { type: 'image', label: 'Gambar', desc: 'Upload foto' },
   { type: 'imageGrid', label: 'Grid Gambar', desc: '2 atau 3 kolom' },
   { type: 'gallery', label: 'Galeri', desc: 'Slideshow' },

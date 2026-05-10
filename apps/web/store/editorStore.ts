@@ -59,6 +59,8 @@ function defaultBlock(type: Block['type']): Block {
     case 'image': return { id, type, url: '', alt: '', caption: '' }
     case 'imageGrid': return { id, type, columns: 2, images: [] }
     case 'gallery': return { id, type, images: [] }
+    case 'list': return { id, type, items: [''], ordered: false }
+    case 'callout': return { id, type, content: '', variant: 'editorial', icon: 'zap' }
     case 'embed': return { id, type, url: '', embedType: 'youtube' }
     default: return { id, type: 'paragraph', content: '' }
   }

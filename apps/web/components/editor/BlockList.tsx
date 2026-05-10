@@ -8,6 +8,8 @@ import { ImageBlock } from './blocks/ImageBlock'
 import { EmbedBlock } from './blocks/EmbedBlock'
 import { ImageGridBlock } from './blocks/ImageGridBlock'
 import { GalleryBlock } from './blocks/GalleryBlock'
+import { ListBlock } from './blocks/ListBlock'
+import { CalloutBlock } from './blocks/CalloutBlock'
 import type { Block } from '@beritakarya/types'
 
 export function BlockList() {
@@ -40,6 +42,8 @@ function BlockRenderer({ block }: { block: Block }) {
     case 'image': return <ImageBlock block={block} />
     case 'imageGrid': return <ImageGridBlock block={block} />
     case 'gallery': return <GalleryBlock block={block} />
+    case 'list': return <ListBlock block={block} />
+    case 'callout': return <CalloutBlock block={block} />
     case 'embed': return <EmbedBlock block={block} />
     default:
       return (
