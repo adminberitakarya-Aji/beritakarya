@@ -445,6 +445,18 @@ export default function SettingsPage() {
           </div>
         </div>
       </div>
+
+      {/* Floating/Bottom Action Bar */}
+      <div className="sticky bottom-8 z-30 flex justify-end">
+        <button 
+          onClick={handleSave}
+          disabled={saving}
+          className="flex items-center gap-3 bg-brand-red hover:bg-brand-black text-white px-8 py-4 text-xs font-black uppercase tracking-[0.2em] transition-all shadow-2xl shadow-brand-red/40 disabled:opacity-50 rounded-sm border border-white/10"
+        >
+          {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+          {saving ? 'Sedang Menyimpan...' : 'Simpan Seluruh Perubahan'}
+        </button>
+      </div>
     </div>
   )
 }
