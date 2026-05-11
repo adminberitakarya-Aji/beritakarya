@@ -1,19 +1,11 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "target": "ES2020",
-    "module": "commonjs",
-    "lib": ["ES2020"],
+    "rootDir": "./src",
     "outDir": "./dist",
-    "rootDir": "./",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
-    "paths": {
-      "@beritakarya/*": ["./packages/*/src"]
-    }
+    "ignoreDeprecations": "6.0"
   },
-  "include": ["packages/*/src/**/*", "apps/**/*"],
+  "include": ["src/*"],
   "exclude": ["node_modules", "dist"]
 }
