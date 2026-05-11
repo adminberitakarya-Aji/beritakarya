@@ -44,21 +44,17 @@ app.use(helmet({
 }))
 
 // ── 2. CORS (Gerbang Utama) ───────────────────────────────────
+// ── 2. CORS (Gerbang Utama) ───────────────────────────────────
 const allowedOrigins: (string | RegExp)[] = [
-  'https://www.beritakarya.co',
-  'https://beritakarya.co',
-  /\.beritakarya\.co$/,
-  'https://beritakarya.com',
-  /\.vercel\.app$/,
+  /^https?:\/\/(.+\.)?beritakarya\.co$/,
+  /^https?:\/\/(.+\.)?beritakarya\.com$/,
+  /^https?:\/\/(.+\.)?vercel\.app$/,
   'http://localhost:3000',
   'http://localhost:3001',
 ]
 
-// Tambahkan CORS_ORIGIN dari env jika ada (untuk override dinamis)
 if (env.CORS_ORIGIN) {
-  env.CORS_ORIGIN.split(',').map(o => o.trim()).forEach(origin => {
-    if (origin) allowedOrigins.push(origin)
-  })
+  env.CORS_ORIGIN.split(',').forEach(o => allowedOrigins.push(o.trim()))
 }
 
 const corsOptions: CorsOptions = {
