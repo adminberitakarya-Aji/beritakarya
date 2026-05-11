@@ -4,6 +4,9 @@
     "rootDir": "./src",
     "outDir": "./dist",
     "baseUrl": ".",
+    "paths": {
+      "@beritakarya/*": ["../../packages/*/src"]
+    }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
