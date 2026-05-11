@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "ts-node-dev -r tsconfig-paths/register --respawn --transpile-only src/main.ts",
-    "build": "tsc --rootDir src",
+    "build": "tsc",
     "start": "node dist/main.js",
     "test": "vitest run",
     "lint": "cross-env ESLINT_USE_FLAT_CONFIG=false eslint src --ext .ts",
