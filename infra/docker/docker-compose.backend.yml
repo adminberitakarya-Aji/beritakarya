@@ -38,7 +38,7 @@ services:
     ports:
       - "127.0.0.1:3001:3001"  # Hanya localhost VPS — Nginx host bisa reach, internet tidak
     volumes:
-      - uploads_data:/app/apps/api/uploads
+      - /opt/beritakarya/uploads:/app/apps/api/uploads   # Bind mount langsung ke host
     depends_on:
       postgres:
         condition: service_healthy
