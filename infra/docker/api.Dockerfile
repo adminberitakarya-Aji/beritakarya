@@ -23,7 +23,7 @@ RUN pnpm install --frozen-lockfile
 RUN pnpm --filter @beritakarya/api run db:generate
 # Rebuild sharp untuk arsitektur alpine agar pemrosesan gambar lancar
 RUN cd apps/api && npm rebuild sharp
-RUN pnpm turbo run build --filter=@beritakarya/api
+RUN pnpm turbo run build --filter=@beritakarya/api --force
 
 # Stage 3: Runner
 FROM node:20-alpine AS runner
