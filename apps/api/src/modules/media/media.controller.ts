@@ -11,9 +11,7 @@ import * as repo from './media.repository'
 
 export const mediaRouter: Router = Router()
 
-const UPLOAD_DIR = process.env.NODE_ENV === 'production' 
-  ? '/app/uploads' 
-  : path.join(process.cwd(), 'uploads')
+const UPLOAD_DIR = path.join(process.cwd(), 'uploads')
 const THUMB_DIR  = path.join(UPLOAD_DIR, 'thumbs')
 
 // Ensure directories exist with better error handling
