@@ -15,13 +15,25 @@ const UPLOAD_DIR = process.env.NODE_ENV === 'production'
   ? '/app/uploads' 
   : path.join(process.cwd(), 'uploads')
 const THUMB_DIR  = path.join(UPLOAD_DIR, 'thumbs')
-try {
-  ;[UPLOAD_DIR, THUMB_DIR].forEach(d => {
-    if (!fs.existsSync(d)) fs.mkdirSync(d, { recursive: true })
-  })
-} catch (err) {
-  console.error('[Media] Failed to create upload directories:', err)
+
+// Ensure directories exist with better error handling
+function ensureDirectories() {
+  const dirs = [UPLOAD_DIR, THUMB_DIR]
+  for (const dir of dirs) {
+    try {
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true })
+        console.log(`[Media] Created directory: ${dir}`)
+      }
+    } catch (err) {
+      console.error(`[Media] Failed to create directory ${dir}:`, err)
+      throw new Error(`Failed to create upload directory: ${dir}`)
+    }
+  }
 }
+
+// Initialize directories on module load
+ensureDirectories()
 
 const storage = multer.memoryStorage()
 
@@ -36,8 +48,22 @@ const upload = multer({
 })
 
 async function processImage(buffer: Buffer, filename: string) {
-  const sharp = (await import('sharp')).default
-  const meta  = await sharp(buffer).metadata()
+  // Import sharp with better error handling
+  let sharp: any
+  try {
+    sharp = (await import('sharp')).default
+  } catch (err) {
+    console.error('[Media] Failed to import sharp:', err)
+    throw new Error('Sharp library not available. Please install sharp: npm install sharp')
+  }
+
+  let meta: any
+  try {
+    meta = await sharp(buffer).metadata()
+  } catch (err) {
+    console.error('[Media] Failed to read image metadata:', err)
+    throw new Error('Invalid image file or corrupted data')
+  }
 
   const maxW = 1920
   const needResize = (meta.width ?? 0) > maxW
@@ -72,15 +98,33 @@ async function processImage(buffer: Buffer, filename: string) {
   const fullName = `${filename}.webp`
   const fullPath = path.join(UPLOAD_DIR, fullName)
   
-  await sharp(processedBuffer)
-    .composite([{ input: Buffer.from(watermarkSvg), gravity: 'southeast' }])
-    .webp({ quality: 82 })
-    .toFile(fullPath)
+  try {
+    await sharp(processedBuffer)
+      .composite([{ input: Buffer.from(watermarkSvg), gravity: 'southeast' }])
+      .webp({ quality: 82 })
+      .toFile(fullPath)
+  } catch (err) {
+    console.error('[Media] Failed to save full image:', err)
+    throw new Error('Failed to save processed image')
+  }
 
   // Thumbnail 400px → WebP
   const thumbName = `${filename}_thumb.webp`
   const thumbPath = path.join(THUMB_DIR, thumbName)
-  await sharp(buffer).resize(400).webp({ quality: 70 }).toFile(thumbPath)
+  try {
+    await sharp(buffer).resize(400).webp({ quality: 70 }).toFile(thumbPath)
+  } catch (err) {
+    console.error('[Media] Failed to save thumbnail:', err)
+    // Clean up full image if thumbnail fails
+    try {
+      if (fs.existsSync(fullPath)) {
+        fs.unlinkSync(fullPath)
+      }
+    } catch (cleanupErr) {
+      console.error('[Media] Failed to cleanup after thumbnail error:', cleanupErr)
+    }
+    throw new Error('Failed to save thumbnail')
+  }
 
   const finalMeta = await sharp(fullPath).metadata()
   return {

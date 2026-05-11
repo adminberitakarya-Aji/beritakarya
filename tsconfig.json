@@ -1,24 +1,11 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "target": "ES2020",
-    "lib": ["ES2020"],
-    "module": "node16",
-    "moduleResolution": "node16",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
+    "rootDir": "./src",
+    "outDir": "./dist",
     "baseUrl": ".",
-    "paths": {
-      "@beritakarya/config": ["packages/config/src"],
-      "@beritakarya/types": ["packages/types/src"],
-      "@beritakarya/utils": ["packages/utils/src"]
-    }
-
+    "ignoreDeprecations": "6.0"
   },
-  "exclude": ["node_modules", "dist", ".next", "coverage"]
+  "include": ["src/*"],
+  "exclude": ["node_modules", "dist"]
 }
