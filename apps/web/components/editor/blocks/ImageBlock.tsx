@@ -32,8 +32,10 @@ export function ImageBlock({ block }: { block: TImageBlock }) {
         width: data.data.width,
         height: data.data.height
       })
-    } catch {
-      alert('Upload gagal, coba lagi')
+    } catch (error: any) {
+      const msg = error?.response?.data?.error?.message || 'Upload gagal, coba lagi'
+      console.error('[ImageBlock] Upload error:', error?.response?.data || error)
+      alert(msg)
     } finally {
       setUploading(false)
       setProgress(0)

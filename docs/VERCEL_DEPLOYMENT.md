@@ -57,7 +57,7 @@ Pastikan file `apps/web/proxy.ts` digunakan sebagai middleware utama. Jika belum
 
 ```typescript
 // apps/web/middleware.ts
-export { proxy as default } from './proxy'
+export { proxy as default, config } from './proxy'
 ```
 
 Atau rename `proxy.ts` menjadi `middleware.ts` jika Anda lebih suka standar Next.js.

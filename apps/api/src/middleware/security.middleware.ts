@@ -33,21 +33,21 @@ export function securityHeadersMiddleware(
   // Add XSS Protection
   res.setHeader('X-XSS-Protection', '1; mode=block')
 
-  // Content Security Policy (CSP)
-  const isDev = env.NODE_ENV !== 'production'
-  if (!isDev) {
-    res.setHeader(
-      'Content-Security-Policy',
-      [
-        "default-src 'self'",
-        "script-src 'self'",
-        "style-src 'self' 'unsafe-inline'",
-        "img-src 'self' data: https:",
-        "connect-src 'self' https://*.beritakarya.co https://beritakarya.co",
-        "frame-ancestors 'none'"
-      ].join('; ')
-    )
-  }
+  // Content Security Policy (CSP) — aktif di SEMUA environment
+  const cspDirectives = [
+    "default-src 'self'",
+    env.NODE_ENV === 'production'
+      ? "script-src 'self'"
+      : "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: https: blob:",
+    "connect-src 'self' https://*.beritakarya.co https://beritakarya.co wss://*.beritakarya.co ws://localhost:*",
+    "frame-ancestors 'none'",
+    "form-action 'self'",
+    "base-uri 'self'",
+  ].join('; ')
+
+  res.setHeader('Content-Security-Policy', cspDirectives)
 
   // Handle CORS Preflight - Don't add CSP to OPTIONS requests
   if (_req.method === 'OPTIONS') {

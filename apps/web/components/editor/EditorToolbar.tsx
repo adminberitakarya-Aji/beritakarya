@@ -36,7 +36,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export function EditorToolbar() {
-  const { status, saving, saveArticle, publishArticle, lastSaved, toggleSidebar, isFocusMode, toggleFocusMode } = useEditorStore();
+  const { status, saving, saveArticle, publishArticle, submitForReview, lastSaved, toggleSidebar, isFocusMode, toggleFocusMode } = useEditorStore();
   const { user } = useAuthStore();
   const { site } = useParams<{ site: string }>();
   const router = useRouter();
@@ -49,8 +49,6 @@ export function EditorToolbar() {
       await publishArticle();
     } else {
       if (!confirm('Kirim artikel ini untuk di-review oleh redaksi?')) return;
-      // For journalists, we update status to 'submitted'
-      const { submitForReview } = useEditorStore.getState();
       await submitForReview();
       router.push(`/${site}/dashboard/articles`);
     }

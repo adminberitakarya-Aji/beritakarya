@@ -1,5 +1,6 @@
 import 'dotenv/config'
 import { env } from './lib/env'
+import './lib/envValidation'
 import express from 'express'
 import cors, { type CorsOptions } from 'cors'
 import helmet from 'helmet'
