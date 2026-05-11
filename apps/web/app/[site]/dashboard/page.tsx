@@ -436,8 +436,8 @@ export default function DashboardOverview() {
             </div>
             <div>
               <p className="dash-label mb-1">Engagement Rate</p>
-              <p className="text-xl font-black text-brand-black dark:text-white tabular-nums flex items-center gap-2">
-                68.4% <ArrowUpRight size={16} className="text-emerald-500" />
+              <p className="text-xl font-black text-gray-400 dark:text-gray-500 tabular-nums flex items-center gap-2">
+                N/A
               </p>
             </div>
           </div>
