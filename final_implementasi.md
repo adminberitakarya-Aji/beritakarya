@@ -10,10 +10,10 @@
 
 | Fase | Deskripsi | Status |
 |------|-----------|--------|
-| **Fase 1** | Fix Kritis — Lokal (commit & push) | ✅ Selesai (pending git push) |
+| **Fase 1** | Fix Kritis — Lokal (commit & push) | ✅ Selesai |
 | **Fase 2** | Setup Nginx Host di VPS | ❌ Belum |
 | **Fase 3** | SSL Auto-Renewal di VPS | ❌ Belum |
-| **Fase 4** | Cleanup, Security, Testing | ❌ Belum |
+| **Fase 4** | Cleanup, Security, Testing | ✅ Selesai (kode) |
 
 ---
 
@@ -439,6 +439,8 @@ import './lib/envValidation'
 **Verifikasi:**
 - [ ] Server gagal start dengan pesan jelas jika `JWT_SECRET` < 32 karakter
 
+> ✅ **DONE** — Dieksekusi 11 Mei 2026: `apps/api/src/lib/envValidation.ts` dibuat & diimport di `main.ts`
+
 ---
 
 ### TASK 4.2 — Perkuat CSP Headers (Semua Environment)
@@ -469,6 +471,8 @@ Ubah blok CSP (line 37-50):
 - [ ] Di dev: tidak ada CSP error di console untuk operasi normal
 - [ ] Di prod: CSP ketat aktif (check di DevTools → Network → Response Headers)
 
+> ✅ **DONE** — Dieksekusi 11 Mei 2026: CSP diaktifkan di semua environment
+
 ---
 
 ### TASK 4.3 — Fix Error Handling Upload Gambar
@@ -491,6 +495,8 @@ Cari catch block upload dan perbaiki:
 }
 ```
 
+> ✅ **DONE** — Dieksekusi 11 Mei 2026: error handling lebih informatif
+
 ---
 
 ### TASK 4.4 — Update Dokumentasi `VERCEL_DEPLOYMENT.md`
@@ -505,19 +511,23 @@ Cari yang menyebut `NEXT_PUBLIC_API_URL=https://api.beritakarya.co/api/v1` dan p
 > ⚠️ `lib/api.ts` sudah otomatis menambahkan `/api/v1`.
 ```
 
+> ✅ **DONE** — Dieksekusi 11 Mei 2026: dokumentasi URL & middleware export diperbarui
+
 ---
 
 ### TASK 4.5 — Fix Zustand `get()` di EditorialSidebar
 
-**File:** `apps/web/components/dashboard/EditorialSidebar.tsx` (~line 206)
+**File:** `apps/web/components/editor/EditorToolbar.tsx` (ditemukan di file ini, bukan EditorialSidebar)
 
 ```typescript
 // JANGAN (tidak reaktif — hanya baca sekali):
-const value = useEditorStore.getState().someField
+const { submitForReview } = useEditorStore.getState();
 
 // BENAR (reaktif — auto-update saat state berubah):
-const value = useEditorStore((state) => state.someField)
+const { submitForReview, ... } = useEditorStore();
 ```
+
+> ✅ **DONE** — Dieksekusi 11 Mei 2026: di `EditorToolbar.tsx` (reaktif pattern)
 
 ---
 
@@ -530,17 +540,15 @@ git add apps/api/src/lib/envValidation.ts
 git add apps/api/src/main.ts
 git add apps/api/src/middleware/security.middleware.ts
 git add apps/web/components/editor/blocks/ImageBlock.tsx
+git add apps/web/components/editor/EditorToolbar.tsx
 git add docs/VERCEL_DEPLOYMENT.md
 
-git commit -m "fix: env validation, CSP all envs, upload error handling, docs
-
-- Add envValidation.ts: fail-fast on missing/weak env vars
-- Apply CSP headers in all environments (strict in prod, relaxed in dev)
-- Improve ImageBlock error handling: show actual API error message
-- Fix VERCEL_DEPLOYMENT.md: clarify NEXT_PUBLIC_API_URL has no /api/v1"
+git commit -m "fix: env validation, CSP all envs, upload error handling, docs, zustand pattern"
 
 git push origin main
 ```
+
+> ✅ **DONE** — Dieksekusi 11 Mei 2026: semua cleanup di-push ke main branch.
 
 ---
 
