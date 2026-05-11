@@ -21,6 +21,8 @@ COPY --from=deps /app/node_modules ./node_modules
 # Pastikan semua node_modules workspace ter-link dengan benar
 RUN pnpm install --frozen-lockfile
 RUN pnpm --filter @beritakarya/api run db:generate
+# Rebuild sharp untuk arsitektur alpine agar pemrosesan gambar lancar
+RUN cd apps/api && npm rebuild sharp
 RUN pnpm turbo run build --filter=@beritakarya/api
 
 # Stage 3: Runner
