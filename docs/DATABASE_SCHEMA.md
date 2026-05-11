@@ -51,6 +51,12 @@ Mencatat setiap aksi administratif sensitif.
 ### 10. `Notification` 🔔
 Sistem notifikasi internal untuk workflow redaksi.
 
+### 11. `PageView` (Analytics) 📈
+Mencatat traffic real-time untuk analitik dashboard.
+- `articleId`: Null jika visitor di Homepage, berisi ID jika di halaman artikel.
+- `path`: URL yang diakses.
+- `referrer` / `userAgent`: Data untuk analisis sumber trafik.
+
 ## 🔗 Relasi Penting
 
 - **Site ↔ Everything**: Hampir semua entitas (`User`, `Article`, `Category`, `Ad`, `Subscriber`, `AuditLog`) terikat pada `Site`.

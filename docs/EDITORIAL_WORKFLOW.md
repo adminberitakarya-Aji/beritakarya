@@ -50,3 +50,12 @@ Platform menggunakan Server-Sent Events (SSE) dan tabel `Notification` untuk men
 - **Ke Pimred**: Notifikasi saat ada draft baru masuk (`article_submitted`).
 - **Ke Jurnalis**: Notifikasi saat artikel mereka disetujui (`article_reviewed`) atau butuh revisi.
 - **System-wide**: Notifikasi berita mendadak (*Breaking News*).
+---
+
+## 🤖 Best Practices Penggunaan AI
+Fitur AI Assistant bukan hanya untuk menulis ulang, tapi untuk meningkatkan nilai jual berita:
+
+1.  **SEO Optimization**: Gunakan AI untuk menyarankan meta-description yang mengandung kata kunci portal Anda.
+2.  **Engagement Focus**: Minta AI membuat 3 opsi headline yang menarik (click-worthy) namun tetap etis (bukan clickbait).
+3.  **Struktur Konten**: Gunakan fitur *Expand* untuk memperkaya data atau memberikan konteks sejarah pada berita yang sedang ditulis.
+4.  **Tone Adjustment**: Pastikan menggunakan fitur AI untuk menyesuaikan gaya bahasa agar sesuai dengan karakter portal daerah masing-masing.

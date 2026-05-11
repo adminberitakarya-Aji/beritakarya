@@ -101,14 +101,17 @@ Proyek ini dilengkapi dengan **GitHub Actions** yang secara otomatis:
 3. **Journalist**: Penulisan artikel dan pengiriman draft ke antrian review.
 4. **Reader**: Akses publik, komentar, dan personalisasi bacaan.
 
-## 📄 Dokumentasi Tambahan
+## 📄 Dokumentasi Utama
 
-Lihat folder `docs/` untuk detail lebih mendalam:
-- [Workflow Editorial](./docs/EDITORIAL_WORKFLOW.md)
-- [Skema Database](./docs/DATABASE_SCHEMA.md)
-- [Panduan Produksi (VPS/Docker)](./docs/PRODUCTION_SETUP.md)
-- [Panduan All-in-One VPS (API + DB)](./docs/ALL_IN_ONE_VPS.md)
-- [Deployment ke Vercel (Frontend)](./docs/VERCEL_DEPLOYMENT.md)
+*   **[DOKUMENTASI MASTER](./FULL_PROJECT_DOCUMENTATION.md)**: Referensi teknis terlengkap (Frontend, Backend, Infra). **(Wajib Baca)**
+*   **[Master Setup VPS](./VPS_MASTER_SETUP.md)**: Panduan instalasi ulang VPS dari nol.
+*   **[Riwayat Project](./PROJECT_HISTORY_LOG.md)**: Arsip seluruh audit dan perbaikan masa lalu.
+
+## 📁 Dokumentasi Pendukung (docs/)
+
+*   [Workflow Editorial](./docs/EDITORIAL_WORKFLOW.md): Panduan tim redaksi.
+*   [Skema Database](./docs/DATABASE_SCHEMA.md): Struktur tabel Prisma.
+*   [Deployment Vercel](./docs/VERCEL_DEPLOYMENT.md): Panduan frontend.
 
 ---
 © 2026 BeritaKarya Global Media. *Jernih Melihat Nusantara.*
