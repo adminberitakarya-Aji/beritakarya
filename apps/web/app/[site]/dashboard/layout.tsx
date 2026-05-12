@@ -67,14 +67,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   // Navigation organized by section
   const navSections = [
-    {
-      label: 'Utama',
-      items: [
-        { name: 'Ringkasan', href: `/${site}/dashboard`, icon: LayoutDashboard, roles: ['superadmin', 'pimred', 'journalist'] },
-        { name: 'Artikel', href: `/${site}/dashboard/articles`, icon: FileText, roles: ['superadmin', 'pimred', 'journalist'] },
-        { name: 'Media', href: `/${site}/dashboard/media`, icon: ImageIcon, roles: ['superadmin', 'pimred', 'journalist'] },
-      ]
-    },
+        {
+          label: 'Utama',
+          items: [
+            { name: 'Ringkasan', href: `/${site}/dashboard`, icon: LayoutDashboard, roles: ['superadmin', 'pimred', 'journalist'] },
+            { name: 'Post', href: `/${site}/dashboard/articles`, icon: FileText, roles: ['superadmin', 'pimred', 'journalist'] },
+            { name: 'Media', href: `/${site}/dashboard/media`, icon: ImageIcon, roles: ['superadmin', 'pimred', 'journalist'] },
+          ]
+        },
     {
       label: 'Editorial',
       items: [
@@ -98,7 +98,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const ROLE_LABELS: Record<string, string> = {
     superadmin: 'Superadmin',
-    pimred: 'Pimpinan Redaksi',
+    pimred: 'Wapimred',
     journalist: 'Wartawan',
   }
 

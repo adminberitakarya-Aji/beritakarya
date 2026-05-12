@@ -69,7 +69,7 @@ export default function AdsDashboard() {
       <div className="flex flex-col items-center justify-center py-24 text-center">
         <AlertCircle size={48} className="text-red-400 mb-4" />
         <h2 className="text-lg font-black text-brand-black dark:text-white uppercase tracking-tight">Akses Terbatas</h2>
-        <p className="text-xs text-gray-400 mt-2">Halaman manajemen iklan hanya dapat diakses oleh Pimred dan Superadmin.</p>
+        <p className="text-xs text-gray-400 mt-2">Halaman manajemen iklan hanya dapat diakses oleh Wapimred dan Superadmin.</p>
       </div>
     );
   }
@@ -116,7 +116,7 @@ export default function AdsDashboard() {
           <div>
             <h4 className="text-[11px] font-black text-blue-900 dark:text-blue-300 uppercase tracking-widest mb-1">Panduan Iklan BeritaKarya</h4>
             <ul className="text-[10px] text-blue-700/70 dark:text-blue-400/70 space-y-1.5 list-disc pl-4">
-              <li>Mode **Banner Gambar** sangat disarankan untuk iklan klien lokal (Pimred) agar performa website tetap ringan.</li>
+              <li>Mode **Banner Gambar** sangat disarankan untuk iklan klien lokal (Wapimred) agar performa website tetap ringan.</li>
               <li>Mode **Script Iklan** digunakan untuk kode pihak ketiga seperti Google AdSense atau MGID.</li>
               <li>Selalu pastikan gambar iklan sudah dalam format **WebP** atau **JPG** terkompresi sebelum di-upload.</li>
             </ul>

@@ -134,9 +134,9 @@ export default function ArticlesPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-black text-brand-black dark:text-white tracking-tight">Kelola Artikel</h1>
+          <h1 className="text-2xl font-black text-brand-black dark:text-white tracking-tight">Kelola Post</h1>
           <p className="text-xs text-gray-400 mt-1">
-            Portal <strong className="text-brand-red uppercase">{site}</strong> — {articles.length} artikel total
+            Portal <strong className="text-brand-red uppercase">{site}</strong> — {articles.length} post total
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -160,7 +160,7 @@ export default function ArticlesPage() {
             className="flex items-center gap-2 px-5 py-2.5 bg-brand-red text-white text-[11px] font-black uppercase tracking-widest rounded-lg hover:bg-red-700 transition-all shadow-lg shadow-brand-red/20 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isCreating ? <Loader2 className="animate-spin" size={14} /> : <Plus size={14} />}
-            {isCreating ? 'Membuat...' : 'Artikel Baru'}
+            {isCreating ? 'Membuat...' : 'Post Berita'}
           </button>
         </div>
       </div>
@@ -175,7 +175,7 @@ export default function ArticlesPage() {
           )} />
           <input 
             type="text"
-            placeholder="Cari judul artikel di seluruh database..."
+            placeholder="Cari judul post di seluruh database..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-white/5 border border-transparent focus:border-brand-red/30 focus:bg-white dark:focus:bg-white/[0.08] rounded-xl text-sm outline-none transition-all text-brand-black dark:text-white placeholder:text-gray-300 shadow-sm"
@@ -232,7 +232,7 @@ export default function ArticlesPage() {
           <table className="w-full text-left">
             <thead className="bg-gray-50 dark:bg-white/[0.02] border-b border-gray-100 dark:border-white/5">
               <tr>
-                <th className="px-6 py-3.5 dash-label">Artikel</th>
+                <th className="px-6 py-3.5 dash-label">Post</th>
                 <th className="px-4 py-3.5 dash-label hidden md:table-cell">Penulis</th>
                 <th className="px-4 py-3.5 dash-label hidden lg:table-cell">Tanggal</th>
                 <th className="px-4 py-3.5 dash-label">Status</th>
@@ -368,14 +368,14 @@ export default function ArticlesPage() {
                     <div className="flex flex-col items-center gap-3 text-gray-300 dark:text-white/10">
                       <FileText size={48} strokeWidth={1} />
                       <p className="text-xs font-bold uppercase tracking-widest text-gray-400">
-                        {searchQuery ? `Tidak ada hasil untuk "${searchQuery}"` : 'Tidak ada artikel'}
+                        {searchQuery ? `Tidak ada hasil untuk "${searchQuery}"` : 'Tidak ada post'}
                       </p>
                       {!searchQuery && (
                         <button
                           onClick={handleNew}
                           className="mt-2 flex items-center gap-2 px-4 py-2 bg-brand-red text-white text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-red-700 transition-all"
                         >
-                          <Plus size={12} /> Tulis Pertama
+                          <Plus size={12} /> Tulis Post Pertama
                         </button>
                       )}
                     </div>

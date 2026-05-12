@@ -553,14 +553,14 @@ export default function DashboardOverview() {
               <h3 className="dash-label">Aksi Cepat</h3>
             </div>
             <div className="p-4 space-y-2">
-              {[
-                { label: 'Tulis Artikel Baru', href: `/${site}/dashboard/articles`, icon: Plus, color: 'bg-brand-red text-white hover:bg-red-700' },
-                { label: 'Kelola Kategori', href: `/${site}/dashboard/categories`, icon: Tag, color: 'bg-gray-50 dark:bg-white/5 text-brand-black dark:text-white hover:bg-gray-100 dark:hover:bg-white/10' },
-                { label: 'Pengaturan Situs', href: `/${site}/dashboard/settings`, icon: Settings, color: 'bg-gray-50 dark:bg-white/5 text-brand-black dark:text-white hover:bg-gray-100 dark:hover:bg-white/10' },
-              ].filter(item => {
-                if (item.label === 'Pengaturan Situs') return user?.role === 'superadmin' || user?.role === 'pimred';
-                return true;
-              }).map(item => (
+               {[
+                 { label: 'Tulis Post Berita', href: `/${site}/dashboard/articles`, icon: Plus, color: 'bg-brand-red text-white hover:bg-red-700' },
+                 { label: 'Kelola Kategori', href: `/${site}/dashboard/categories`, icon: Tag, color: 'bg-gray-50 dark:bg-white/5 text-brand-black dark:text-white hover:bg-gray-100 dark:hover:bg-white/10' },
+                 { label: 'Pengaturan Situs', href: `/${site}/dashboard/settings`, icon: Settings, color: 'bg-gray-50 dark:bg-white/5 text-brand-black dark:text-white hover:bg-gray-100 dark:hover:bg-white/10' },
+               ].filter(item => {
+                 if (item.label === 'Pengaturan Situs') return user?.role === 'superadmin' || user?.role === 'pimred';
+                 return true;
+               }).map(item => (
                 <Link
                   key={item.label}
                   href={item.href}

@@ -114,7 +114,7 @@ export default function CategoriesDashboard() {
       <div className="flex flex-col items-center justify-center py-24 text-center">
         <AlertCircle size={48} className="text-red-400 mb-4" />
         <h2 className="text-lg font-black text-brand-black dark:text-white uppercase tracking-tight">Akses Terbatas</h2>
-        <p className="text-xs text-gray-400 mt-2">Halaman manajemen kategori hanya untuk Pimred dan Superadmin.</p>
+        <p className="text-xs text-gray-400 mt-2">Halaman manajemen kategori hanya untuk Wapimred dan Superadmin.</p>
       </div>
     );
   }

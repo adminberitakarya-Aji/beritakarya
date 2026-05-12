@@ -13,5 +13,5 @@ export default function NewArticlePage({ params }: Props) {
 }
 
 export function generateMetadata({ params }: Props) {
-  return { title: `Artikel Baru — ${params.site} | BeritaKarya` }
+  return { title: `Post Baru — ${params.site} | BeritaKarya` }
 }

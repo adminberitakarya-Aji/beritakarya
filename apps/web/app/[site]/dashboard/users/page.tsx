@@ -57,7 +57,7 @@ export default function UsersPage() {
       case 'superadmin':
         return <span className="px-2 py-1 bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400 text-[9px] font-bold uppercase tracking-wider rounded-sm flex items-center gap-1 w-max"><Shield size={10} /> Superadmin</span>;
       case 'pimred':
-        return <span className="px-2 py-1 bg-purple-100 text-purple-700 dark:bg-purple-500/20 dark:text-purple-400 text-[9px] font-bold uppercase tracking-wider rounded-sm w-max">Pimred</span>;
+        return <span className="px-2 py-1 bg-purple-100 text-purple-700 dark:bg-purple-500/20 dark:text-purple-400 text-[9px] font-bold uppercase tracking-wider rounded-sm w-max">Wapimred</span>;
       case 'journalist':
         return <span className="px-2 py-1 bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400 text-[9px] font-bold uppercase tracking-wider rounded-sm w-max">Jurnalis</span>;
       default:
@@ -133,7 +133,7 @@ export default function UsersPage() {
                         >
                           <option value="reader">Pembaca Biasa</option>
                           <option value="journalist">Jurnalis</option>
-                          <option value="pimred">Pimred</option>
+                          <option value="pimred">Wapimred</option>
                           {currentUser?.role === 'superadmin' && <option value="superadmin">Superadmin</option>}
                         </select>
                       </div>
