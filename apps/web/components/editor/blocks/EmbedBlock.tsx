@@ -66,6 +66,40 @@ export function EmbedBlock({ block }: { block: TEmbedBlock }) {
     }
   }
 
+  if (block.embedType === 'twitter') {
+    return (
+      <div className="relative group">
+        <div className="border rounded-xl overflow-hidden bg-white">
+          <blockquote className="twitter-tweet" data-theme="light">
+            <a href={block.url}>{block.url}</a>
+          </blockquote>
+        </div>
+        <button
+          onClick={() => updateBlock(block.id, { url: '', embedType: 'other' })}
+          className="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100"
+        >Ganti</button>
+        <script async src="https://platform.twitter.com/widgets.js" charSet="utf-8" />
+      </div>
+    )
+  }
+
+  if (block.embedType === 'instagram') {
+    return (
+      <div className="relative group">
+        <div className="border rounded-xl overflow-hidden bg-white">
+          <blockquote className="instagram-media" data-instgrm-captioned data-instgrm-permalink={block.url}>
+            <a href={block.url}>{block.url}</a>
+          </blockquote>
+        </div>
+        <button
+          onClick={() => updateBlock(block.id, { url: '', embedType: 'other' })}
+          className="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100"
+        >Ganti</button>
+        <script async src="https://www.instagram.com/embed.js" />
+      </div>
+    )
+  }
+
   return (
     <div className="border rounded-xl p-3 bg-gray-50 flex items-center gap-3">
       <div className="text-xs text-gray-500 flex-1 truncate">{block.url}</div>

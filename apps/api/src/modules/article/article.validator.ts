@@ -42,10 +42,10 @@ export const updateArticleSchema = z.object({
   publishedAt: z.date().optional()
 })
 
-export const articleQuerySchema = z.object({
-  status: z.enum(['draft','review','published']).optional(),
-  search: z.string().optional(),
-  category: z.string().optional(),
-  page: z.coerce.number().positive().default(1),
-  limit: z.coerce.number().positive().max(100).default(20)
-})
+  export const articleQuerySchema = z.object({
+    status: z.enum(['draft','submitted','review','revision','approved','scheduled','published','archived']).optional(),
+    search: z.string().optional(),
+    category: z.string().optional(),
+    page: z.coerce.number().positive().default(1),
+    limit: z.coerce.number().positive().max(100).default(20)
+  })

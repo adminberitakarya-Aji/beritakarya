@@ -86,11 +86,9 @@ export default function ArticlesPage() {
   const handleNew = async () => {
     setIsCreating(true);
     try {
-      const { data } = await api.post('/articles', { 
-        title: `Draft — ${new Date().toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' })}`,
-        categoryId: null, tags: [], blocks: []
-      });
-      router.push(`/${site}/dashboard/articles/${data.data.id}`);
+      // Redirect ke halaman artikel baru tanpa membuat draft di database
+      // Draft akan dibuat hanya saat user benar-benar menyimpan (save/auto-save)
+      router.push(`/${site}/dashboard/articles/new`);
     } catch (e: any) {
       alert(e.response?.data?.error?.message || 'Gagal membuat artikel baru');
     } finally {
