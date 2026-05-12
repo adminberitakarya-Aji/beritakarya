@@ -4,9 +4,9 @@ import { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Shield, FileText, User, Settings, Search, Filter,
-  ChevronLeft, ChevronRight, AlertCircle, RefreshCw,
-  BarChart3, Clock, Activity, Download, Eye, X
+  Shield, FileText, User, Settings, Search,
+  ChevronLeft, ChevronRight, RefreshCw,
+  BarChart3, Activity, Eye, X
 } from 'lucide-react';
 import { api } from '../../../../lib/api';
 import { useAuthStore } from '../../../../store/authStore';

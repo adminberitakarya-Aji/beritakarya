@@ -2,9 +2,9 @@
 
 import { useEditorStore } from '../../store/editorStore';
 import { 
-  X, Tag, Layout, Image as ImageIcon, Search, 
-  ShieldAlert, Award, Star, BarChart, Settings,
-  Type, Globe, ChevronRight, History, RotateCcw
+  X, Tag, Layout, Image as ImageIcon, 
+  ShieldAlert, Award, Star, BarChart, 
+  Globe, ChevronRight, History, RotateCcw
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useState } from 'react';

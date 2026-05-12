@@ -10,11 +10,9 @@ import {
   Code as CodeIcon, 
   Save, 
   AlertCircle, 
-  CheckCircle2, 
   ExternalLink,
   Upload,
-  RefreshCw,
-  X
+  RefreshCw
 } from 'lucide-react';
 import { cn } from '../../../../lib/utils';
 

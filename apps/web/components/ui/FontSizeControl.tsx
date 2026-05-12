@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Type, Minus, Plus, RefreshCw } from 'lucide-react';
+import { Type } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 export default function FontSizeControl() {

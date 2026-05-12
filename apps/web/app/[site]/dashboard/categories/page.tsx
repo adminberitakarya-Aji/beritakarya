@@ -15,7 +15,6 @@ import {
   Zap,
   Check
 } from 'lucide-react';
-import { cn } from '../../../../lib/utils';
 
 interface Category {
   id: string;

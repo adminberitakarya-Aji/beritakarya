@@ -7,7 +7,6 @@ import {
   Check, 
   Trash2, 
   Clock, 
-  User, 
   FileText, 
   AlertCircle,
   Filter,

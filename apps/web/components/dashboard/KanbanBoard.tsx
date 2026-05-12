@@ -1,8 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { MoreVertical, MessageSquare, Eye, FileText, User, Plus } from 'lucide-react';
-import StatusBadge from '../ui/StatusBadge';
+import { Eye, FileText, Plus } from 'lucide-react';
 import Link from 'next/link';
 
 interface Article {

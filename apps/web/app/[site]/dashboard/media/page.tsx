@@ -4,10 +4,10 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import { 
   Image as ImageIcon, Upload, Search, Filter, 
-  Trash2, Edit3, X, Check, Copy, MoreVertical,
-  Maximize2, RefreshCw, Info, Download, Shield
+  Trash2, X, Check, Copy,
+  Maximize2, RefreshCw
 } from 'lucide-react';
-import ReactCrop, { Crop, PixelCrop, centerCrop, makeAspectCrop } from 'react-image-crop';
+import ReactCrop, { Crop, PixelCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 import { api } from '../../../../lib/api';
 import { cn } from '../../../../lib/utils';

@@ -15,7 +15,7 @@ interface EditorProps {
 }
 
 export function Editor({ articleId, siteId }: EditorProps) {
-  const { loadArticle, saveArticle, undo, saving, lastSaved, isDirty, isFocusMode, reset } = useEditorStore()
+  const { loadArticle, saveArticle, undo, isFocusMode, reset } = useEditorStore()
 
   useEffect(() => {
     if (articleId && articleId !== 'new') {

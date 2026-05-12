@@ -4,8 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { 
   ChevronLeft, ChevronRight, Calendar as CalendarIcon, 
-  Clock, FileText, User, Tag, Plus, Filter, Search,
-  AlertCircle, CheckCircle2, MoreHorizontal
+  Clock
 } from 'lucide-react';
 import { format, addDays, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay, isToday, startOfMonth, endOfMonth } from 'date-fns';
 import { id } from 'date-fns/locale';
@@ -27,7 +26,6 @@ export default function EditorialCalendar() {
   const { site } = useParams() as { site: string };
   const [currentDate, setCurrentDate] = useState(new Date());
   const [articles, setArticles] = useState<Article[]>([]);
-  const [loading, setLoading] = useState(true);
 
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
@@ -37,7 +35,6 @@ export default function EditorialCalendar() {
 
   useEffect(() => {
     const fetchArticles = async () => {
-      setLoading(true);
       try {
         // Fetch all articles for the current month range
         const { data } = await api.get('/articles', {
@@ -51,8 +48,6 @@ export default function EditorialCalendar() {
         setArticles(data.data.articles || data.data.items || []);
       } catch (e) {
         console.error(e);
-      } finally {
-        setLoading(false);
       }
     };
     fetchArticles();

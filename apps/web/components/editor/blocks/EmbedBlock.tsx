@@ -78,7 +78,7 @@ export function EmbedBlock({ block }: { block: TEmbedBlock }) {
           onClick={() => updateBlock(block.id, { url: '', embedType: 'other' })}
           className="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100"
         >Ganti</button>
-        <script async src="https://platform.twitter.com/widgets.js" charSet="utf-8" />
+        <script async src="https://platform.twitter.com/widgets.js" />
       </div>
     )
   }

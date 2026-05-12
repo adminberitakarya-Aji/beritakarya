@@ -8,15 +8,13 @@ import { useAuthStore } from '../../../../store/authStore';
 import { motion } from 'framer-motion';
 import { 
   Plus, Search, Eye, Edit3, Trash2, Calendar,
-  FileText, Loader2, Send, CheckCircle, Clock
+  FileText, Loader2, Send
 } from 'lucide-react';
 import StatusBadge from '../../../../components/ui/StatusBadge';
 import EditorialBadge from '../../../../components/ui/EditorialBadge';
 import KanbanBoard from '../../../../components/dashboard/KanbanBoard';
 import { cn } from '../../../../lib/utils';
 import { LayoutGrid, List } from 'lucide-react';
-
-const ALL_STATUSES = ['draft','submitted','review','revision','approved','scheduled','published','archived'];
 
 const STATUS_LABELS: Record<string, string> = {
   '': 'Semua',
