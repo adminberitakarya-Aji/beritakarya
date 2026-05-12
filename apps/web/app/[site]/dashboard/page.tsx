@@ -345,7 +345,7 @@ export default function DashboardOverview() {
             href={`/${site}/dashboard/articles/new`}
             className="flex items-center gap-2 px-5 py-2.5 bg-brand-red text-white text-[11px] font-black uppercase tracking-widest rounded-lg hover:bg-red-700 transition-all shadow-lg shadow-brand-red/20"
           >
-            <Plus size={15} /> Tulis Artikel
+            <Plus size={15} /> Post Berita
           </Link>
         </div>
       </div>
