@@ -158,7 +158,6 @@ export default function AuditLogPage() {
     setLoading(true);
     try {
       const params = new URLSearchParams({
-        site,
         page: String(page),
         limit: '25',
         ...(searchAction && { action: searchAction }),
@@ -167,7 +166,7 @@ export default function AuditLogPage() {
 
       const [logsRes, statsRes] = await Promise.all([
         api.get(`/audit?${params}`),
-        stats === null ? api.get(`/audit/stats?site=${site}`) : Promise.resolve(null),
+        stats === null ? api.get(`/audit/stats`) : Promise.resolve(null),
       ]);
 
       const d = logsRes.data.data;
@@ -181,7 +180,7 @@ export default function AuditLogPage() {
     } finally {
       setLoading(false);
     }
-  }, [site, page, searchAction, filterEntityType]);
+  }, [page, searchAction, filterEntityType]);
 
   useEffect(() => { fetchLogs(); }, [fetchLogs]);
 

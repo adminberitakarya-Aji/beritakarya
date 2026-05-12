@@ -44,7 +44,7 @@ export default function CategoriesDashboard() {
 
   const fetchCategories = async () => {
     try {
-      const { data } = await api.get(`/categories?site=${site}`);
+      const { data } = await api.get(`/categories`);
       setCategories(data.data);
     } catch (error) {
       console.error('Gagal mengambil kategori', error);
@@ -69,7 +69,7 @@ export default function CategoriesDashboard() {
     if (!name.trim()) return;
     setLoading(true);
     try {
-      await api.post(`/categories?site=${site}`, { name, slug });
+      await api.post(`/categories`, { name, slug });
       setName('');
       setSlug('');
       fetchCategories();
@@ -88,7 +88,7 @@ export default function CategoriesDashboard() {
         // Check if exists
         const exists = categories.find(c => c.slug === cat.slug);
         if (!exists) {
-          await api.post(`/categories?site=${site}`, cat);
+          await api.post(`/categories`, cat);
         }
       }
       await fetchCategories();
@@ -102,7 +102,7 @@ export default function CategoriesDashboard() {
   const handleDelete = async (id: string) => {
     if (!confirm('Hapus kategori ini? Menghapus kategori dapat memengaruhi artikel yang sudah ada.')) return;
     try {
-      await api.delete(`/categories/${id}?site=${site}`);
+      await api.delete(`/categories/${id}`);
       fetchCategories();
     } catch (error: any) {
       alert(error.response?.data?.error?.message || 'Gagal menghapus kategori');

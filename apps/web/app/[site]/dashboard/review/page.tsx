@@ -45,17 +45,17 @@ export default function ReviewQueuePage() {
   const [reviewModal, setReviewModal] = useState<Article | null>(null);
   const [reviewNotes, setReviewNotes] = useState('');
 
-  const load = async () => {
-    setLoading(true);
-    try {
-      const { data } = await api.get('/articles', { params: { site, limit: 100 } });
-      setArticles(data.data.articles || data.data.items || []);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
-  };
+   const load = async () => {
+     setLoading(true);
+     try {
+       const { data } = await api.get('/articles', { params: { limit: 100 } });
+       setArticles(data.data.articles || data.data.items || []);
+     } catch (e) {
+       console.error(e);
+     } finally {
+       setLoading(false);
+     }
+   };
 
   useEffect(() => { load(); }, [site]);
 

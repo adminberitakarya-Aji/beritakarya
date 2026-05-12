@@ -39,7 +39,6 @@ export default function EditorialCalendar() {
         // Fetch all articles for the current month range
         const { data } = await api.get('/articles', {
           params: { 
-            site, 
             limit: 100,
             // We'd ideally have a date range filter in the API, 
             // but for now we fetch recent/scheduled and filter client-side

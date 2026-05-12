@@ -46,7 +46,7 @@ export default function MediaManagerPage() {
   const fetchMedia = async () => {
     setLoading(true);
     try {
-      const { data } = await api.get('/media', { params: { site, limit: 50 } });
+      const { data } = await api.get('/media', { params: { limit: 50 } });
       setMedia(data.data.items);
     } catch (e) {
       console.error(e);

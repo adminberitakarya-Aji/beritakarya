@@ -28,20 +28,20 @@ export default function TeamMonitoring() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
 
-  useEffect(() => {
-    const fetchTeam = async () => {
-      setLoading(true);
-      try {
-        const { data } = await api.get('/users/stats', { params: { site } });
-        setTeam(data.data);
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchTeam();
-  }, [site]);
+   useEffect(() => {
+     const fetchTeam = async () => {
+       setLoading(true);
+       try {
+         const { data } = await api.get('/users/stats');
+         setTeam(data.data);
+       } catch (e) {
+         console.error(e);
+       } finally {
+         setLoading(false);
+       }
+     };
+     fetchTeam();
+   }, [site]);
 
   const filteredTeam = team.filter(m => 
     m.name.toLowerCase().includes(search.toLowerCase()) || 

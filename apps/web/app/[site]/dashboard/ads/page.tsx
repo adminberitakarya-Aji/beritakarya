@@ -39,7 +39,7 @@ export default function AdsDashboard() {
 
   const fetchAds = async () => {
     try {
-      const { data } = await api.get(`/ads?site=${site}`);
+      const { data } = await api.get(`/ads`);
       setAds(data.data);
     } catch (error) {
       console.error('Failed to fetch ads', error);
@@ -55,7 +55,7 @@ export default function AdsDashboard() {
   const handleSave = async (slotId: string, payload: Partial<Ad>) => {
     setSavingId(slotId);
     try {
-      await api.post(`/ads?site=${site}`, { slot: slotId, ...payload });
+      await api.post(`/ads`, { slot: slotId, ...payload });
       await fetchAds();
     } catch (error: any) {
       alert(error.response?.data?.error?.message || 'Gagal menyimpan iklan');

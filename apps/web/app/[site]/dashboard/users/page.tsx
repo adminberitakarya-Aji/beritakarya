@@ -26,7 +26,7 @@ export default function UsersPage() {
   const fetchUsers = async () => {
     setIsLoading(true);
     try {
-      const { data } = await api.get('/users', { params: { site } });
+      const { data } = await api.get('/users');
       setUsers(data.data?.items || []);
     } catch (err: any) {
       setError(err.response?.data?.error?.message || 'Gagal mengambil data pengguna');

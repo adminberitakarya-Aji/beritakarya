@@ -32,7 +32,7 @@ export default function NotificationBell() {
 
   const fetchNotifications = async () => {
     try {
-      const { data } = await api.get('/notifications', { params: { site } });
+      const { data } = await api.get('/notifications');
       setNotifications(data.data.items);
       setUnreadCount(data.data.unreadCount);
     } catch (e) {
@@ -50,7 +50,7 @@ export default function NotificationBell() {
     // Setup SSE
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
     const token = localStorage.getItem('accessToken');
-    const eventSource = new EventSource(`${apiUrl}/api/v1/notifications/stream?site=${site}&token=${token}`);
+    const eventSource = new EventSource(`${apiUrl}/api/v1/notifications/stream?token=${token}`);
 
     eventSource.onmessage = (event) => {
       const newNotif = JSON.parse(event.data);
@@ -89,7 +89,7 @@ export default function NotificationBell() {
 
   const markAllRead = async () => {
     try {
-      await api.patch('/notifications/read-all', { site });
+      await api.patch('/notifications/read-all');
       setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
       setUnreadCount(0);
     } catch (e) {

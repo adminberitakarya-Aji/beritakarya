@@ -259,9 +259,9 @@ export default function DashboardOverview() {
       setLoading(true);
       try {
         const [artRes, trafficRes, topRes] = await Promise.all([
-          api.get('/articles', { params: { site, limit: 50 } }),
-          api.get('/analytics/traffic', { params: { site, days: 7 } }),
-          api.get('/analytics/top-content', { params: { site, limit: 5 } })
+          api.get('/articles', { params: { limit: 50 } }),
+          api.get('/analytics/traffic', { params: { days: 7 } }),
+          api.get('/analytics/top-content', { params: { limit: 5 } })
         ]);
         
         setArticles(artRes.data.data.articles || artRes.data.data.items || []);
