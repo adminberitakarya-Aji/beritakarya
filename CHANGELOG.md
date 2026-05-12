@@ -5,6 +5,18 @@ Format ini didasarkan pada [Keep a Changelog](https://keepachangelog.com/en/1.0.
 
 ---
 
+## [1.1.0] - 2026-05-12
+### ✨ UI Refinement & KYC Planning
+
+#### Added
+- Membuat `implementasi_plan_KYC.md` sebagai panduan verifikasi identitas (KTP/KK) bagi kontributor.
+
+#### Changed
+- Mengubah teks tombol dashboard dari "+ Tulis Artikel" menjadi **"+ Post Berita"** untuk terminologi yang lebih umum.
+- Sinkronisasi dashboard ads dan manajemen artikel.
+
+---
+
 ## [1.0.0] - 2026-05-12
 ### 🚀 Infrastructure Stabilization (Milestone: Healthy)
 

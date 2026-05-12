@@ -41,10 +41,18 @@ Terletak di `apps/web`.
     *   Implementasi pola reaktif pada store. Menghindari `getState()` di dalam komponen agar UI selalu sinkron dengan state terbaru.
 *   **API Normalization**:
     *   `NEXT_PUBLIC_API_URL` sekarang menggunakan base URL saja (`https://api.beritakarya.co`), sementara suffix `/api/v1` ditangani secara otomatis oleh helper `lib/api.ts`.
+---
+
+## 🔐 4. Sistem Verifikasi KYC (Know Your Contributor)
+Sistem ini dirancang untuk memastikan akuntabilitas jurnalis dan kepatuhan terhadap hukum pers.
+
+*   **Implementasi**: Panduan lengkap tersedia di `implementasi_plan_KYC.md`.
+*   **Persyaratan**: Kontributor (Jurnalis/Wapimred) wajib mengunggah KTP dan melengkapi biografi sebelum dapat mempublikasikan berita.
+*   **Keamanan Data**: Menggunakan penyimpanan terisolasi (bukan publik) dan sistem audit log untuk akses dokumen sensitif.
 
 ---
 
-## 🌐 4. Infrastruktur & DevOps
+## 🌐 5. Infrastruktur & DevOps
 Sistem dideploy menggunakan Docker di VPS Ubuntu.
 
 ### Docker Configuration
@@ -62,7 +70,7 @@ Nginx dikonfigurasi di level sistem operasi (bukan di dalam Docker) untuk perfor
 
 ---
 
-## 🚀 5. Panduan Maintenance
+## 🚀 6. Panduan Maintenance
 *   **Update Kode**: `git pull` -> `docker compose ... up -d --build`.
 *   **Cek Kesehatan**: `curl https://api.beritakarya.co/health`.
 *   **Lokasi Gambar**: `/opt/beritakarya/uploads` di VPS.
@@ -70,7 +78,7 @@ Nginx dikonfigurasi di level sistem operasi (bukan di dalam Docker) untuk perfor
 
 ---
 
-## 🛰️ 6. Alur Flow Project (Request Lifecycle)
+## 🛰️ 7. Alur Flow Project (Request Lifecycle)
 Memahami alur ini sangat penting agar tidak "bertabrakan" lagi antara Nginx dan Docker.
 
 ### A. Alur API Request
@@ -95,7 +103,7 @@ Ini adalah alur yang kita optimasi agar sangat cepat:
 
 ---
 
-## ⚠️ 7. Troubleshooting & "Ganjalan" Utama
+## ⚠️ 8. Troubleshooting & "Ganjalan" Utama
 Berdasarkan pengalaman perbaikan kemarin, berikut adalah hal-hal yang wajib diperhatikan:
 
 ### 1. Masalah Path Build (Docker vs Lokal)
