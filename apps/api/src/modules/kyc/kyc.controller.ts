@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express'
 import multer from 'multer'
 import os from 'os'
 import fs from 'fs/promises'
+import path from 'path'
 import { prisma } from '../../db/client'
 import { requireAuth, requireRole } from '../../middleware/auth.middleware'
 import { siteMiddleware, requireSiteAccess } from '../../middleware/site.middleware'
@@ -266,5 +267,52 @@ kycRouter.patch('/:userId/verify',
     })
 
     res.json({ success: true, data: { message: `KYC ${status} berhasil` } })
+  })
+)
+
+// GET /view/:userId/:type - Securely serve KYC documents
+kycRouter.get('/view/:userId/:type',
+  ...withSite,
+  requireRole(['superadmin', 'wapimred']),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { userId, type } = req.params // type: 'idCard' | 'familyCard'
+    
+    if (type !== 'idCard' && type !== 'familyCard') {
+      return res.status(400).json({ success: false, error: { message: 'Tipe dokumen tidak valid' } })
+    }
+
+    const targetUser = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { siteId: true, idCardPath: true, familyCardPath: true }
+    })
+
+    if (!targetUser) {
+      return res.status(404).json({ success: false, error: { message: 'User tidak ditemukan' } })
+    }
+
+    // Site access check for wapimred
+    if (req.user!.role === 'wapimred' && targetUser.siteId !== req.site) {
+      return res.status(403).json({ success: false, error: { message: 'Akses ditolak untuk situs ini' } })
+    }
+
+    const filePath = type === 'idCard' ? targetUser.idCardPath : targetUser.familyCardPath
+
+    if (!filePath) {
+      return res.status(404).json({ success: false, error: { message: 'File tidak ditemukan' } })
+    }
+
+    // Log the view for audit trail
+    await prisma.kYCViewLog.create({
+      data: {
+        userId,
+        viewerId: req.user!.userId,
+        siteId: targetUser.siteId!,
+        fileType: type === 'idCard' ? 'ktp' : 'kk',
+        ipAddress: req.ip,
+        userAgent: req.headers['user-agent']
+      }
+    })
+
+    res.sendFile(filePath)
   })
 )
