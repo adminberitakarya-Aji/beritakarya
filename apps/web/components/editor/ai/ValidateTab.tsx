@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { useGrammar, useReadability } from '../../../hooks/useAI'
 import { useEditorStore } from '../../../store/editorStore'
+import { useKeyboardShortcuts } from '../../../hooks/useKeyboardShortcuts'
 
 interface Props {
   model?: string
@@ -69,6 +70,28 @@ export function ValidateTab({ model = 'gpt-4o' }: Props) {
     setSelectedCorrections(new Set())
     setTimeout(() => doGrammar({ text: getAllText(blocks) }), 100)
   }
+
+  // Keyboard shortcuts
+  useKeyboardShortcuts([
+    {
+      key: 'g',
+      shift: true,
+      ctrl: true,
+      alt: false,
+      action: () => {
+        if (allText && !grammarState.loading) doGrammar({ text: allText })
+      }
+    },
+    {
+      key: 'r',
+      shift: true,
+      ctrl: true,
+      alt: false,
+      action: () => {
+        if (allText && !readState.loading) doRead({ text: allText })
+      }
+    }
+  ], true)
 
   return (
     <div className="space-y-5">

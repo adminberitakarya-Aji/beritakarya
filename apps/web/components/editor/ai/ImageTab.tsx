@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { useCaption } from '../../../hooks/useAI'
 import { Upload, Copy, Check } from 'lucide-react'
+import { useKeyboardShortcuts } from '../../../hooks/useKeyboardShortcuts'
 
 interface Props {
   model?: string
@@ -34,6 +35,19 @@ export function ImageTab({ model = 'gpt-4o' }: Props) {
       detail: { altText } 
     }))
   }
+
+  // Keyboard shortcut
+  useKeyboardShortcuts([
+    {
+      key: 'c',
+      shift: true,
+      ctrl: true,
+      alt: false,
+      action: () => {
+        if (imageUrl && !captionState.loading) handleGenerate()
+      }
+    }
+  ], true)
   
   return (
     <div className="space-y-4">

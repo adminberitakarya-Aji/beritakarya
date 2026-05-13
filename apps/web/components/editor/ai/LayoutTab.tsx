@@ -1,6 +1,7 @@
 'use client'
 import { useLayout } from '../../../hooks/useAI'
 import { useEditorStore } from '../../../store/editorStore'
+import { useKeyboardShortcuts } from '../../../hooks/useKeyboardShortcuts'
 
 interface Props {
   model?: string
@@ -13,6 +14,19 @@ export function LayoutTab({ model = 'gpt-4o' }: Props) {
   const handleAnalyze = async () => {
     await analyzeLayout({ blocks })
   }
+
+  // Keyboard shortcut
+  useKeyboardShortcuts([
+    {
+      key: 'l',
+      shift: true,
+      ctrl: true,
+      alt: false,
+      action: () => {
+        if (blocks.length > 0 && !layoutState.loading) handleAnalyze()
+      }
+    }
+  ], true)
 
   return (
     <div className="space-y-4">

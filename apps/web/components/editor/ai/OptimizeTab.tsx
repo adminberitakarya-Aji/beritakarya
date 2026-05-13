@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { useHeadlines, useSEO } from '../../../hooks/useAI'
 import { useEditorStore } from '../../../store/editorStore'
+import { useKeyboardShortcuts } from '../../../hooks/useKeyboardShortcuts'
 
 interface Props {
   model?: string
@@ -16,6 +17,28 @@ export function OptimizeTab({ model = 'gpt-4o' }: Props) {
   const title = blocks.find(b => b.type === 'heading')?.content || ''
   const firstParagraph = blocks.find(b => b.type === 'paragraph')?.content || ''
   const excerpt = firstParagraph.slice(0, 200)
+
+  // Keyboard shortcuts
+  useKeyboardShortcuts([
+    {
+      key: 'h',
+      shift: true,
+      ctrl: true,
+      alt: false,
+      action: () => {
+        if (title && !headlineState.loading) generateHeadlines({ title, contentExcerpt: excerpt })
+      }
+    },
+    {
+      key: 's',
+      shift: true,
+      ctrl: true,
+      alt: false,
+      action: () => {
+        if (title && !seoState.loading) generateSEO({ title, contentExcerpt: excerpt })
+      }
+    }
+  ], true)
 
   return (
     <div className="space-y-6">

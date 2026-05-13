@@ -1,8 +1,9 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useEditorStore } from '../../../store/editorStore'
 import { useRewrite, useExpand } from '../../../hooks/useAI'
 import { AIResultCard } from './AIResultCard'
+import { useKeyboardShortcuts } from '../../../hooks/useKeyboardShortcuts'
 
 type Tone = 'formal' | 'santai' | 'berita'
 type Length = 'lebih_pendek' | 'sama' | 'lebih_panjang'
@@ -64,6 +65,28 @@ export function WriteTab({ model = 'gpt-4o' }: Props) {
   const applyRewrite = (result: string) => {
     if (selectedId) updateBlock(selectedId, { content: result })
   }
+
+  // Keyboard shortcuts
+  useKeyboardShortcuts([
+    {
+      key: 'r',
+      shift: true,
+      ctrl: true,
+      alt: false,
+      action: () => {
+        if (selectedId && !rewriteState.loading) handleRewrite()
+      }
+    },
+    {
+      key: 'e',
+      shift: true,
+      ctrl: true,
+      alt: false,
+      action: () => {
+        if (selectedId && !expandState.loading) handleExpand()
+      }
+    }
+  ], true)
 
   return (
     <div className="space-y-4">

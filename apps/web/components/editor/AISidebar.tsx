@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { WriteTab } from './ai/WriteTab'
 import { OptimizeTab } from './ai/OptimizeTab'
 import { ValidateTab } from './ai/ValidateTab'
@@ -29,6 +29,8 @@ export function AISidebar() {
   const [open, setOpen] = useState(false)
   const [tab, setTab] = useState<Tab>('write')
   const [selectedModel, setSelectedModel] = useState('gpt-4o')
+  const [showShortcuts, setShowShortcuts] = useState(false)
+  const sidebarRef = useRef<HTMLDivElement>(null)
   
   // Load saved model preference from localStorage
   useEffect(() => {
