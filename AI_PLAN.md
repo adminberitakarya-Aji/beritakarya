@@ -829,7 +829,7 @@ Impact
 
 ### **Week 2-3 (Enhancement) - IN PROGRESS**
 - [ ] SERP preview for SEO
-- [ ] Model selector dropdown
+- [x] Model selector dropdown ✅
 - [ ] Keyboard shortcuts
 - [ ] Wire circuit breaker
 - [ ] Add Redis caching for frequent prompts
