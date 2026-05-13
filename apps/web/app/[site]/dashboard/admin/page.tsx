@@ -28,10 +28,6 @@ export default function AdminDashboardPage() {
     contactEmail: ''
   })
 
-  useEffect(() => {
-    fetchSites()
-  }, [])
-
   const fetchSites = async () => {
     try {
       const res = await fetch('/api/v1/sites?includeStats=true')
@@ -46,6 +42,10 @@ export default function AdminDashboardPage() {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    fetchSites()
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
