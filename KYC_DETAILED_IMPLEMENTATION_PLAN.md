@@ -1207,21 +1207,21 @@ export default function NotificationBell() {
 
 Before launching KYC feature, **MUST COMPLETE**:
 
-- [ ] Auth middleware site-scopingFix (`requireSiteAccess`)
-- [ ] File validator service with MIME + resolution checks
+- [x] Auth middleware site-scopingFix (`requireSiteAccess`)
+- [x] File validator service with MIME + resolution checks
 - [ ] Virus scanning integration (if required)
-- [ ] Watermark service with Sharp
-- [ ] Thumbnail generation for admin preview
-- [ ] Prisma migration (nullable fields + KYCViewLog)
-- [ ] Backfill script for existing users
-- [ ] KYC consent form with legal language
-- [ ] Privacy policy page (`/kebijakan-privasi`)
-- [ ] Notification triggers (admin + user)
+- [x] Watermark service with Sharp
+- [x] Thumbnail generation for admin preview
+- [x] Prisma migration (nullable fields + KYCViewLog)
+- [x] Backfill script for existing users
+- [x] KYC consent form with legal language
+- [x] Privacy policy page (`/kebijakan-privasi`)
+- [x] Notification triggers (admin + user)
 - [ ] Email service integration (optional but recommended)
 - [ ] Integration tests for entire flow
 - [ ] Manual testing: complete submit → review → approve/reject cycle
-- [ ] Audit log verification (all actions recorded)
-- [ ] Security review: auth bypass attempts fail
+- [x] Audit log verification (all actions recorded)
+- [x] Security review: auth bypass attempts fail
 - [ ] Performance test: upload 5MB file timeout < 30s
 
 **Estimated P0 Time**: 2-3 development weeks (5-7 days actual coding + testing)
