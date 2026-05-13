@@ -19,4 +19,11 @@ gzip $BACKUP_FILE
 # Keep only last 7 days of backups
 find $BACKUP_DIR -name "beritakarya_backup_*.sql.gz" -mtime +7 -delete
 
-echo "Backup completed: $BACKUP_FILE.gz"
+# Send notification on success/failure
+if [ $? -eq 0 ]; then
+  echo "✅ Backup successful" | mail -s "Backup Success - BeritaKarya" adminberitakarya@gmail.com
+  exit 0
+else
+  echo "❌ Backup failed" | mail -s "Backup FAILED - BeritaKarya" adminberitakarya@gmail.com
+  exit 1
+fi
