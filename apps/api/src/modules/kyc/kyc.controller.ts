@@ -33,21 +33,118 @@ kycRouter.get('/',
   requireRole(['superadmin', 'wapimred']),
   asyncHandler(async (req: any, res: any) => {
     const { siteId } = req
-    const users = await prisma.user.findMany({
-      where: { siteId },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        role: true,
-        isVerified: true,
-        kycSubmittedAt: true,
-        kycReviewedAt: true,
-        kycNotes: true
-      },
-      orderBy: { kycSubmittedAt: 'desc' }
+    const page = parseInt(req.query.page as string) || 1
+    const limit = parseInt(req.query.limit as string) || 20
+    const search = req.query.search as string
+    const status = req.query.status as string
+    const skip = (page - 1) * limit
+
+    const where: any = { siteId }
+
+    if (search) {
+      where.OR = [
+        { name: { contains: search, mode: 'insensitive' } },
+        { email: { contains: search, mode: 'insensitive' } }
+      ]
+    }
+
+    if (status === 'pending') {
+      where.kycSubmittedAt = { not: null }
+      where.isVerified = false
+      where.kycNotes = { not: { contains: 'REJECTED' } }
+    } else if (status === 'verified') {
+      where.isVerified = true
+    } else if (status === 'rejected') {
+      where.kycNotes = { contains: 'REJECTED' }
+    }
+
+    const [users, total] = await Promise.all([
+      prisma.user.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { kycSubmittedAt: 'desc' },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          isVerified: true,
+          kycSubmittedAt: true,
+          kycReviewedAt: true,
+          kycNotes: true,
+        }
+      }),
+      prisma.user.count({ where })
+    ])
+
+    res.json({ 
+      success: true, 
+      data: users,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit)
+      }
     })
-    res.json({ success: true, data: users })
+  })
+)
+
+// GET /stats - Get KYC editorial metrics
+kycRouter.get('/stats',
+  ...withSite,
+  requireRole(['superadmin', 'wapimred']),
+  asyncHandler(async (req: any, res: any) => {
+    const { siteId } = req
+    const now = new Date()
+    const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+
+    const [
+      totalPending,
+      approvedThisWeek,
+      rejectedThisWeek,
+      allVerifiedUsers
+    ] = await Promise.all([
+      // Total Pending (Submitted but not verified and not rejected)
+      prisma.user.count({
+        where: { siteId, kycSubmittedAt: { not: null }, isVerified: false, kycNotes: { not: { contains: 'REJECTED' } } }
+      }),
+      // Approved This Week
+      prisma.user.count({
+        where: { siteId, isVerified: true, kycReviewedAt: { gte: oneWeekAgo } }
+      }),
+      // Rejected This Week
+      prisma.user.count({
+        where: { siteId, isVerified: false, kycNotes: { contains: 'REJECTED' }, kycReviewedAt: { gte: oneWeekAgo } }
+      }),
+      // All Verified Users (for avg time calculation)
+      prisma.user.findMany({
+        where: { siteId, isVerified: true, kycSubmittedAt: { not: null }, kycReviewedAt: { not: null } },
+        select: { kycSubmittedAt: true, kycReviewedAt: true }
+      })
+    ])
+
+    // Calculate Average Approval Time (in hours)
+    let avgApprovalTime = 0
+    if (allVerifiedUsers.length > 0) {
+      const totalHours = allVerifiedUsers.reduce((sum, u) => {
+        const diff = u.kycReviewedAt!.getTime() - u.kycSubmittedAt!.getTime()
+        return sum + (diff / (1000 * 60 * 60))
+      }, 0)
+      avgApprovalTime = Math.round(totalHours / allVerifiedUsers.length)
+    }
+
+    res.json({
+      success: true,
+      data: {
+        totalPending,
+        approvedThisWeek,
+        rejectedThisWeek,
+        avgApprovalTime,
+        conversionRate: Math.round((approvedThisWeek / (approvedThisWeek + rejectedThisWeek || 1)) * 100)
+      }
+    })
   })
 )
 
