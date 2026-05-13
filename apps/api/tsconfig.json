@@ -8,7 +8,9 @@
     "paths": {
       "@beritakarya/*": ["../../packages/*/src"]
     },
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "declaration": false,
+    "declarationMap": false
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
