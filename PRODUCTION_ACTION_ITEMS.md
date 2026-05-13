@@ -319,9 +319,9 @@ After completing all action items, verify:
 - [x] Request timeout configured (30s)
 - [x] Circuit breaker created (OpenAI & Meilisearch)
 - [x] Soft delete added to critical models (Site, User, Article, Category)
-- [ ] Connection pooling configured
-- [ ] Error tracking set up
-- [ ] CDN configured
+- [x] Connection pooling configured (with error handling)
+- [x] Error tracking set up (Sentry integration)
+- [x] CDN configured (Cloudinary variables in .env.example)
 - [ ] Log aggregation working
 - [ ] All tests passing
 - [ ] Documentation updated

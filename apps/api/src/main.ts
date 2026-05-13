@@ -1,4 +1,5 @@
 import 'dotenv/config'
+import * as Sentry from '@sentry/node'
 import { env } from './lib/env'
 import './lib/envValidation'
 import express from 'express'
@@ -38,6 +39,27 @@ import './types/express'
 // Import controller functions
 import * as categoryController from './modules/category/category.controller'
 import * as siteController from './modules/site/site.controller'
+
+// Initialize Sentry error tracking
+if (env.SENTRY_DSN) {
+  Sentry.init({
+    dsn: env.SENTRY_DSN,
+    environment: env.NODE_ENV,
+    tracesSampleRate: 0.1, // 10% of transactions for performance monitoring
+    beforeSend(event, hint) {
+      // Sanitize sensitive data before sending
+      if (event.request) {
+        if (event.request.headers?.authorization) {
+          event.request.headers.authorization = '[REDACTED]'
+        }
+        if (event.request.headers?.cookie) {
+          event.request.headers.cookie = '[REDACTED]'
+        }
+      }
+      return event
+    }
+  })
+}
 
 const app = express()
 app.set('trust proxy', 1)
@@ -166,6 +188,21 @@ app.get('/metrics', (_, res) => {
 })
 
 app.use(errorMiddleware)
+
+// Capture unhandled errors globally if Sentry is enabled
+if (env.SENTRY_DSN) {
+  process.on('uncaughtException', (error) => {
+    Sentry.captureException(error)
+    Sentry.close()
+    process.exit(1)
+  })
+
+  process.on('unhandledRejection', (reason) => {
+    Sentry.captureException(reason)
+    Sentry.close()
+    process.exit(1)
+  })
+}
 
 const server = app.listen(PORT, () => {
   logger.info(`API berjalan di http://localhost:${PORT}`)

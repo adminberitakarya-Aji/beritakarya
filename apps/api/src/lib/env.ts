@@ -15,6 +15,7 @@ const envSchema = z.object({
   REDIS_PASSWORD: z.string().optional(),
   MEILISEARCH_HOST: z.string().default('http://localhost:7700'),
   MEILISEARCH_KEY: z.string().default(''),
+  SENTRY_DSN: z.string().optional(),
 })
 
 const parsed = envSchema.safeParse(process.env)

@@ -19,6 +19,7 @@
     "@beritakarya/types": "workspace:*",
     "@beritakarya/utils": "workspace:*",
     "@prisma/client": "^5.12.0",
+    "@sentry/node": "^10.53.1",
     "aws-sdk": "^2.1693.0",
     "bcryptjs": "^2.4.3",
     "connect-timeout": "^1.9.1",
