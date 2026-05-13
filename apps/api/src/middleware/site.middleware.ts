@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
-// @ts-ignore - workspace package import
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore - workspace package import issues
 import { KNOWN_SITE_IDS } from '@beritakarya/config'
 import { prisma } from '../db/client'
 
