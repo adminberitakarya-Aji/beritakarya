@@ -65,6 +65,25 @@ export function OptimizeTab({ model = 'gpt-4o' }: Props) {
         )}
         {seoState.result && (
           <div className="space-y-3">
+            {/* SERP Preview */}
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+              <p className="text-[10px] font-medium text-gray-500 mb-2">Google SERP Preview</p>
+              <div className="bg-white border border-gray-200 rounded p-3 text-sm leading-relaxed">
+                <p className="text-blue-700 text-base hover:text-blue-800 cursor-pointer truncate">
+                  {seoState.result.metaTitle || title}
+                </p>
+                <p className="text-green-600 text-xs truncate">
+                  https://beritakarya.co/artikel-{title.toLowerCase().replace(/\s+/g, '-')}
+                </p>
+                <p className="text-gray-600 text-xs mt-1 line-clamp-2">
+                  {seoState.result.metaDescription}
+                </p>
+              </div>
+              <p className="text-[10px] text-gray-400 mt-2 text-center">
+                Preview: Google search result appearance
+              </p>
+            </div>
+
             <div>
               <label className="text-[10px] font-medium text-gray-500 block mb-1">Meta Title (50-60 chars)</label>
               <div className="bg-gray-50 border border-gray-200 rounded-lg p-2.5 text-xs">
