@@ -24,7 +24,7 @@ export default function CategoriesDashboard() {
   // Get site from URL
   useEffect(() => {
     const path = window.location.pathname;
-    const match = path.match(/^\/[^\/]+/);
+    const match = path.match(/^[^/]+/);
     if (match) {
       setSiteId(match[0].slice(1));
     }
