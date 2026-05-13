@@ -84,11 +84,11 @@ export default function ArticlesPage() {
   const handleNew = async () => {
     setIsCreating(true);
     try {
-      // Redirect ke halaman artikel baru tanpa membuat draft di database
+      // Redirect ke halaman post baru tanpa membuat draft di database
       // Draft akan dibuat hanya saat user benar-benar menyimpan (save/auto-save)
       router.push(`/${site}/dashboard/articles/new`);
     } catch (e: any) {
-      alert(e.response?.data?.error?.message || 'Gagal membuat artikel baru');
+      alert(e.response?.data?.error?.message || 'Gagal membuat post baru');
     } finally {
       setIsCreating(false);
     }
@@ -107,13 +107,13 @@ export default function ArticlesPage() {
   };
 
   const handleDelete = async (articleId: string) => {
-    if (!confirm('Yakin ingin menghapus artikel ini? Tindakan ini tidak dapat dibatalkan.')) return;
+    if (!confirm('Yakin ingin menghapus post ini? Tindakan ini tidak dapat dibatalkan.')) return;
     setActionLoading(articleId + 'del');
     try {
       await api.delete(`/articles/${articleId}`);
       await load();
     } catch (e: any) {
-      alert(e.response?.data?.error?.message || 'Gagal menghapus artikel');
+      alert(e.response?.data?.error?.message || 'Gagal menghapus post');
     } finally {
       setActionLoading(null);
     }
@@ -313,7 +313,7 @@ export default function ArticlesPage() {
                   <td className="px-4 py-4">
                     <div className="flex justify-end items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       {/* Journalist: kirim ke editor jika masih draft */}
-                      {article.status === 'draft' && (user?.role === 'journalist' || user?.role === 'pimred' || user?.role === 'superadmin') && (
+                      {article.status === 'draft' && (user?.role === 'journalist' || user?.role === 'wapimred' || user?.role === 'superadmin') && (
                         <button
                           onClick={() => handleSubmitToReview(article.id)}
                           disabled={actionLoading === article.id}
@@ -336,15 +336,15 @@ export default function ArticlesPage() {
                       </Link>
                       {article.status === 'published' && (
                         <Link
-                          href={`/${site}/artikel/${article.slug}`}
+                          href={`/${site}/post/${article.slug}`}
                           target="_blank"
                           className="p-2 text-gray-400 hover:text-brand-black dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg transition-all"
-                          title="Lihat artikel"
+                          title="Lihat post"
                         >
                           <Eye size={15} />
                         </Link>
                       )}
-                      {(user?.role === 'superadmin' || user?.role === 'pimred') && (
+                      {(user?.role === 'superadmin' || user?.role === 'wapimred') && (
                         <button 
                           onClick={() => handleDelete(article.id)}
                           disabled={actionLoading === article.id + 'del'}

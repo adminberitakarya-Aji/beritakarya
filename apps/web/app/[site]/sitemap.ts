@@ -55,7 +55,7 @@ export default async function sitemap({ params }: { params: { site: string } }):
   // 3. Articles
   articles.forEach((article: any) => {
     entries.push({
-      url: `${siteUrl}/artikel/${article.slug}`,
+      url: `${siteUrl}/post/${article.slug}`,
       lastModified: new Date(article.publishedAt || article.updatedAt || new Date()),
       changeFrequency: 'monthly',
       priority: 0.6,

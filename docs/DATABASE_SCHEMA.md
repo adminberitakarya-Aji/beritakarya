@@ -12,7 +12,7 @@ Menyimpan konfigurasi untuk setiap portal berita.
 
 ### 2. `User` & `Auth`
 Mengelola identitas dan hak akses (RBAC).
-- `role`: `superadmin` | `pimred` | `journalist` | `reader`.
+- `role`: `superadmin` | `wapimred` | `journalist` | `reader`.
 - `siteId`: Relasi ke `Site` (null untuk superadmin).
 - `refreshTokens`: Token untuk session management yang aman.
 

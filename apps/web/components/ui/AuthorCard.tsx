@@ -20,7 +20,7 @@ interface AuthorCardProps {
 
 const ROLE_LABELS: Record<string, string> = {
   superadmin: 'Superadmin',
-  pimred: 'Pimpinan Redaksi',
+  wapimred: 'Wapimred',
   journalist: 'Wartawan',
   reader: 'Pembaca',
 };
@@ -67,7 +67,7 @@ export default function AuthorCard({ author, site, variant = 'card', className }
           )}
           {typeof author.articleCount === 'number' && (
             <p className="text-[10px] text-gray-400 mt-1 flex items-center gap-1 font-medium">
-              <FileText size={10} /> {author.articleCount} artikel ditulis
+              <FileText size={10} /> {author.articleCount} post ditulis
             </p>
           )}
         </div>

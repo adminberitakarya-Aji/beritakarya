@@ -1,9 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
-import jwt from 'jsonwebtoken'
-import type { JWTPayload } from '@beritakarya/types'
-import { logger } from '../lib/logger'
-import { env } from '../lib/env'
+import { JWTPayload } from '@beritakarya/types'
 
+// Extend Express Request type to include user and site
 declare global {
   namespace Express {
     interface Request {
@@ -13,79 +11,59 @@ declare global {
   }
 }
 
-export function requireAuth(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  const authHeader = req.headers.authorization
-  const token = authHeader?.startsWith('Bearer ') 
-    ? authHeader.slice(7) 
-    : (req.query.token as string)
-
-  if (!token) {
-    logger.warn(`Auth failed: No token found for ${req.path}`)
+/**
+ * Middleware to require authentication
+ */
+export function requireAuth(req: Request, res: Response, next: NextFunction) {
+  if (!req.user) {
     return res.status(401).json({
       success: false,
-      error: { code: 'UNAUTHORIZED', message: 'Token tidak ditemukan' }
+      error: { code: 'UNAUTHORIZED', message: 'Authentication required' }
     })
   }
-
-  try {
-    const payload = jwt.verify(
-      token,
-      env.JWT_SECRET
-    ) as JWTPayload
-    req.user = payload
-    next()
-  } catch (err: any) {
-    logger.warn(`Auth failed: Invalid token for ${req.path} - ${err.message}`)
-    return res.status(401).json({
-      success: false,
-      error: { code: 'TOKEN_INVALID', message: 'Token tidak valid atau sudah expired' }
-    })
-  }
+  next()
 }
 
-export function optionalAuth(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  const authHeader = req.headers.authorization
-  const token = authHeader?.startsWith('Bearer ') 
-    ? authHeader.slice(7) 
-    : (req.query.token as string)
-
-  if (!token) return next()
-
-  try {
-    const payload = jwt.verify(
-      token,
-      env.JWT_SECRET
-    ) as JWTPayload
-    req.user = payload
-    next()
-  } catch (err: any) {
-    // If token is invalid, just proceed as guest
-    next()
-  }
-}
-
-export function requireRole(...roles: string[]) {
+/**
+ * Middleware to require specific roles
+ */
+export function requireRole(roles: string[]) {
   return (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
       return res.status(401).json({
         success: false,
-        error: { code: 'UNAUTHORIZED', message: 'Belum login' }
+        error: { code: 'UNAUTHORIZED', message: 'Authentication required' }
       })
     }
+
     if (!roles.includes(req.user.role)) {
       return res.status(403).json({
         success: false,
-        error: { code: 'FORBIDDEN', message: 'Akses ditolak' }
+        error: { code: 'FORBIDDEN', message: 'Insufficient permissions' }
       })
     }
+
     next()
   }
+}
+
+/**
+ * Middleware to require superadmin role
+ */
+export function requireSuperadmin(req: Request, res: Response, next: NextFunction) {
+  if (!req.user) {
+    return res.status(401).json({
+      success: false,
+      error: { code: 'UNAUTHORIZED', message: 'Authentication required' }
+    })
+  }
+
+  if (req.user.role !== 'superadmin') {
+    return res.status(403).json({
+      success: false,
+      error: { code: 'FORBIDDEN', message: 'Superadmin access required' }
+    })
+  }
+
+  next()
 }

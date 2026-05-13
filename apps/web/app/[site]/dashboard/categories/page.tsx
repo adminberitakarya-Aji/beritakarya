@@ -1,37 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { api } from '../../../../lib/api';
-import { useAuthStore } from '../../../../store/authStore';
-import { useParams } from 'next/navigation';
-import { 
-  Hash, 
-  Plus, 
-  Trash2, 
-  RefreshCw, 
-  Link as LinkIcon, 
-  AlertCircle,
-  Library,
-  Zap,
-  Check
-} from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 interface Category {
   id: string;
   name: string;
   slug: string;
+  siteId?: string | null;
+  isGlobal?: boolean;
 }
-
-const DEFAULT_CATEGORIES = [
-  { name: 'Politik', slug: 'politik' },
-  { name: 'Ekonomi', slug: 'ekonomi' },
-  { name: 'Olahraga', slug: 'olahraga' },
-  { name: 'Kriminal', slug: 'kriminal' },
-  { name: 'Hiburan', slug: 'hiburan' },
-  { name: 'Teknologi', slug: 'teknologi' },
-  { name: 'Edukasi', slug: 'edukasi' },
-  { name: 'Lifestyle', slug: 'lifestyle' },
-];
 
 export default function CategoriesDashboard() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -39,13 +17,30 @@ export default function CategoriesDashboard() {
   const [slug, setSlug] = useState('');
   const [loading, setLoading] = useState(false);
   const [syncing, setSyncing] = useState(false);
-  const { site } = useParams() as { site: string };
-  const { user } = useAuthStore();
+  const [isGlobalView, setIsGlobalView] = useState(false);
+  const [siteId, setSiteId] = useState<string>('pusat');
+  const router = useRouter();
+
+  // Get site from URL
+  useEffect(() => {
+    const path = window.location.pathname;
+    const match = path.match(/^\/[^\/]+/);
+    if (match) {
+      setSiteId(match[0].slice(1));
+    }
+  }, []);
 
   const fetchCategories = async () => {
     try {
-      const { data } = await api.get(`/categories`);
-      setCategories(data.data);
+      const params = new URLSearchParams();
+      if (isGlobalView) {
+        params.append('view', 'all');
+      }
+      const response = await fetch(`/api/v1/categories?${params.toString()}`);
+      const data = await response.json();
+      if (data.success) {
+        setCategories(data.data);
+      }
     } catch (error) {
       console.error('Gagal mengambil kategori', error);
     }
@@ -53,7 +48,7 @@ export default function CategoriesDashboard() {
 
   useEffect(() => {
     fetchCategories();
-  }, [site]);
+  }, [isGlobalView]);
 
   // Auto-generate slug from name
   useEffect(() => {
@@ -69,137 +64,171 @@ export default function CategoriesDashboard() {
     if (!name.trim()) return;
     setLoading(true);
     try {
-      await api.post(`/categories`, { name, slug });
+      // For superadmin creating global category, send siteId: null
+      const payload = isGlobalView ? { name, slug, siteId: null } : { name, slug, siteId: siteId };
+      
+      const response = await fetch('/api/v1/categories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error?.message || 'Gagal membuat kategori');
+      }
+      
       setName('');
       setSlug('');
       fetchCategories();
     } catch (error: any) {
-      alert(error.response?.data?.error?.message || 'Gagal membuat kategori');
+      alert(error.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSyncDefaults = async () => {
-    if (!confirm('Ingin menambahkan kategori pakem BeritaKarya (Nasional, Politik, dll) ke site ini?')) return;
-    setSyncing(true);
-    try {
-      for (const cat of DEFAULT_CATEGORIES) {
-        // Check if exists
-        const exists = categories.find(c => c.slug === cat.slug);
-        if (!exists) {
-          await api.post(`/categories`, cat);
-        }
-      }
-      await fetchCategories();
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setSyncing(false);
+  const handleDelete = async (id: string, isGlobal: boolean) => {
+    if (isGlobal) {
+      alert('Kategori global tidak dapat dihapus');
+      return;
     }
-  };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Hapus kategori ini? Menghapus kategori dapat memengaruhi artikel yang sudah ada.')) return;
+    if (!confirm('Hapus kategori ini? Menghapus kategori dapat memengaruhi post yang sudah ada.')) {
+      return;
+    }
+
     try {
-      await api.delete(`/categories/${id}`);
+      const response = await fetch(`/api/v1/categories/${id}`, { method: 'DELETE' });
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error?.message || 'Gagal menghapus kategori');
+      }
+
       fetchCategories();
     } catch (error: any) {
-      alert(error.response?.data?.error?.message || 'Gagal menghapus kategori');
+      alert(error.message);
     }
   };
 
-  if (user?.role !== 'superadmin' && user?.role !== 'pimred') {
-    return (
-      <div className="flex flex-col items-center justify-center py-24 text-center">
-        <AlertCircle size={48} className="text-red-400 mb-4" />
-        <h2 className="text-lg font-black text-brand-black dark:text-white uppercase tracking-tight">Akses Terbatas</h2>
-        <p className="text-xs text-gray-400 mt-2">Halaman manajemen kategori hanya untuk Wapimred dan Superadmin.</p>
-      </div>
-    );
-  }
-
   return (
-    <div className="max-w-5xl mx-auto space-y-10 animate-fade-in pb-20">
+    <div className="max-w-5xl mx-auto space-y-6 pb-20">
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-brand-red text-white flex items-center justify-center shadow-lg shadow-brand-red/20">
-            <Library size={24} />
-          </div>
-          <div>
-            <h1 className="text-2xl font-black text-brand-black dark:text-white tracking-tight">Manajemen Kategori</h1>
-            <p className="text-[11px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">Kelola rubrikasi berita di <strong className="text-brand-red">{site}</strong></p>
-          </div>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Manajemen Kategori
+          </h1>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            Kelola rubrikasi berita
+            {!isGlobalView && <span className="text-red-600 font-semibold"> untuk {siteId}</span>}
+          </p>
         </div>
-        
-        {/* Quick Sync Button */}
-        <button
-          onClick={handleSyncDefaults}
-          disabled={syncing}
-          className="flex items-center gap-2 px-5 py-2.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-100 transition-all shadow-sm border border-blue-100 dark:border-blue-900/30 disabled:opacity-50"
-        >
-          {syncing ? <RefreshCw size={14} className="animate-spin" /> : <Zap size={14} />}
-          Generate Kategori Pakem
-        </button>
+
+        {/* Superadmin Toggle */}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setIsGlobalView(!isGlobalView)}
+            className={`px-4 py-2 rounded-lg text-xs font-bold uppercase transition-all ${
+              isGlobalView 
+                ? 'bg-purple-600 text-white' 
+                : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300'
+            }`}
+          >
+            {isGlobalView ? '🌐 Global View ON' : '📍 Site View'}
+          </button>
+          
+          {isGlobalView && (
+            <div className="text-xs text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20 px-3 py-2 rounded-lg border border-purple-200 dark:border-purple-900/30">
+              Anda melihat semua kategori di semua situs. Hanya superadmin yang bisa melihat ini.
+            </div>
+          )}
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         {/* Form Add */}
         <div className="lg:col-span-1 space-y-6">
-          <div className="dash-card p-6">
-            <h2 className="text-[11px] font-black uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-2">
-              <Plus size={14} className="text-brand-red" /> Tambah Kategori Baru
+          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 shadow-sm">
+            <h2 className="text-sm font-bold uppercase tracking-widest text-gray-500 mb-6 flex items-center gap-2">
+              Tambah Kategori Baru
             </h2>
             <form onSubmit={handleCreate} className="space-y-5">
               <div>
-                <label className="dash-label mb-2 block">Nama Kategori</label>
+                <label className="block text-sm font-medium mb-2">Nama Kategori</label>
                 <input 
                   type="text" 
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Misal: Politik Lokal"
-                  className="w-full px-4 py-3 bg-white dark:bg-slate-900 border border-gray-200 dark:border-white/10 rounded-xl text-xs outline-none focus:border-brand-red transition-all shadow-sm"
+                  className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm outline-none focus:border-red-500 transition-all"
                   required
                 />
               </div>
               
               <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="dash-label flex items-center gap-2">
-                    <LinkIcon size={12} /> Slug URL
-                  </label>
-                  <span className="text-[9px] text-gray-400 font-bold uppercase">Auto-Generated</span>
-                </div>
+                <label className="block text-sm font-medium mb-2">Slug URL</label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs">/</span>
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm">/</span>
                   <input 
                     type="text" 
                     value={slug}
                     onChange={(e) => setSlug(e.target.value)}
                     placeholder="politik-lokal"
-                    className="w-full pl-7 pr-4 py-3 bg-gray-50 dark:bg-black/20 border border-gray-100 dark:border-white/5 rounded-xl text-xs outline-none font-mono text-brand-red shadow-inner"
+                    className="w-full pl-7 pr-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm outline-none font-mono text-red-600"
                     required
                   />
                 </div>
+                <p className="text-xs text-gray-500 mt-2">
+                  URL-friendly version. Auto-generated dari nama.
+                </p>
               </div>
+
+              {/* Global Category Toggle (Superadmin only) */}
+              {isGlobalView && (
+                <div className="p-3 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-900/30 rounded-lg">
+                  <div className="flex items-center gap-2 text-purple-800 dark:text-purple-300">
+                    <input 
+                      type="checkbox" 
+                      id="isGlobal" 
+                      defaultChecked={true}
+                      className="w-4 h-4"
+                      readOnly
+                    />
+                    <label htmlFor="isGlobal" className="text-sm font-bold">
+                      Kategori Global (tersedia ke semua situs)
+                    </label>
+                  </div>
+                  <p className="text-xs text-purple-600 dark:text-purple-400 mt-2 ml-6">
+                    Kategori ini akan terlihat di semua portal BeritaKarya.
+                  </p>
+                </div>
+              )}
+
+              {!isGlobalView && (
+                <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-900/30 rounded-lg">
+                  <p className="text-xs text-blue-800 dark:text-blue-300">
+                    Kategori akan dibuat khusus untuk situs <strong>{siteId}</strong>.
+                  </p>
+                </div>
+              )}
 
               <button 
                 type="submit" 
                 disabled={loading}
-                className="w-full bg-brand-black dark:bg-white text-white dark:text-brand-black py-3.5 rounded-xl text-[11px] font-black uppercase tracking-[0.2em] shadow-xl hover:opacity-90 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
+                className="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-bold shadow-lg hover:shadow-xl transition-all disabled:opacity-50 flex items-center justify-center gap-2"
               >
-                {loading ? <RefreshCw size={14} className="animate-spin" /> : <Check size={14} />}
-                {loading ? 'Menyimpan...' : 'Tambah Rubrik'}
+                {loading ? 'Menyimpan...' : 'Tambah Kategori'}
               </button>
             </form>
           </div>
 
-          <div className="p-5 bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/20 rounded-xl">
+          <div className="p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/20 rounded-xl">
             <div className="flex items-start gap-3 text-amber-600">
-              <AlertCircle size={16} className="shrink-0 mt-0.5" />
-              <p className="text-[10px] font-bold leading-relaxed">
-                Hati-hati saat mengubah Slug. Perubahan slug akan memutus link berita yang sudah dibagikan di media sosial.
+              <span className="text-lg">⚠️</span>
+              <p className="text-xs leading-relaxed">
+                <strong>Perhatian:</strong> Ulangi Slug dengan hati-hati. Perubahan dapat memutus tautan berita yang sudah dibagikan di media sosial.
               </p>
             </div>
           </div>
@@ -207,46 +236,74 @@ export default function CategoriesDashboard() {
 
         {/* List Table */}
         <div className="lg:col-span-2">
-          <div className="dash-card overflow-hidden">
-            <table className="w-full text-left border-collapse">
+          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm">
+            <table className="w-full">
               <thead>
-                <tr className="bg-gray-50 dark:bg-white/5 border-b border-gray-100 dark:border-white/5">
-                  <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Nama Kategori</th>
-                  <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Slug / URL Path</th>
-                  <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400 text-right">Aksi</th>
+                <tr className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+                  <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-gray-500">
+                    Nama Kategori
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-gray-500">
+                    Scope
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-gray-500">
+                    Slug / URL
+                  </th>
+                  <th className="px-6 py-4 text-right text-xs font-bold uppercase tracking-wider text-gray-500">
+                    Aksi
+                  </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50 dark:divide-white/5">
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                 {categories.length === 0 ? (
                   <tr>
-                    <td colSpan={3} className="px-6 py-12 text-center">
-                      <div className="flex flex-col items-center gap-3 text-gray-300">
-                        <Hash size={40} strokeWidth={1} />
-                        <span className="text-[10px] font-black uppercase tracking-widest">Belum ada kategori rubrik</span>
+                    <td colSpan={4} className="px-6 py-12 text-center">
+                      <div className="flex flex-col items-center gap-3 text-gray-400">
+                        <span className="text-4xl">📂</span>
+                        <span className="text-sm font-bold uppercase tracking-widest">Belum ada kategori</span>
+                        <p className="text-xs">Mulai dengan menambahkan kategori baru di form di samping.</p>
                       </div>
                     </td>
                   </tr>
                 ) : (
                   categories.map(cat => (
-                    <tr key={cat.id} className="hover:bg-gray-50/50 dark:hover:bg-white/[0.02] transition-all group">
+                    <tr key={cat.id} className="hover:bg-gray-50/50 dark:hover:bg-white/5 transition-all">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-400 group-hover:text-brand-red transition-colors">
-                            <Hash size={14} />
+                          <div className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-900 flex items-center justify-center text-gray-400">
+                            <span className="text-sm">#</span>
                           </div>
-                          <span className="text-xs font-bold text-brand-black dark:text-white">{cat.name}</span>
+                          <span className="text-sm font-semibold text-gray-900 dark:text-white">{cat.name}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="text-xs font-mono text-gray-400 bg-gray-100 dark:bg-white/5 px-2 py-1 rounded-md">/{cat.slug}</span>
+                        {cat.isGlobal ? (
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-800 border border-purple-300">
+                            🌐 GLOBAL
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800 border border-blue-300">
+                            {cat.siteId || siteId}
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4">
+                        <code className="text-xs font-mono bg-gray-100 dark:bg-gray-900 px-2 py-1 rounded">
+                          /{cat.slug}
+                        </code>
                       </td>
                       <td className="px-6 py-4 text-right">
                         <button 
-                          onClick={() => handleDelete(cat.id)}
-                          className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all"
-                          title="Hapus Kategori"
+                          onClick={() => handleDelete(cat.id, cat.isGlobal || false)}
+                          className={`p-2 rounded-lg transition-colors ${
+                            cat.isGlobal 
+                              ? 'text-gray-300 cursor-not-allowed' 
+                              : 'text-gray-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20'
+                          }`}
+                          title={cat.isGlobal ? 'Kategori global tidak dapat dihapus' : 'Hapus Kategori'}
+                          disabled={cat.isGlobal}
                         >
-                          <Trash2 size={16} />
+                          🗑️
                         </button>
                       </td>
                     </tr>
@@ -254,10 +311,17 @@ export default function CategoriesDashboard() {
                 )}
               </tbody>
             </table>
-          </div>
-          
-          <div className="mt-4 flex items-center justify-between px-2">
-            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Total: {categories.length} Rubrik</p>
+            
+            <div className="mt-4 flex items-center justify-between px-6 py-4 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+              <p className="text-xs font-bold uppercase tracking-wider text-gray-500">
+                Total: {categories.length} Kategori
+              </p>
+              {isGlobalView && (
+                <p className="text-xs text-purple-600 dark:text-purple-400">
+                  Menampilkan semua kategori dari semua situs
+                </p>
+              )}
+            </div>
           </div>
         </div>
       </div>

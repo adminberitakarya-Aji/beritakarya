@@ -27,7 +27,7 @@ const jurnalisSurabaya: JWTPayload = {
   userId: 'u-2', role: 'journalist', siteId: 'surabaya', iat: 0, exp: 0
 }
 const editorPusat: JWTPayload = {
-  userId: 'u-3', role: 'pimred', siteId: null, iat: 0, exp: 0
+  userId: 'u-3', role: 'wapimred', siteId: null, iat: 0, exp: 0
 }
 
 const mockArticle = (overrides = {}) => ({

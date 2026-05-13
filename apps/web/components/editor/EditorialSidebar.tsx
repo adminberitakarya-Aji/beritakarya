@@ -97,7 +97,7 @@ export function EditorialSidebar() {
             {/* Header */}
             <div className="p-6 border-b border-gray-50 dark:border-white/5 flex items-center justify-between">
               <div>
-                <h3 className="text-sm font-black text-brand-black dark:text-white uppercase tracking-tight">Pengaturan Berita</h3>
+                <h3 className="text-sm font-black text-brand-black dark:text-white uppercase tracking-tight">Pengaturan Post</h3>
                 <p className="text-[10px] text-gray-400 mt-0.5">Konfigurasi editorial & SEO</p>
               </div>
               <button 
@@ -152,9 +152,9 @@ export function EditorialSidebar() {
                               onClick={() => updateArticleData({ featuredImage: '' })}
                               className="p-2 bg-white/20 hover:bg-white/40 rounded-full text-white backdrop-blur-md"
                              >
-                               <X size={16} />
-                             </button>
-                          </div>
+                                <X size={16} />
+                              </button>
+                           </div>
                         </>
                       ) : (
                         <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center cursor-pointer hover:bg-gray-100 dark:hover:bg-white/[0.08] transition-colors">
@@ -178,7 +178,7 @@ export function EditorialSidebar() {
                   {/* Category */}
                   <div className="space-y-3">
                     <label className="dash-label flex items-center gap-2">
-                      <Layout size={12} className="text-brand-red" /> Kategori Berita
+                      <Layout size={12} className="text-brand-red" /> Kategori Post
                     </label>
                     <div className="grid grid-cols-1 gap-2">
                       <select 
@@ -271,10 +271,10 @@ export function EditorialSidebar() {
                       <Globe size={10} /> Preview Google
                     </p>
                     <h4 className="text-lg text-blue-600 dark:text-blue-400 font-medium line-clamp-1">
-                      {metaTitle || title || 'Judul Berita...'}
+                      {metaTitle || title || 'Judul Post...'}
                     </h4>
                     <p className="text-sm text-green-700 dark:text-green-500/80 line-clamp-1">
-                      beritakarya.co › {categoryId || 'artikel'} › ...
+                      beritakarya.co › {categoryId || 'post'} › ...
                     </p>
                     <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2">
                       {metaDescription || 'Tulis deskripsi meta untuk meningkatkan performa pencarian di mesin pencari...'}
@@ -300,7 +300,7 @@ export function EditorialSidebar() {
                         rows={4}
                         value={metaDescription}
                         onChange={e => updateArticleData({ metaDescription: e.target.value })}
-                        placeholder="Deskripsi singkat artikel untuk cuplikan pencarian..."
+                        placeholder="Deskripsi singkat post untuk cuplikan pencarian..."
                         className="w-full px-4 py-3 bg-white dark:bg-slate-800 border border-gray-200 dark:border-white/10 rounded-xl text-xs outline-none focus:border-brand-red resize-none"
                       />
                       <p className="text-[9px] text-gray-400 text-right">{metaDescription.length} / 160</p>
@@ -336,7 +336,7 @@ export function EditorialSidebar() {
                     <div className="py-20 text-center border-2 border-dashed border-gray-100 dark:border-white/5 rounded-2xl">
                       <History size={32} className="mx-auto mb-4 text-gray-200 dark:text-white/5" />
                       <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-6 leading-relaxed">
-                        Belum ada riwayat<br/>versi untuk artikel ini.
+                        Belum ada riwayat<br/>versi untuk post ini.
                       </p>
                     </div>
                   ) : (
@@ -371,7 +371,7 @@ export function EditorialSidebar() {
                   )}
 
                   <p className="text-[9px] text-gray-400 italic leading-relaxed text-center px-4">
-                    Versi baru disimpan otomatis saat Anda mengirim artikel untuk review atau saat mempublikasikannya.
+                    Versi baru disimpan otomatis saat Anda mengirim post untuk review atau saat mempublikasikannya.
                   </p>
                 </div>
               )}

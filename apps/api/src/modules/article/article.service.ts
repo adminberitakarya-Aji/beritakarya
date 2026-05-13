@@ -44,11 +44,11 @@ export async function getArticles(
 
 export async function getArticleById(id: string, siteId: string, user?: JWTPayload) {
   const article = await repo.findArticleById(id, siteId)
-  if (!article) throw Object.assign(new Error('Artikel tidak ditemukan'), { statusCode: 404 })
+  if (!article) throw Object.assign(new Error('Post tidak ditemukan'), { statusCode: 404 })
   
   // Authorization: Journalists can only view their own articles (unless published, but dashboard usually shows drafts)
-  if (user && !['superadmin', 'pimred'].includes(user.role) && article.authorId !== user.userId) {
-    throw Object.assign(new Error('Anda tidak punya akses ke artikel ini'), { statusCode: 403 })
+  if (user && !['superadmin', 'wapimred'].includes(user.role) && article.authorId !== user.userId) {
+    throw Object.assign(new Error('Anda tidak punya akses ke post ini'), { statusCode: 403 })
   }
 
   return article
@@ -56,7 +56,7 @@ export async function getArticleById(id: string, siteId: string, user?: JWTPaylo
 
 export async function getArticleBySlug(slug: string, siteId: string) {
   const article = await repo.findArticleBySlug(slug, siteId)
-  if (!article) throw Object.assign(new Error('Artikel tidak ditemukan'), { statusCode: 404 })
+  if (!article) throw Object.assign(new Error('Post tidak ditemukan'), { statusCode: 404 })
   return article
 }
 
@@ -71,7 +71,7 @@ export async function getPublishedArticleBySlug(
   let article = cached
   if (!article) {
     article = await repo.findPublishedArticleBySlug(slug, siteId)
-    if (!article) throw Object.assign(new Error('Artikel tidak ditemukan'), { statusCode: 404 })
+    if (!article) throw Object.assign(new Error('Post tidak ditemukan'), { statusCode: 404 })
     await setCache(cacheKey, article, 3600) // Cache for 1 hour
   }
   
@@ -79,7 +79,7 @@ export async function getPublishedArticleBySlug(
   recordView({
     siteId,
     articleId: article.id,
-    path: `/artikel/${slug}`,
+    path: `/post/${slug}`,
     ...meta
   }).catch(err => console.error('Failed to record view:', err))
   
@@ -108,8 +108,8 @@ export async function createArticle(
   await repo.createAuditLog({
     userId: user.userId,
     siteId,
-    action: 'article.create',
-    entityType: 'article',
+    action: 'post.create',
+    entityType: 'post',
     entityId: article.id,
     newValue: article
   })
@@ -131,17 +131,17 @@ export async function updateArticle(
   user: JWTPayload
 ) {
   const article = await repo.findArticleById(id, siteId)
-  if (!article) throw Object.assign(new Error('Artikel tidak ditemukan'), { statusCode: 404 })
+  if (!article) throw Object.assign(new Error('Post tidak ditemukan'), { statusCode: 404 })
   
   // Authorization
-  if (!['superadmin', 'pimred'].includes(user.role) && article.authorId !== user.userId) {
-    throw Object.assign(new Error('Anda tidak punya akses ke artikel ini'), { statusCode: 403 })
+  if (!['superadmin', 'wapimred'].includes(user.role) && article.authorId !== user.userId) {
+    throw Object.assign(new Error('Anda tidak punya akses ke post ini'), { statusCode: 403 })
   }
 
   // Prevent journalists from setting certain statuses directly
   if (user.role === 'journalist' && input.status && !['draft', 'submitted'].includes(input.status)) {
      if (article.status !== 'revision' && input.status !== 'submitted') {
-        throw Object.assign(new Error('Hanya Pimred yang dapat mengubah status ke ' + input.status), { statusCode: 403 })
+        throw Object.assign(new Error('Hanya Wapimred yang dapat mengubah status ke ' + input.status), { statusCode: 403 })
      }
   }
 
@@ -184,16 +184,16 @@ export async function updateArticle(
     const userName = userData?.name || 'User'
 
     const editors = await prisma.user.findMany({
-      where: { siteId, role: { in: ['superadmin', 'pimred'] } },
+      where: { siteId, role: { in: ['superadmin', 'wapimred'] } },
       select: { id: true }
     })
     for (const editor of editors) {
       await sendNotification({
         userId: editor.id,
         siteId,
-        type: 'article_submitted',
-        title: 'Artikel Baru Masuk Antrian',
-        message: `${userName} baru saja mengirim artikel "${updated.title}" untuk di-review.`,
+        type: 'post_submitted',
+        title: 'Post Baru Masuk Antrian',
+        message: `${userName} baru saja mengirim post "${updated.title}" untuk di-review.`,
         link: `/${siteId}/dashboard/review`
       })
     }
@@ -201,9 +201,9 @@ export async function updateArticle(
     await sendNotification({
       userId: updated.authorId,
       siteId,
-      type: 'article_reviewed',
+      type: 'post_reviewed',
       title: 'Revisi Diperlukan',
-      message: `Editor meminta revisi untuk artikel "${updated.title}". Catatan: ${input.reviewNotes || 'Cek dashboard.'}`,
+      message: `Editor meminta revisi untuk post "${updated.title}". Catatan: ${input.reviewNotes || 'Cek dashboard.'}`,
       link: `/${siteId}/dashboard/articles/${id}`
     })
   }
@@ -211,8 +211,8 @@ export async function updateArticle(
   await repo.createAuditLog({
     userId: user.userId,
     siteId,
-    action: 'article.update',
-    entityType: 'article',
+    action: 'post.update',
+    entityType: 'post',
     entityId: id,
     oldValue: article,
     newValue: updated
@@ -229,10 +229,10 @@ export async function updateArticle(
 
 export async function publishArticle(id: string, siteId: string, user: JWTPayload) {
   const article = await repo.findArticleById(id, siteId)
-  if (!article) throw Object.assign(new Error('Artikel tidak ditemukan'), { statusCode: 404 })
+  if (!article) throw Object.assign(new Error('Post tidak ditemukan'), { statusCode: 404 })
   
-  if (!['superadmin', 'pimred'].includes(user.role)) {
-    throw Object.assign(new Error('Akses ditolak: Hanya Pimred dan Superadmin yang dapat mem-publish artikel'), { statusCode: 403 })
+  if (!['superadmin', 'wapimred'].includes(user.role)) {
+    throw Object.assign(new Error('Akses ditolak: Hanya Wapimred dan Superadmin yang dapat mem-publish post'), { statusCode: 403 })
   }
 
   const updated = await repo.updateArticle(id, siteId, {
@@ -247,17 +247,17 @@ export async function publishArticle(id: string, siteId: string, user: JWTPayloa
   await sendNotification({
     userId: updated.authorId,
     siteId,
-    type: 'article_reviewed',
-    title: 'Artikel Berhasil Terbit!',
-    message: `Selamat! Artikel "${updated.title}" Anda telah disetujui dan terbit sekarang.`,
-    link: `/${siteId}/artikel/${updated.slug}`
+    type: 'post_reviewed',
+    title: 'Post Berhasil Terbit!',
+    message: `Selamat! Post "${updated.title}" Anda telah disetujui dan terbit sekarang.`,
+    link: `/${siteId}/post/${updated.slug}`
   })
 
   await repo.createAuditLog({
     userId: user.userId,
     siteId,
-    action: 'article.publish',
-    entityType: 'article',
+    action: 'post.publish',
+    entityType: 'post',
     entityId: id,
     oldValue: article,
     newValue: updated
@@ -268,17 +268,17 @@ export async function publishArticle(id: string, siteId: string, user: JWTPayloa
 
 export async function deleteArticle(id: string, siteId: string, user: JWTPayload) {
   const article = await repo.findArticleById(id, siteId)
-  if (!article) throw Object.assign(new Error('Artikel tidak ditemukan'), { statusCode: 404 })
+  if (!article) throw Object.assign(new Error('Post tidak ditemukan'), { statusCode: 404 })
   
-  if (!['superadmin', 'pimred'].includes(user.role) && article.authorId !== user.userId) {
+  if (!['superadmin', 'wapimred'].includes(user.role) && article.authorId !== user.userId) {
     throw Object.assign(new Error('Akses ditolak'), { statusCode: 403 })
   }
 
   await repo.createAuditLog({
     userId: user.userId,
     siteId,
-    action: 'article.delete',
-    entityType: 'article',
+    action: 'post.delete',
+    entityType: 'post',
     entityId: id,
     oldValue: article
   })
@@ -295,7 +295,7 @@ export async function getArticleVersions(articleId: string) {
 
 export async function saveArticleVersion(articleId: string, authorId: string, siteId: string) {
   const article = await repo.findArticleById(articleId, siteId)
-  if (!article) throw new Error('Artikel tidak ditemukan')
+  if (!article) throw new Error('Post tidak ditemukan')
 
   const versionNumber = await repo.getNextVersionNumber(articleId)
   return repo.createVersion({
@@ -312,10 +312,10 @@ export async function restoreArticleVersion(versionId: string, siteId: string, u
   if (!version) throw new Error('Versi tidak ditemukan')
 
   const article = await repo.findArticleById(version.articleId, siteId)
-  if (!article) throw new Error('Artikel tidak ditemukan')
+  if (!article) throw new Error('Post tidak ditemukan')
 
   // Authorization check
-  if (!['superadmin', 'pimred'].includes(user.role) && article.authorId !== user.userId) {
+  if (!['superadmin', 'wapimred'].includes(user.role) && article.authorId !== user.userId) {
     throw new Error('Akses ditolak')
   }
 
@@ -327,8 +327,8 @@ export async function restoreArticleVersion(versionId: string, siteId: string, u
   await repo.createAuditLog({
     userId: user.userId,
     siteId,
-    action: 'article.restore_version',
-    entityType: 'article',
+    action: 'post.restore_version',
+    entityType: 'post',
     entityId: article.id,
     oldValue: article,
     newValue: updated

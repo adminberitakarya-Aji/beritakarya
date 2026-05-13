@@ -29,10 +29,10 @@ interface Article {
 }
 
 const EMPTY_STATES: Record<string, { icon: React.ElementType; msg: string }> = {
-  submitted: { icon: CheckCircle, msg: 'Tidak ada artikel yang dikirim untuk review' },
-  review:    { icon: AlertCircle, msg: 'Tidak ada artikel dalam proses review' },
-  revision:  { icon: XCircle, msg: 'Tidak ada artikel yang perlu direvisi' },
-  approved:  { icon: CheckCircle, msg: 'Tidak ada artikel yang sudah disetujui' },
+  submitted: { icon: CheckCircle, msg: 'Tidak ada post yang dikirim untuk review' },
+  review:    { icon: AlertCircle, msg: 'Tidak ada post dalam proses review' },
+  revision:  { icon: XCircle, msg: 'Tidak ada post yang perlu direvisi' },
+  approved:  { icon: CheckCircle, msg: 'Tidak ada post yang sudah disetujui' },
 };
 
 export default function ReviewQueuePage() {
@@ -85,7 +85,7 @@ export default function ReviewQueuePage() {
       setReviewNotes('');
       await load();
     } catch (e: any) {
-      alert(e.response?.data?.error?.message || 'Gagal memproses artikel');
+      alert(e.response?.data?.error?.message || 'Gagal memproses post');
     } finally {
       setActionLoading(null);
     }
@@ -93,13 +93,13 @@ export default function ReviewQueuePage() {
 
   const wordCount = (a: Article) => a.wordCount || (Array.isArray(a.blocks) ? a.blocks.length * 80 : 0);
 
-  if (!user || !['superadmin', 'pimred'].includes(user.role)) {
+  if (!user || !['superadmin', 'wapimred'].includes(user.role)) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center space-y-3">
           <AlertCircle size={40} className="text-red-400 mx-auto" />
           <p className="text-sm font-bold text-gray-400 uppercase tracking-widest">Akses Terbatas</p>
-          <p className="text-xs text-gray-300">Halaman ini hanya untuk Pimpinan Redaksi dan Superadmin.</p>
+          <p className="text-xs text-gray-300">Halaman ini hanya untuk Wapimred dan Superadmin.</p>
         </div>
       </div>
     );
@@ -116,7 +116,7 @@ export default function ReviewQueuePage() {
           </div>
           <h1 className="text-2xl font-black text-brand-black dark:text-white tracking-tight">Antrian Review</h1>
           <p className="text-xs text-gray-400 mt-1">
-            Kelola alur persetujuan artikel dari wartawan ke publikasi.
+            Kelola alur persetujuan post dari wartawan ke publikasi.
           </p>
         </div>
         <button
@@ -316,8 +316,8 @@ export default function ReviewQueuePage() {
                   <CheckCircle size={18} className="text-emerald-600" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-black text-brand-black dark:text-white uppercase tracking-tight">Setujui Artikel</h3>
-                  <p className="text-[10px] text-gray-400 mt-0.5">Artikel akan masuk ke status Disetujui</p>
+                  <h3 className="text-sm font-black text-brand-black dark:text-white uppercase tracking-tight">Setujui Post</h3>
+                  <p className="text-[10px] text-gray-400 mt-0.5">Post akan masuk ke status Disetujui</p>
                 </div>
               </div>
               <p className="text-xs font-bold text-gray-600 dark:text-gray-300 mb-4 line-clamp-2 border-l-2 border-emerald-500 pl-3">

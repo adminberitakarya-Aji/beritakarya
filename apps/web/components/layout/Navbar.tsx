@@ -171,7 +171,7 @@ export default function Navbar({
                       <p className="text-[10px] text-gray-500 truncate">{user.email}</p>
                     </div>
                     <div className="p-2">
-                      {['superadmin', 'pimred', 'journalist'].includes(user.role) && (
+                      {['superadmin', 'wapimred', 'journalist'].includes(user.role) && (
                         <Link 
                           href={`/${pathname.split('/')[1] || 'pusat'}/dashboard`}
                           className="block px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-gray-600 hover:text-brand-red hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/5 rounded-md transition-colors"

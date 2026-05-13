@@ -223,7 +223,7 @@ function CategoryBar({ name, value, max }: { name: string; value: number; max: n
     <div className="space-y-1.5">
       <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest">
         <span className="text-gray-400">{name}</span>
-        <span className="text-brand-red">{value} artikel</span>
+        <span className="text-brand-red">{value} post</span>
       </div>
       <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
         <motion.div 
@@ -316,7 +316,7 @@ export default function DashboardOverview() {
 
   const ROLE_GREETINGS: Record<string, string> = {
     superadmin: 'Superadmin',
-    pimred: 'Pimpinan Redaksi',
+    wapimred: 'Wapimred',
     journalist: 'Wartawan',
   };
 
@@ -352,7 +352,7 @@ export default function DashboardOverview() {
 
       {/* ── KPI Cards ── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <KPICard title="Total Artikel" value={total} icon={FileText}
+        <KPICard title="Total Post" value={total} icon={FileText}
           accent="bg-blue-50 text-blue-500 dark:bg-blue-900/20"
           sparkData={trafficSpark} sub="Semua status" delay={0} />
         <KPICard title="Sudah Terbit" value={published} icon={CheckCircle}
@@ -366,8 +366,8 @@ export default function DashboardOverview() {
           sub="Antri terbit" delay={0.15} />
       </div>
 
-      {/* ── Secondary Cards (hanya superadmin/pimred) ── */}
-      {(user?.role === 'superadmin' || user?.role === 'pimred') && (
+      {/* ── Secondary Cards (hanya superadmin/wapimred) ── */}
+      {(user?.role === 'superadmin' || user?.role === 'wapimred') && (
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="dash-card p-4 flex items-center gap-4">
             <div className="w-10 h-10 rounded-lg bg-violet-50 dark:bg-violet-900/20 flex items-center justify-center">
@@ -400,7 +400,7 @@ export default function DashboardOverview() {
               <p className="text-lg font-black text-brand-black dark:text-white">
                 {(articles.reduce((s, a) => s + (a.viewCount || 0), 0) / 1000).toFixed(1)}K
               </p>
-              <p className="text-[10px] text-gray-400 mt-0.5">Semua artikel</p>
+              <p className="text-[10px] text-gray-400 mt-0.5">Semua post</p>
             </div>
           </div>
         </div>
@@ -449,9 +449,9 @@ export default function DashboardOverview() {
       {/* ── Main Grid ── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        {/* Review Queue (pimred/superadmin) atau Recent Activity (journalist) */}
+        {/* Review Queue (wapimred/superadmin) atau Recent Activity (journalist) */}
         <div className="lg:col-span-2 space-y-6">
-          {(user?.role === 'superadmin' || user?.role === 'pimred') && reviewQueue.length > 0 && (
+          {(user?.role === 'superadmin' || user?.role === 'wapimred') && reviewQueue.length > 0 && (
             <div className="dash-card">
               <div className="dash-card-header">
                 <div className="flex items-center gap-2">
@@ -486,7 +486,7 @@ export default function DashboardOverview() {
               {recentActivity.length === 0 ? (
                 <div className="py-12 flex flex-col items-center gap-3 text-gray-200 dark:text-white/10">
                   <FileText size={40} strokeWidth={1} />
-                  <p className="text-xs font-bold uppercase tracking-widest text-gray-300">Belum ada artikel</p>
+                  <p className="text-xs font-bold uppercase tracking-widest text-gray-300">Belum ada post</p>
                 </div>
               ) : (
                 recentActivity.map((a, i) => <ActivityItem key={a.id} article={a} site={site} index={i} />)
@@ -558,7 +558,7 @@ export default function DashboardOverview() {
                  { label: 'Kelola Kategori', href: `/${site}/dashboard/categories`, icon: Tag, color: 'bg-gray-50 dark:bg-white/5 text-brand-black dark:text-white hover:bg-gray-100 dark:hover:bg-white/10' },
                  { label: 'Pengaturan Situs', href: `/${site}/dashboard/settings`, icon: Settings, color: 'bg-gray-50 dark:bg-white/5 text-brand-black dark:text-white hover:bg-gray-100 dark:hover:bg-white/10' },
                ].filter(item => {
-                 if (item.label === 'Pengaturan Situs') return user?.role === 'superadmin' || user?.role === 'pimred';
+                 if (item.label === 'Pengaturan Situs') return user?.role === 'superadmin' || user?.role === 'wapimred';
                  return true;
                }).map(item => (
                 <Link

@@ -29,7 +29,7 @@ export function LayoutTab() {
     <div className="space-y-4">
       <div className="bg-coral-50 border border-orange-100 rounded-xl p-3">
         <p className="text-xs text-gray-600 leading-relaxed">
-          AI akan menganalisis struktur artikel dan menyarankan perbaikan layout.
+          AI akan menganalisis struktur post dan menyarankan perbaikan layout.
           Anda bisa pilih saran mana yang ingin diterapkan.
         </p>
       </div>
@@ -39,7 +39,7 @@ export function LayoutTab() {
         disabled={loading || blocks.length < 2}
         className="w-full py-2.5 bg-orange-600 text-white text-xs font-medium rounded-xl hover:bg-orange-700 disabled:opacity-50 transition-colors"
       >
-        {loading ? 'Menganalisis struktur...' : '✦ Analisis Layout Artikel'}
+        {loading ? 'Menganalisis struktur...' : '✦ Analisis Layout Post'}
       </button>
 
       {error && (
@@ -116,7 +116,7 @@ export function LayoutTab() {
 
       {!hasResult && !loading && (
         <p className="text-xs text-center text-gray-300 py-4">
-          Klik tombol di atas untuk menganalisis layout artikel
+          Klik tombol di atas untuk menganalisis layout post
         </p>
       )}
     </div>

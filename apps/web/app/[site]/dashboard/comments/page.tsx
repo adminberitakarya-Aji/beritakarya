@@ -175,7 +175,7 @@ export default function ModerationPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-3 bg-gray-100 dark:bg-white/5 px-3 py-1.5 rounded-lg w-fit">
                       <FileText size={10} className="text-brand-red" />
-                      <span className="text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest">Pada Artikel:</span>
+                      <span className="text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest">Pada Post:</span>
                       <p className="text-[10px] font-black text-brand-red uppercase truncate max-w-[200px]">{c.article.title}</p>
                     </div>
                     <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed font-serif antialiased bg-white dark:bg-slate-900/50 p-4 rounded-xl border border-gray-100 dark:border-white/10 shadow-inner">

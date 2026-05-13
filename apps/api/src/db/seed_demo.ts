@@ -40,7 +40,7 @@ async function main() {
   for (const cat of categories) {
     const slug = cat.toLowerCase().replace(' ', '-')
     const created = await prisma.category.upsert({
-      where: { siteId_slug: { siteId: PUSAT_ID, slug } },
+      where: { slug_siteId: { slug, siteId: PUSAT_ID } },
       update: {},
       create: { name: cat, slug, siteId: PUSAT_ID }
     })

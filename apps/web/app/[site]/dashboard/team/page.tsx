@@ -124,7 +124,7 @@ export default function TeamMonitoring() {
                   <div className="bg-gray-50 dark:bg-white/5 rounded-xl p-3">
                     <div className="flex items-center gap-2 mb-1">
                       <FileText size={12} className="text-brand-red" />
-                      <span className="text-[9px] font-black uppercase tracking-widest text-gray-400">Artikel</span>
+                      <span className="text-[9px] font-black uppercase tracking-widest text-gray-400">Post</span>
                     </div>
                     <p className="text-lg font-black text-brand-black dark:text-white">{member.publishedCount}</p>
                   </div>

@@ -41,14 +41,14 @@ export function EditorToolbar() {
   const { site } = useParams<{ site: string }>();
   const router = useRouter();
 
-  const isEditor = user?.role === 'superadmin' || user?.role === 'pimred';
+  const isEditor = user?.role === 'superadmin' || user?.role === 'wapimred';
 
   const handlePublish = async () => {
     if (isEditor) {
-      if (!confirm('Apakah bapak yakin ingin mempublikasikan artikel ini?')) return;
+      if (!confirm('Apakah bapak yakin ingin mempublikasikan post ini?')) return;
       await publishArticle();
     } else {
-      if (!confirm('Kirim artikel ini untuk di-review oleh redaksi?')) return;
+      if (!confirm('Kirim post ini untuk di-review oleh redaksi?')) return;
       await submitForReview();
       router.push(`/${site}/dashboard/articles`);
     }
@@ -123,7 +123,7 @@ export function EditorToolbar() {
             <button
               onClick={() => toggleSidebar()}
               className="p-2 bg-gray-50 dark:bg-white/5 text-gray-500 dark:text-gray-400 hover:text-brand-red rounded-lg transition-all border border-transparent hover:border-brand-red/20"
-              title="Pengaturan Artikel"
+              title="Pengaturan Post"
             >
               <Settings size={18} />
             </button>

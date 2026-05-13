@@ -11,9 +11,7 @@ import { userRouter } from './modules/user/user.controller'
 import { articleRouter } from './modules/article/article.controller'
 import { mediaRouter } from './modules/media/media.controller'
 import { aiRouter } from './ai/ai.controller'
-import { categoryRouter } from './modules/category/category.controller'
 import { adRouter } from './modules/ad/ad.controller'
-import { siteRouter } from './modules/site/site.controller'
 import { newsletterRouter } from './modules/newsletter/newsletter.controller'
 import { auditRouter } from './modules/audit/audit.controller'
 import { analyticsRouter } from './modules/analytics/analytics.controller'
@@ -28,23 +26,26 @@ import { authLimiter, apiLimiter } from './lib/rateLimit'
 import { prisma } from './db/client'
 import { logger, httpLogger } from './lib/logger'
 import { metrics } from './lib/monitoring'
+import { asyncHandler } from './utils/asyncHandler'
+
+// Import global type augmentation (must be before other imports)
+import './types/express'
+
+// Import controller functions
+import * as categoryController from './modules/category/category.controller'
+import * as siteController from './modules/site/site.controller'
 
 const app = express()
-app.set('trust proxy', 1) // Wajib untuk reverse proxy (Nginx) agar rate limit membaca IP asli client, bukan IP container Nginx
+app.set('trust proxy', 1)
 const PORT = env.PORT
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs))
 
-// ── 1. Helmet DULU sebelum CORS ───────────────────────────────
-// Helmet harus di-setup sebelum cors() agar tidak menimpa
-// header Access-Control-Allow-Origin yang diset cors middleware.
 app.use(helmet({
   crossOriginResourcePolicy: { policy: 'cross-origin' },
-  contentSecurityPolicy: false  // CSP dihandle oleh securityHeadersMiddleware
+  contentSecurityPolicy: false
 }))
 
-// ── 2. CORS (Gerbang Utama) ───────────────────────────────────
-// ── 2. CORS (Gerbang Utama) ───────────────────────────────────
 const allowedOrigins: (string | RegExp)[] = [
   /^https?:\/\/(.+\.)?beritakarya\.co$/,
   /^https?:\/\/(.+\.)?beritakarya\.com$/,
@@ -59,7 +60,6 @@ if (env.CORS_ORIGIN) {
 
 const corsOptions: CorsOptions = {
   origin: (origin, callback) => {
-    // Allow requests with no origin (curl, Postman, server-side)
     if (!origin) return callback(null, true)
     const allowed = allowedOrigins.some(o =>
       typeof o === 'string' ? o === origin : o.test(origin)
@@ -83,14 +83,12 @@ const corsOptions: CorsOptions = {
     'x-api-key'
   ],
   exposedHeaders: ['X-Request-ID'],
-  maxAge: 86400  // Cache preflight 24 jam
+  maxAge: 86400
 }
 
-// Handle preflight OPTIONS untuk SEMUA route
 app.options('*', cors(corsOptions))
 app.use(cors(corsOptions))
 
-// ── 3. Security & Core Middlewares ───────────────────────────
 app.use(securityHeadersMiddleware)
 
 app.use(express.json({ limit: '10mb' }))
@@ -99,27 +97,35 @@ app.use(requestIdMiddleware)
 app.use(httpLogger)
 app.use(performanceMiddleware)
 
-// ── Rate Limiting ──────────────────────────────────────────
 app.use('/api/v1', apiLimiter)
 
-// ── Routes ─────────────────────────────────────────────────
 app.use('/api/v1/auth', authLimiter, authRouter)
 app.use('/api/v1/users', userRouter)
 app.use('/api/v1/articles', articleRouter)
 app.use('/api/v1/media', mediaRouter)
 app.use('/api/v1/ai', aiRouter)
-app.use('/api/v1/categories', categoryRouter)
+
+// Category routes - using functions directly (not routers)
+app.get('/api/v1/categories', asyncHandler(categoryController.getCategories))
+app.post('/api/v1/categories', asyncHandler(categoryController.createCategory))
+app.put('/api/v1/categories/:id', asyncHandler(categoryController.updateCategory))
+app.delete('/api/v1/categories/:id', asyncHandler(categoryController.deleteCategory))
+
+// Site routes - using functions directly
+app.get('/api/v1/sites', asyncHandler(siteController.getSites))
+app.get('/api/v1/sites/:id', asyncHandler(siteController.getSiteById))
+app.post('/api/v1/sites', asyncHandler(siteController.createSite))
+app.put('/api/v1/sites/:id', asyncHandler(siteController.updateSite))
+app.delete('/api/v1/sites/:id', asyncHandler(siteController.deleteSite))
+app.post('/api/v1/sites/:id/wapimred', asyncHandler(siteController.assignWapimred))
+
 app.use('/api/v1/ads', adRouter)
-app.use('/api/v1/sites', siteRouter)
 app.use('/api/v1/newsletter', newsletterRouter)
 app.use('/api/v1/audit', auditRouter)
 app.use('/api/v1/analytics', analyticsRouter)
 app.use('/api/v1/notifications', notificationRouter)
 app.use('/api/v1/comments', commentRouter)
 
-import { asyncHandler } from './utils/asyncHandler'
-
-// ── System Endpoints ───────────────────────────────────────
 app.get('/health', asyncHandler(async (_, res) => {
   let databaseHealth = false
   try {
@@ -148,7 +154,6 @@ app.get('/metrics', (_, res) => {
   })
 })
 
-// ── Error Handling ─────────────────────────────────────────
 app.use(errorMiddleware)
 
 app.listen(PORT, () => {

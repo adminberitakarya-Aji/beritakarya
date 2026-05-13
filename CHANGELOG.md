@@ -9,7 +9,7 @@ Format ini didasarkan pada [Keep a Changelog](https://keepachangelog.com/en/1.0.
 ### ✨ UI Refinement & KYC Planning
 
 #### Added
-- Membuat `implementasi_plan_KYC.md` sebagai panduan verifikasi identitas (KTP/KK) bagi kontributor.
+- Membuat `implementasi_plan_KYC.md` v2.0 (Enterprise Ready) dengan standar UU PDP, S3 Storage, dan Site-scoped Authorization.
 
 #### Changed
 - Mengubah teks tombol dashboard dari "+ Tulis Artikel" menjadi **"+ Post Berita"** untuk terminologi yang lebih umum.

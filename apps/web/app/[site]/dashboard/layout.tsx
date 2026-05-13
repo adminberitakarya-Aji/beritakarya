@@ -50,7 +50,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       if (!token) {
         router.push('/login')
       } else if (user) {
-        const allowedRoles = ['superadmin', 'pimred', 'journalist']
+        const allowedRoles = ['superadmin', 'wapimred', 'journalist']
         if (!allowedRoles.includes(user.role)) {
           router.push(`/${site}`)
         }
@@ -70,35 +70,41 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {
           label: 'Utama',
           items: [
-            { name: 'Ringkasan', href: `/${site}/dashboard`, icon: LayoutDashboard, roles: ['superadmin', 'pimred', 'journalist'] },
-            { name: 'Post', href: `/${site}/dashboard/articles`, icon: FileText, roles: ['superadmin', 'pimred', 'journalist'] },
-            { name: 'Media', href: `/${site}/dashboard/media`, icon: ImageIcon, roles: ['superadmin', 'pimred', 'journalist'] },
+            { name: 'Ringkasan', href: `/${site}/dashboard`, icon: LayoutDashboard, roles: ['superadmin', 'wapimred', 'journalist'] },
+            { name: 'Post', href: `/${site}/dashboard/articles`, icon: FileText, roles: ['superadmin', 'wapimred', 'journalist'] },
+            { name: 'Media', href: `/${site}/dashboard/media`, icon: ImageIcon, roles: ['superadmin', 'wapimred', 'journalist'] },
           ]
         },
     {
       label: 'Editorial',
       items: [
-        { name: 'Antrian Review', href: `/${site}/dashboard/review`, icon: ClipboardCheck, roles: ['superadmin', 'pimred'] },
-        { name: 'Kalender', href: `/${site}/dashboard/calendar`, icon: Calendar, roles: ['superadmin', 'pimred'] },
-        { name: 'Kategori', href: `/${site}/dashboard/categories`, icon: Tag, roles: ['superadmin', 'pimred'] },
-        { name: 'Iklan & Banner', href: `/${site}/dashboard/ads`, icon: ImageIcon, roles: ['superadmin', 'pimred'] },
-        { name: 'Komentar', href: `/${site}/dashboard/comments`, icon: MessageSquare, roles: ['superadmin', 'pimred'] },
+        { name: 'Antrian Review', href: `/${site}/dashboard/review`, icon: ClipboardCheck, roles: ['superadmin', 'wapimred'] },
+        { name: 'Kalender', href: `/${site}/dashboard/calendar`, icon: Calendar, roles: ['superadmin', 'wapimred'] },
+        { name: 'Kategori', href: `/${site}/dashboard/categories`, icon: Tag, roles: ['superadmin', 'wapimred'] },
+        { name: 'Iklan & Banner', href: `/${site}/dashboard/ads`, icon: ImageIcon, roles: ['superadmin', 'wapimred'] },
+        { name: 'Komentar', href: `/${site}/dashboard/comments`, icon: MessageSquare, roles: ['superadmin', 'wapimred'] },
       ]
     },
     {
       label: 'Administrasi',
       items: [
-        { name: 'Monitor Tim', href: `/${site}/dashboard/team`, icon: UsersIcon, roles: ['superadmin', 'pimred'] },
-        { name: 'Pengguna', href: `/${site}/dashboard/users`, icon: UsersIcon, roles: ['superadmin', 'pimred'] },
-        { name: 'Audit Log', href: `/${site}/dashboard/audit`, icon: Shield, roles: ['superadmin', 'pimred'] },
-        { name: 'Pengaturan', href: `/${site}/dashboard/settings`, icon: Settings, roles: ['superadmin', 'pimred'] },
+        { name: 'Monitor Tim', href: `/${site}/dashboard/team`, icon: UsersIcon, roles: ['superadmin', 'wapimred'] },
+        { name: 'Pengguna', href: `/${site}/dashboard/users`, icon: UsersIcon, roles: ['superadmin', 'wapimred'] },
+        { name: 'Audit Log', href: `/${site}/dashboard/audit`, icon: Shield, roles: ['superadmin', 'wapimred'] },
+        { name: 'Pengaturan', href: `/${site}/dashboard/settings`, icon: Settings, roles: ['superadmin', 'wapimred'] },
       ]
-    }
+    },
+    ...(user?.role === 'superadmin' ? [{
+      label: 'Superadmin',
+      items: [
+        { name: 'Manajemen Situs', href: `/${site}/dashboard/admin`, icon: Settings, roles: ['superadmin'] },
+      ]
+    }] : [])
   ]
 
   const ROLE_LABELS: Record<string, string> = {
     superadmin: 'Superadmin',
-    pimred: 'Wapimred',
+    wapimred: 'Wapimred',
     journalist: 'Wartawan',
   }
 
@@ -285,7 +291,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </div>
       )}
-
+      
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col h-screen overflow-hidden">
         {/* Top Header Bar */}

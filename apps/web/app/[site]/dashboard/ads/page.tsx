@@ -26,8 +26,8 @@ interface Ad {
 }
 
 const SLOTS = [
-  { id: 'leaderboard', name: 'Top Billboard / Leaderboard', size: '970x250', desc: 'Muncul di bagian paling atas halaman utama dan setiap artikel.' },
-  { id: 'in_feed', name: 'In-Feed Banner', size: '300x250', desc: 'Disisipkan secara otomatis setelah paragraf ke-3 di dalam teks artikel.' }
+  { id: 'leaderboard', name: 'Top Billboard / Leaderboard', size: '970x250', desc: 'Muncul di bagian paling atas halaman utama dan setiap post.' },
+  { id: 'in_feed', name: 'In-Feed Banner', size: '300x250', desc: 'Disisipkan secara otomatis setelah paragraf ke-3 di dalam teks post.' }
 ];
 
 export default function AdsDashboard() {
@@ -64,7 +64,7 @@ export default function AdsDashboard() {
     }
   };
 
-  if (user?.role !== 'superadmin' && user?.role !== 'pimred') {
+  if (user?.role !== 'superadmin' && user?.role !== 'wapimred') {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center">
         <AlertCircle size={48} className="text-red-400 mb-4" />
@@ -275,26 +275,26 @@ function AdSlotCard({ slot, data, onSave, isSaving }: { slot: any, data: Ad | un
             </div>
           </div>
         )}
+      </div>
 
-        {/* Footer Actions */}
-        <div className="mt-8 flex justify-end items-center gap-4 border-t border-gray-50 dark:border-white/5 pt-6">
-          {hasChanges && !isSaving && (
-            <span className="text-[10px] font-bold text-brand-red animate-pulse italic">Ada perubahan belum disimpan...</span>
+      {/* Footer Actions */}
+      <div className="mt-8 flex justify-end items-center gap-4 border-t border-gray-50 dark:border-white/5 pt-6">
+        {hasChanges && !isSaving && (
+          <span className="text-[10px] font-bold text-brand-red animate-pulse italic">Ada perubahan belum disimpan...</span>
+        )}
+        <button 
+          onClick={handleSave}
+          disabled={isSaving || !hasChanges}
+          className={cn(
+            "px-8 py-3 rounded-xl text-[11px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-3",
+            hasChanges 
+              ? "bg-brand-black dark:bg-white text-white dark:text-brand-black shadow-xl hover:opacity-90" 
+              : "bg-gray-100 dark:bg-white/5 text-gray-400 cursor-not-allowed"
           )}
-          <button 
-            onClick={handleSave}
-            disabled={isSaving || !hasChanges}
-            className={cn(
-              "px-8 py-3 rounded-xl text-[11px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-3",
-              hasChanges 
-                ? "bg-brand-black dark:bg-white text-white dark:text-brand-black shadow-xl hover:opacity-90" 
-                : "bg-gray-100 dark:bg-white/5 text-gray-400 cursor-not-allowed"
-            )}
-          >
-            {isSaving ? <RefreshCw size={14} className="animate-spin" /> : <Save size={14} />}
-            {isSaving ? 'Menyimpan...' : 'Simpan Pengaturan'}
-          </button>
-        </div>
+        >
+          {isSaving ? <RefreshCw size={14} className="animate-spin" /> : <Save size={14} />}
+          {isSaving ? 'Menyimpan...' : 'Simpan Pengaturan'}
+        </button>
       </div>
     </div>
   );

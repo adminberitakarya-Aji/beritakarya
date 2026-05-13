@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const slugParam = resolvedParams?.slug;
   
   const article = await getArticle(siteParam, slugParam)
-  if (!article) return { title: 'Artikel Tidak Ditemukan' }
+  if (!article) return { title: 'Post Tidak Ditemukan' }
 
   const siteConfig = SITE_MAP[siteParam] || SITE_MAP['pusat']
   const siteName = siteConfig?.name || (siteParam.charAt(0).toUpperCase() + siteParam.slice(1));
@@ -114,7 +114,7 @@ export default async function ArticlePage({ params }: Props) {
   const relatedArticles = await getRelatedArticles(siteParam, slugParam, article.category?.name)
   const coverImage = article.featuredImage || article.blocks.find((b: any) => b.type === 'image')?.url || '/placeholder.jpg'
   const excerpt = article.blocks.find((b: any) => b.type === 'paragraph')?.content || ''
-  const articleUrl = `${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/${siteParam}/artikel/${slugParam}`
+  const articleUrl = `${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/${siteParam}/post/${slugParam}`
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -301,7 +301,7 @@ export default async function ArticlePage({ params }: Props) {
               {/* Share Box */}
               <div className="bg-slate-900 rounded-2xl p-8 text-white shadow-xl relative overflow-hidden">
                 <div className="absolute -top-10 -right-10 w-32 h-32 bg-brand-red/20 blur-3xl rounded-full" />
-                <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-red mb-8 border-b border-white/5 pb-2">Bagikan Artikel</h4>
+                <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-red mb-8 border-b border-white/5 pb-2">Bagikan Post</h4>
                 <div className="grid grid-cols-2 gap-3">
                   {[
                     { label: 'Facebook', icon: Share2, color: 'bg-white/5 hover:bg-[#1877F2]' },
@@ -329,7 +329,7 @@ export default async function ArticlePage({ params }: Props) {
                       <NewsCard key={rel.id} article={rel} variant="minimal" site={params.site} />
                     ))
                   ) : (
-                    <p className="text-xs text-gray-400">Memuat artikel terkait...</p>
+                    <p className="text-xs text-gray-400">Memuat post terkait...</p>
                   )}
                 </div>
               </div>
@@ -377,7 +377,7 @@ function PublicBlock({ block }: { block: Block }) {
           <div className="relative aspect-video rounded-xl overflow-hidden shadow-lg border border-gray-100 dark:border-white/5">
             <Image 
               src={block.url} 
-              alt={block.alt || 'Article image'}
+              alt={block.alt || 'Post image'}
               fill
               className="object-cover"
             />

@@ -35,13 +35,13 @@ interface AuditStats {
 
 // ─── Action Config ────────────────────────────────────────────────
 const ACTION_CONFIG: Record<string, { label: string; icon: any; color: string; bg: string }> = {
-  'article.create': { label: 'Artikel Dibuat',   icon: FileText, color: 'text-blue-600',   bg: 'bg-blue-50 dark:bg-blue-900/20' },
-  'article.update': { label: 'Artikel Diubah',   icon: FileText, color: 'text-amber-600',  bg: 'bg-amber-50 dark:bg-amber-900/20' },
-  'article.publish': { label: 'Artikel Terbit',  icon: FileText, color: 'text-green-600',  bg: 'bg-green-50 dark:bg-green-900/20' },
-  'article.delete': { label: 'Artikel Dihapus',  icon: FileText, color: 'text-red-600',    bg: 'bg-red-50 dark:bg-red-900/20' },
-  'user.create':    { label: 'User Dibuat',       icon: User,     color: 'text-violet-600', bg: 'bg-violet-50 dark:bg-violet-900/20' },
-  'user.update':    { label: 'User Diubah',       icon: User,     color: 'text-violet-600', bg: 'bg-violet-50 dark:bg-violet-900/20' },
-  'settings.update':{ label: 'Situs Diubah',     icon: Settings, color: 'text-slate-600',  bg: 'bg-slate-50 dark:bg-slate-800/50' },
+  'post.create': { label: 'Post Dibuat',     icon: FileText, color: 'text-blue-600',   bg: 'bg-blue-50 dark:bg-blue-900/20' },
+  'post.update': { label: 'Post Diubah',     icon: FileText, color: 'text-amber-600',  bg: 'bg-amber-50 dark:bg-amber-900/20' },
+  'post.publish': { label: 'Post Terbit',    icon: FileText, color: 'text-green-600',  bg: 'bg-green-50 dark:bg-green-900/20' },
+  'post.delete': { label: 'Post Dihapus',    icon: FileText, color: 'text-red-600',    bg: 'bg-red-50 dark:bg-red-900/20' },
+  'user.create':  { label: 'User Dibuat',       icon: User,     color: 'text-violet-600', bg: 'bg-violet-50 dark:bg-violet-900/20' },
+  'user.update':  { label: 'User Diubah',       icon: User,     color: 'text-violet-600', bg: 'bg-violet-50 dark:bg-violet-900/20' },
+  'settings.update':{ label: 'Situs Diubah',  icon: Settings, color: 'text-slate-600',  bg: 'bg-slate-50 dark:bg-slate-800/50' },
 };
 
 const getActionConfig = (action: string) =>
@@ -149,7 +149,7 @@ export default function AuditLogPage() {
 
   // Auth guard
   useEffect(() => {
-    if (user && !['superadmin', 'pimred'].includes(user.role)) {
+    if (user && !['superadmin', 'wapimred'].includes(user.role)) {
       router.replace(`/${site}/dashboard`);
     }
   }, [user, site, router]);
@@ -197,7 +197,7 @@ export default function AuditLogPage() {
           <div>
             <h1 className="text-2xl font-black text-brand-black dark:text-white tracking-tight">Audit Log</h1>
             <p className="text-[11px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">
-              Riwayat Aktivitas Redaksional
+              Riwayat Aktivitas Editorial
             </p>
           </div>
         </div>
@@ -273,7 +273,7 @@ export default function AuditLogPage() {
           <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
             type="text"
-            placeholder="Filter aksi (misal: article.publish)..."
+            placeholder="Filter aksi (misal: post.publish)..."
             value={searchAction}
             onChange={e => { setSearchAction(e.target.value); setPage(1); }}
             className="w-full pl-10 pr-4 py-3 bg-white dark:bg-slate-900 border border-gray-200 dark:border-white/10 rounded-xl text-xs outline-none focus:border-brand-red transition-all"
@@ -285,7 +285,7 @@ export default function AuditLogPage() {
           className="px-4 py-3 bg-white dark:bg-slate-900 border border-gray-200 dark:border-white/10 rounded-xl text-xs outline-none focus:border-brand-red transition-all appearance-none min-w-[160px]"
         >
           <option value="">Semua Entitas</option>
-          <option value="article">Artikel</option>
+          <option value="post">Post</option>
           <option value="user">Pengguna</option>
           <option value="site">Situs</option>
           <option value="category">Kategori</option>

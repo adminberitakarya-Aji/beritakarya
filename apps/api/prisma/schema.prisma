@@ -36,6 +36,7 @@ model Site {
   newsletterSubscribers NewsletterSubscriber[]
   comments              Comment[]
   pageViews             PageView[]
+  kycViewLogs           KYCViewLog[]
 }
 
 model User {
@@ -46,6 +47,18 @@ model User {
   role         String   @default("reader")
   siteId       String?
 
+  // KYC Fields
+  bio              String?   @db.Text
+  idCardPath       String?
+  familyCardPath   String?
+  isVerified       Boolean   @default(false)
+  kycSubmittedAt   DateTime?
+  kycNotes         String?
+  kycReviewedBy    String?   // userId admin yang approval
+  kycReviewedAt    DateTime?
+  kycConsentGivenAt DateTime? // Waktu user setuju kebijakan data
+  kycDataExpiresAt DateTime?  // Auto-delete after X years (GDPR compliance)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -53,22 +66,32 @@ model User {
   articles      Article[]
   refreshTokens RefreshToken[]
   comments      Comment[]
+  kycViewLogs   KYCViewLog[]
 
   @@index([siteId])
   @@index([email])
+  @@index([isVerified])
+  @@index([kycSubmittedAt])
 }
 
 model Category {
-  id        String    @id @default(uuid())
-  name      String
-  slug      String
-  siteId    String
-  createdAt DateTime  @default(now())
+  id          String   @id @default(uuid())
+  name        String
+  slug        String
+  siteId      String?  // NULL = global category (available to all sites)
+  isGlobal    Boolean  @default(false) @map("is_global")
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  site      Site      @relation(fields: [siteId], references: [id])
-  articles  Article[]
+  site        Site?     @relation(fields: [siteId], references: [id])
+  articles    Article[]
 
-  @@unique([siteId, slug])
+  // Unique constraint: allows (slug, NULL) for global categories
+  // and (slug, siteId) for site-specific categories
+  @@unique([slug, siteId])
+  @@index([siteId])
+  @@index([isGlobal])
 }
 
 model Advertisement {
@@ -293,5 +316,24 @@ model Notification {
   createdAt DateTime @default(now())
 
   @@index([userId])
+  @@index([siteId])
+}
+
+// Audit trail untuk akses file KYC
+model KYCViewLog {
+  id        String   @id @default(uuid())
+  userId    String   // user yang KYC-nya dilihat
+  viewerId  String   // admin yang melihat
+  siteId    String
+  fileType  String   // 'ktp' | 'kk' | 'bio'
+  viewedAt  DateTime @default(now())
+  ipAddress String?
+  userAgent String?
+
+  user      User     @relation(fields: [userId], references: [id])
+  site      Site     @relation(fields: [siteId], references: [id])
+
+  @@index([userId, viewedAt])
+  @@index([viewerId])
   @@index([siteId])
 }

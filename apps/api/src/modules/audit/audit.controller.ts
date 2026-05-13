@@ -8,9 +8,9 @@ export const auditRouter: Router = Router()
 
 const withSite = [requireAuth, siteMiddleware, requireSiteAccess]
 
-// GET /api/v1/audit  — list audit logs (superadmin/pimred only)
+// GET /api/v1/audit  — list audit logs (superadmin/wapimred only)
 auditRouter.get('/', ...withSite, asyncHandler(async (req: Request, res: Response) => {
-  if (!['superadmin', 'pimred'].includes(req.user!.role)) {
+  if (!['superadmin', 'wapimred'].includes(req.user!.role)) {
     return res.status(403).json({ success: false, message: 'Akses ditolak' })
   }
 
@@ -28,7 +28,7 @@ auditRouter.get('/', ...withSite, asyncHandler(async (req: Request, res: Respons
 
 // GET /api/v1/audit/stats  — summary stats
 auditRouter.get('/stats', ...withSite, asyncHandler(async (req: Request, res: Response) => {
-  if (!['superadmin', 'pimred'].includes(req.user!.role)) {
+  if (!['superadmin', 'wapimred'].includes(req.user!.role)) {
     return res.status(403).json({ success: false, message: 'Akses ditolak' })
   }
 
