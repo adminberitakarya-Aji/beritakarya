@@ -1,15 +1,19 @@
 'use client'
 import { useState } from 'react'
 import { useCaption } from '../../../hooks/useAI'
-import { Upload, Image as ImageIcon, Copy, Check } from 'lucide-react'
+import { Upload, Copy, Check } from 'lucide-react'
 
-export function ImageTab() {
+interface Props {
+  model?: string
+}
+
+export function ImageTab({ model = 'gpt-4o' }: Props) {
   const [imageUrl, setImageUrl] = useState('')
   const [altText, setAltText] = useState('')
   const [uploadMode, setUploadMode] = useState<'url' | 'preview'>('url')
   const [copied, setCopied] = useState<'caption' | 'alt' | null>(null)
   
-  const [captionState, generateCaption] = useCaption()
+  const [captionState, generateCaption] = useCaption(model)
   
   const handleGenerate = async () => {
     if (!imageUrl) return
@@ -26,8 +30,6 @@ export function ImageTab() {
   }
   
   const handleApplyToImage = () => {
-    // Dispatch custom event or update store to apply alt text to selected image
-    // This will be connected to the editor's image block
     window.dispatchEvent(new CustomEvent('applyImageAlt', { 
       detail: { altText } 
     }))

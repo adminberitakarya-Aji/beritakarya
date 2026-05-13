@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { WriteTab } from './ai/WriteTab'
 import { OptimizeTab } from './ai/OptimizeTab'
 import { ValidateTab } from './ai/ValidateTab'
@@ -16,12 +16,31 @@ const TABS: { id: Tab; label: string }[] = [
   { id: 'image', label: 'Gambar' }
 ]
 
-import { Sparkles, X } from 'lucide-react'
+import { Sparkles, X, ChevronDown } from 'lucide-react'
 import { cn } from '../../lib/utils'
+
+const AI_MODELS = [
+  { value: 'gpt-4o', label: 'GPT-4o (Best)', price: '$$$' },
+  { value: 'gpt-4-turbo', label: 'GPT-4 Turbo (Balanced)', price: '$$' },
+  { value: 'gpt-3.5-turbo', label: 'GPT-3.5 Turbo (Fast)', price: '$' }
+]
 
 export function AISidebar() {
   const [open, setOpen] = useState(false)
   const [tab, setTab] = useState<Tab>('write')
+  const [selectedModel, setSelectedModel] = useState('gpt-4o')
+  
+  // Load saved model preference from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('ai-model')
+    if (saved) setSelectedModel(saved)
+  }, [])
+  
+  const handleModelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const model = e.target.value
+    setSelectedModel(model)
+    localStorage.setItem('ai-model', model)
+  }
 
   if (!open) {
     return (
@@ -49,6 +68,32 @@ export function AISidebar() {
           <X size={20} />
         </button>
       </div>
+      
+      {/* Model Selector */}
+      <div className="px-6 py-3 border-b border-gray-50 bg-gray-25">
+        <div className="flex items-center gap-2">
+          <label className="text-xs font-medium text-gray-500 shrink-0">Model:</label>
+          <div className="relative flex-1">
+            <select
+              value={selectedModel}
+              onChange={handleModelChange}
+              className="w-full text-xs border border-gray-200 rounded-lg px-2.5 py-1.5 pr-8 outline-none focus:border-amber-400 appearance-none bg-white"
+            >
+              {AI_MODELS.map(m => (
+                <option key={m.value} value={m.value}>
+                  {m.label} ({m.price})
+                </option>
+              ))}
+            </select>
+            <ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+          </div>
+        </div>
+        <p className="text-[10px] text-gray-400 mt-1">
+          {selectedModel === 'gpt-4o' && 'Best quality - Recommended for important articles'}
+          {selectedModel === 'gpt-4-turbo' && 'Good balance - Fast and accurate'}
+          {selectedModel === 'gpt-3.5-turbo' && 'Fastest & cheapest - Good for drafts'}
+        </p>
+      </div>
 
       <div className="flex border-b border-gray-50">
         {TABS.map(t => (
@@ -68,11 +113,11 @@ export function AISidebar() {
       </div>
 
       <div className="flex-1 overflow-y-auto p-6 scrollbar-thin">
-        {tab === 'write' && <WriteTab />}
-        {tab === 'optimize' && <OptimizeTab />}
-        {tab === 'validate' && <ValidateTab />}
-        {tab === 'layout' && <LayoutTab />}
-        {tab === 'image' && <ImageTab />}
+        {tab === 'write' && <WriteTab model={selectedModel} />}
+        {tab === 'optimize' && <OptimizeTab model={selectedModel} />}
+        {tab === 'validate' && <ValidateTab model={selectedModel} />}
+        {tab === 'layout' && <LayoutTab model={selectedModel} />}
+        {tab === 'image' && <ImageTab model={selectedModel} />}
       </div>
 
       <div className="px-6 py-4 border-t border-gray-50 bg-brand-surface">

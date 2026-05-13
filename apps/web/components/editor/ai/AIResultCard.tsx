@@ -7,9 +7,10 @@ interface Props {
   onApply: () => void
   showCompare?: boolean
   originalContent?: string
+  model?: string
 }
 
-export function AIResultCard({ label, content, onApply, showCompare = false, originalContent = '' }: Props) {
+export function AIResultCard({ label, content, onApply, showCompare = false, originalContent = '', model }: Props) {
   const [applied, setApplied] = useState(false)
   const [dismissed, setDismissed] = useState(false)
 

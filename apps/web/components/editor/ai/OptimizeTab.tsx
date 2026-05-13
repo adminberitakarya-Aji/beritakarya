@@ -1,102 +1,101 @@
 'use client'
+import { useState } from 'react'
 import { useHeadlines, useSEO } from '../../../hooks/useAI'
 import { useEditorStore } from '../../../store/editorStore'
 
-function getExcerpt(blocks: any[]): string {
-  return blocks
-    .filter(b => b.type === 'paragraph')
-    .map(b => b.content)
-    .join(' ')
-    .slice(0, 800)
+interface Props {
+  model?: string
 }
 
-export function OptimizeTab() {
-  const { title, blocks, setTitle } = useEditorStore()
-  const [headlineState, doHeadline] = useHeadlines()
-  const [seoState, doSEO] = useSEO()
-  const excerpt = getExcerpt(blocks)
-
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text)
-  }
+export function OptimizeTab({ model = 'gpt-4o' }: Props) {
+  const { blocks } = useEditorStore()
+  const [headlineState, generateHeadlines] = useHeadlines(model)
+  const [seoState, generateSEO] = useSEO(model)
+  
+  // Get title and first paragraph for SEO/headline context
+  const title = blocks.find(b => b.type === 'heading')?.content || ''
+  const firstParagraph = blocks.find(b => b.type === 'paragraph')?.content || ''
+  const excerpt = firstParagraph.slice(0, 200)
 
   return (
-    <div className="space-y-5">
-      {/* Headline */}
+    <div className="space-y-6">
+      {/* Headline Generator */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <span className="text-xs font-semibold text-gray-700">Generator Judul</span>
+          <span className="text-xs font-semibold text-gray-700">Headline Generator</span>
           <button
-            onClick={() => doHeadline({ title, contentExcerpt: excerpt })}
+            onClick={() => generateHeadlines({ title: title || 'Untitled', contentExcerpt: excerpt })}
             disabled={headlineState.loading || !title}
             className="text-xs px-3 py-1.5 bg-amber-600 text-white rounded-lg hover:bg-amber-700 disabled:opacity-50"
           >
-            {headlineState.loading ? 'Generating...' : 'Generate 5 Judul'}
+            {headlineState.loading ? 'Generating...' : 'Generate 5 Headlines'}
           </button>
         </div>
-        <p className="text-xs text-gray-400 mb-2">Klik judul untuk langsung terapkan</p>
-
-        {headlineState.result?.headlines.map((h, i) => (
-          <button
-            key={i}
-            onClick={() => setTitle(h)}
-            className="w-full text-left text-xs p-2.5 mb-1.5 border rounded-lg hover:bg-amber-50 hover:border-amber-300 transition-colors text-gray-700"
-          >
-            <span className="text-amber-500 font-medium mr-1">{i + 1}.</span> {h}
-          </button>
-        ))}
-
+        {!title && (
+          <p className="text-xs text-gray-400 mb-2">Add a title first to generate headlines</p>
+        )}
+        {headlineState.result && (
+          <div className="space-y-2">
+            {headlineState.result.headlines.map((h, i) => (
+              <div key={i} className="bg-gray-50 border border-gray-200 rounded-lg p-2.5 text-xs">
+                <p className="text-gray-800">{h}</p>
+              </div>
+            ))}
+          </div>
+        )}
         {headlineState.error && (
           <p className="text-xs text-red-500 bg-red-50 p-2 rounded-lg">{headlineState.error}</p>
         )}
       </div>
 
+      {/* SEO Generator */}
       <div className="border-t pt-4">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-xs font-semibold text-gray-700">Generator SEO</span>
+          <span className="text-xs font-semibold text-gray-700">SEO Meta Generator</span>
           <button
-            onClick={() => doSEO({ title, contentExcerpt: excerpt })}
+            onClick={() => generateSEO({ title: title || 'Untitled', contentExcerpt: excerpt })}
             disabled={seoState.loading || !title}
             className="text-xs px-3 py-1.5 bg-amber-600 text-white rounded-lg hover:bg-amber-700 disabled:opacity-50"
           >
             {seoState.loading ? 'Generating...' : 'Generate SEO'}
           </button>
         </div>
-
+        {!title && (
+          <p className="text-xs text-gray-400 mb-2">Add a title first to generate SEO meta</p>
+        )}
         {seoState.result && (
-          <div className="space-y-2.5">
-            <SEOField label="Meta Title" value={seoState.result.metaTitle} onCopy={copyToClipboard} maxLen={60} />
-            <SEOField label="Meta Description" value={seoState.result.metaDescription} onCopy={copyToClipboard} maxLen={155} />
+          <div className="space-y-3">
             <div>
-              <p className="text-xs text-gray-500 mb-1">Keywords</p>
-              <div className="flex flex-wrap gap-1">
-                {seoState.result.keywords.map((k, i) => (
-                  <span key={i} className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{k}</span>
-                ))}
+              <label className="text-[10px] font-medium text-gray-500 block mb-1">Meta Title (50-60 chars)</label>
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-2.5 text-xs">
+                <p className="text-blue-700">{seoState.result.metaTitle}</p>
+                <p className="text-gray-400 text-[10px] mt-1">{seoState.result.metaTitle.length} characters</p>
+              </div>
+            </div>
+            <div>
+              <label className="text-[10px] font-medium text-gray-500 block mb-1">Meta Description (150-160 chars)</label>
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-2.5 text-xs">
+                <p className="text-gray-700">{seoState.result.metaDescription}</p>
+                <p className="text-gray-400 text-[10px] mt-1">{seoState.result.metaDescription.length} characters</p>
+              </div>
+            </div>
+            <div>
+              <label className="text-[10px] font-medium text-gray-500 block mb-1">Keywords</label>
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-2.5">
+                <div className="flex flex-wrap gap-1.5">
+                  {seoState.result.keywords.map((keyword, i) => (
+                    <span key={i} className="text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded">
+                      {keyword}
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
         )}
-
         {seoState.error && (
           <p className="text-xs text-red-500 bg-red-50 p-2 rounded-lg">{seoState.error}</p>
         )}
-      </div>
-    </div>
-  )
-}
-
-function SEOField({ label, value, onCopy, maxLen }: { label: string; value: string; onCopy: (v: string) => void; maxLen: number }) {
-  const over = value.length > maxLen
-  return (
-    <div>
-      <div className="flex items-center justify-between mb-1">
-        <p className="text-xs text-gray-500">{label}</p>
-        <span className={`text-xs ${over ? 'text-red-500' : 'text-gray-400'}`}>{value.length}/{maxLen}</span>
-      </div>
-      <div className="flex gap-1.5">
-        <p className={`flex-1 text-xs p-2 rounded-lg border ${over ? 'border-red-200 bg-red-50' : 'bg-gray-50'}`}>{value}</p>
-        <button onClick={() => onCopy(value)} className="text-xs px-2 py-1 border rounded-lg hover:bg-gray-100 text-gray-500 self-start">Copy</button>
       </div>
     </div>
   )

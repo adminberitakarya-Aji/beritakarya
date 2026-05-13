@@ -18,13 +18,17 @@ const LENGTH_OPTIONS: { value: Length; label: string }[] = [
   { value: 'lebih_panjang', label: 'Lebih Panjang' }
 ]
 
-export function WriteTab() {
+interface Props {
+  model?: string
+}
+
+export function WriteTab({ model = 'gpt-4o' }: Props) {
   const { blocks, updateBlock } = useEditorStore()
   const [selectedId, setSelectedId] = useState('')
   const [tone, setTone] = useState<Tone>('berita')
   const [length, setLength] = useState<Length>('sama')
-  const [rewriteState, doRewrite] = useRewrite()
-  const [expandState, doExpand] = useExpand()
+  const [rewriteState, doRewrite] = useRewrite(model)
+  const [expandState, doExpand] = useExpand(model)
   
   const paragraphBlocks = blocks.filter(b => b.type === 'paragraph' || b.type === 'quote')
   const selected = blocks.find(b => b.id === selectedId)
@@ -162,6 +166,7 @@ export function WriteTab() {
             onApply={() => applyRewrite(rewriteState.result!)}
             showCompare={true}
             originalContent={content}
+            model={model}
           />
         </div>
       )}
@@ -177,6 +182,7 @@ export function WriteTab() {
             onApply={() => applyRewrite(expandState.result!)}
             showCompare={true}
             originalContent={content}
+            model={model}
           />
         </div>
       )}

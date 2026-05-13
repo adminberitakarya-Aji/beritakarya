@@ -3,6 +3,10 @@ import { useState } from 'react'
 import { useGrammar, useReadability } from '../../../hooks/useAI'
 import { useEditorStore } from '../../../store/editorStore'
 
+interface Props {
+  model?: string
+}
+
 function getAllText(blocks: any[]): string {
   return blocks
     .filter(b => ['paragraph','heading','quote'].includes(b.type))
@@ -14,10 +18,10 @@ function getAllText(blocks: any[]): string {
 const SCORE_COLOR = (s: number) =>
   s >= 70 ? 'text-green-600' : s >= 40 ? 'text-yellow-600' : 'text-red-500'
 
-export function ValidateTab() {
+export function ValidateTab({ model = 'gpt-4o' }: Props) {
   const { blocks, updateBlock } = useEditorStore()
-  const [grammarState, doGrammar] = useGrammar()
-  const [readState, doRead] = useReadability()
+  const [grammarState, doGrammar] = useGrammar(model)
+  const [readState, doRead] = useReadability(model)
   const allText = getAllText(blocks)
   const [selectedCorrections, setSelectedCorrections] = useState<Set<number>>(new Set())
 
@@ -32,10 +36,11 @@ export function ValidateTab() {
   }
 
   const toggleAllCorrections = () => {
-    if (selectedCorrections.size === grammarState.result!.corrections.length) {
+    if (!grammarState.result) return
+    if (selectedCorrections.size === grammarState.result.corrections.length) {
       setSelectedCorrections(new Set())
     } else {
-      setSelectedCorrections(new Set(grammarState.result!.corrections.map((_, i) => i)))
+      setSelectedCorrections(new Set(grammarState.result.corrections.map((_, i) => i)))
     }
   }
 
