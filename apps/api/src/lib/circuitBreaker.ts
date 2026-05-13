@@ -1,8 +1,8 @@
 import CircuitBreaker from 'opossum'
 
-// OpenAI Circuit Breaker
+// OpenAI Circuit Breaker - wraps any async function that returns string
 export const openaiBreaker = new CircuitBreaker(
-  async (prompt: string, options?: { model?: string; temperature?: number }) => {
+  async () => {
     // This will be implemented where OpenAI is called
     // The actual OpenAI call should import and use this breaker
     throw new Error('OpenAI circuit breaker: not yet wired to actual service')
@@ -14,9 +14,9 @@ export const openaiBreaker = new CircuitBreaker(
   }
 )
 
-// Meilisearch Circuit Breaker
+// Meilisearch Circuit Breaker - wraps any async function
 export const meilisearchBreaker = new CircuitBreaker(
-  async (query: string, index?: string, options?: any) => {
+  async () => {
     // This will be implemented where Meilisearch is called
     throw new Error('Meilisearch circuit breaker: not yet wired to actual service')
   },
