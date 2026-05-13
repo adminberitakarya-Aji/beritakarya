@@ -56,7 +56,7 @@ adRouter.patch('/:id',
         linkUrl: linkUrl || null,
         isActive
       },
-      select: { id: true, slot: true, code: true, imageUrl: true, linkUrl: true, isActive: true, updatedAt: true }
+      select: { id: true, slot: true, code: true, imageUrl: true, linkUrl: true, isActive: true, createdAt: true }
     })
     res.json({ success: true, data: ad })
   })

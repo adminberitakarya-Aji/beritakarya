@@ -4,7 +4,7 @@ import { requireAuth } from '../../middleware/auth.middleware'
 import { requireSiteAccess } from '../../middleware/site-scope.middleware'
 import { asyncHandler } from '../../utils/asyncHandler'
 
-export const kycRouter = Router()
+export const kycRouter = Router() as any
 
 kycRouter.get('/',
   requireAuth,

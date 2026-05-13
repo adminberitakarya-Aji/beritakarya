@@ -3,6 +3,8 @@ import { ZodError } from 'zod'
 import multer from 'multer'
 import { logger } from '../lib/logger'
 import { env } from '../lib/env'
+// Import type augmentation to recognize `site` property on Request
+import '../types/express'
 
 export function errorMiddleware(
   err: any,

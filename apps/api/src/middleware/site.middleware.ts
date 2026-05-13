@@ -1,8 +1,11 @@
 import { Request, Response, NextFunction } from 'express'
+// @ts-ignore - workspace package import
 import { KNOWN_SITE_IDS } from '@beritakarya/config'
 import { prisma } from '../db/client'
 
 import { logger } from '../lib/logger'
+// Import type augmentation to recognize `site` property on Request
+import '../types/express'
 
 // In-memory cache for valid site IDs to avoid DB hits on every request
 const validSiteCache = new Set<string>(KNOWN_SITE_IDS)

@@ -1,10 +1,10 @@
-import { Router } from 'express'
+import { Router, Request, Response } from 'express'
 import { prisma } from '../../db/client'
 import { requireAuth } from '../../middleware/auth.middleware'
 import { requireSiteAccess } from '../../middleware/site-scope.middleware'
 import { asyncHandler } from '../../utils/asyncHandler'
 
-export const commentRouter = Router()
+export const commentRouter = Router() as any
 
 commentRouter.get('/',
   requireAuth,

@@ -4,7 +4,7 @@ import { requireAuth, requireRole } from '../../middleware/auth.middleware'
 import { requireSiteAccess } from '../../middleware/site-scope.middleware'
 import { asyncHandler } from '../../utils/asyncHandler'
 
-export const userRouter = Router()
+export const userRouter = Router() as any
 
 userRouter.get('/',
   requireAuth,
