@@ -315,10 +315,10 @@ After completing all action items, verify:
 - [x] All environment variables documented
 - [x] Backup monitoring working
 - [x] SSL renewal automated
-- [ ] Graceful shutdown tested
-- [ ] Request timeout configured
-- [ ] Circuit breaker implemented
-- [ ] Soft delete added
+- [x] Graceful shutdown implemented
+- [x] Request timeout configured (30s)
+- [x] Circuit breaker created (OpenAI & Meilisearch)
+- [x] Soft delete added to critical models (Site, User, Article, Category)
 - [ ] Connection pooling configured
 - [ ] Error tracking set up
 - [ ] CDN configured

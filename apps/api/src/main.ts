@@ -30,6 +30,7 @@ import { prisma } from './db/client'
 import { logger, httpLogger } from './lib/logger'
 import { metrics } from './lib/monitoring'
 import { asyncHandler } from './utils/asyncHandler'
+import timeout from 'connect-timeout'
 
 // Import global type augmentation (must be before other imports)
 import './types/express'
@@ -41,6 +42,12 @@ import * as siteController from './modules/site/site.controller'
 const app = express()
 app.set('trust proxy', 1)
 const PORT = env.PORT
+
+// Request timeout middleware (30 seconds)
+app.use(timeout('30s'))
+app.use((req, res, next) => {
+  if (!req.timedout) next()
+})
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs))
 
@@ -160,6 +167,35 @@ app.get('/metrics', (_, res) => {
 
 app.use(errorMiddleware)
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   logger.info(`API berjalan di http://localhost:${PORT}`)
+})
+
+// Graceful shutdown handler
+process.on('SIGTERM', async () => {
+  logger.info('SIGTERM received, shutting down gracefully')
+  try {
+    await prisma.$disconnect()
+    server.close(() => {
+      logger.info('Server closed')
+      process.exit(0)
+    })
+  } catch (error) {
+    logger.error('Error during graceful shutdown:', error)
+    process.exit(1)
+  }
+})
+
+process.on('SIGINT', async () => {
+  logger.info('SIGINT received, shutting down gracefully')
+  try {
+    await prisma.$disconnect()
+    server.close(() => {
+      logger.info('Server closed')
+      process.exit(0)
+    })
+  } catch (error) {
+    logger.error('Error during graceful shutdown:', error)
+    process.exit(1)
+  }
 })

@@ -26,6 +26,7 @@ model Site {
   socialLinks Json?    @default("{}")
   appearance  Json?    @default("{\"primaryColor\":\"#e11d48\"}")
   trendingTopics Json?    @default("[]")
+  deletedAt   DateTime?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -46,6 +47,7 @@ model User {
   name         String
   role         String   @default("reader")
   siteId       String?
+  deletedAt    DateTime?
 
   // KYC Fields
   bio              String?   @db.Text
@@ -72,6 +74,7 @@ model User {
   @@index([email])
   @@index([isVerified])
   @@index([kycSubmittedAt])
+  @@index([deletedAt])
 }
 
 model Category {
@@ -81,6 +84,7 @@ model Category {
   siteId      String?  // NULL = global category (available to all sites)
   isGlobal    Boolean  @default(false) @map("is_global")
   description String?
+  deletedAt   DateTime?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -92,6 +96,7 @@ model Category {
   @@unique([slug, siteId])
   @@index([siteId])
   @@index([isGlobal])
+  @@index([deletedAt])
 }
 
 model Advertisement {
@@ -145,6 +150,7 @@ model Article {
   isFeatured      Boolean  @default(false)
 
   publishedAt     DateTime?
+  deletedAt       DateTime?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
@@ -161,6 +167,7 @@ model Article {
   @@index([scheduledAt])
   @@index([publishedAt, viewCount])
   @@index([siteId, status, publishedAt])
+  @@index([deletedAt])
 }
 
 model RefreshToken {

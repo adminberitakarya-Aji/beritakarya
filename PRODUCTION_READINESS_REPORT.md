@@ -244,6 +244,7 @@ The BeritaKarya project infrastructure and database are **well-structured and pr
 **Location:** `.env.production.example`
 **Status:** FIXED - All required variables now present
 **Variables Added:** JWT_SECRET, REDIS_URL, MEILISEARCH_URL, SMTP_*, SENTRY_DSN, CDN_URL, CLOUDINARY_*
+**Dependencies Added:** connect-timeout@1.9.1, opossum@9.0.0
 
 ### 3. ✅ Reliability: No Backup Monitoring
 **Location:** `infra/scripts/backup-database.sh`
@@ -518,6 +519,10 @@ The BeritaKarya project is **well-architected and production-ready** with proper
 - ✅ All required environment variables documented
 - ✅ Backup monitoring implemented with alerts
 - ✅ SSL renewal automation created
+- ✅ Graceful shutdown implemented (SIGTERM/SIGINT)
+- ✅ Request timeout configured (30 seconds)
+- ✅ Circuit breaker created (OpenAI & Meilisearch)
+- ✅ Soft delete added to schema (Site, User, Article, Category)
 
 **Remaining High Priority Items (Recommended):**
 - Add graceful shutdown handling

@@ -124,10 +124,10 @@
 4. ✅ **No SSL renewal** - `renew-ssl.sh` created with cron setup
 
 #### High Priority
-1. **No graceful shutdown** - Add SIGTERM handling
-2. **No request timeout** - Add timeout configuration
-3. **No circuit breaker** - Add for external services
-4. **No soft delete** - Implement for critical entities
+1. ✅ **Graceful shutdown** - Implemented in main.ts
+2. ✅ **Request timeout** - 30s timeout middleware added
+3. ✅ **Circuit breaker** - Created for OpenAI & Meilisearch
+4. ✅ **Soft delete** - Added to Site, User, Article, Category
 
 #### Medium Priority
 1. **No connection pooling** - Configure database pooling
@@ -302,8 +302,16 @@ curl https://api.beritakarya.co/metrics
 2. ✅ Remove deprecated `docker-compose.prod.yml` (if still present)
 3. ✅ Add SSL renewal automation - `infra/scripts/renew-ssl.sh`
 4. ✅ Implement backup monitoring - Added email alerts to backup script
-5. ⚠️ Add graceful shutdown handling (HIGH PRIORITY - TODO)
-6. ⚠️ Configure monitoring and alerting (HIGH PRIORITY - TODO)
+5. ✅ Add graceful shutdown handling - SIGTERM/SIGINT handlers
+6. ✅ Configure monitoring and alerting - backups with email alerts
+
+### Phase 2: Short Term (First Week) - COMPLETED
+1. ✅ Implement soft delete pattern - deletedAt added to critical models
+2. ✅ Add request timeout configuration - 30s timeout middleware
+3. ✅ Implement circuit breaker pattern - opossum for OpenAI & Meilisearch
+4. ⚠️ Add comprehensive logging - logger already exists, enhance as needed
+5. ⚠️ Set up error tracking - Sentry integration recommended
+6. ⚠️ Configure CDN - Cloudinary variables already in .env.example
 
 ### Phase 2: Short Term (First Week)
 1. Implement soft delete pattern
