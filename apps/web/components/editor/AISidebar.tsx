@@ -4,14 +4,16 @@ import { WriteTab } from './ai/WriteTab'
 import { OptimizeTab } from './ai/OptimizeTab'
 import { ValidateTab } from './ai/ValidateTab'
 import { LayoutTab } from './ai/LayoutTab'
+import { ImageTab } from './ai/ImageTab'
 
-type Tab = 'write' | 'optimize' | 'validate' | 'layout'
+type Tab = 'write' | 'optimize' | 'validate' | 'layout' | 'image'
 
 const TABS: { id: Tab; label: string }[] = [
   { id: 'write', label: 'Tulis' },
   { id: 'optimize', label: 'Optimasi' },
   { id: 'validate', label: 'Validasi' },
-  { id: 'layout', label: 'Layout' }
+  { id: 'layout', label: 'Layout' },
+  { id: 'image', label: 'Gambar' }
 ]
 
 import { Sparkles, X } from 'lucide-react'
@@ -70,6 +72,7 @@ export function AISidebar() {
         {tab === 'optimize' && <OptimizeTab />}
         {tab === 'validate' && <ValidateTab />}
         {tab === 'layout' && <LayoutTab />}
+        {tab === 'image' && <ImageTab />}
       </div>
 
       <div className="px-6 py-4 border-t border-gray-50 bg-brand-surface">
@@ -79,4 +82,4 @@ export function AISidebar() {
       </div>
     </div>
   )
-}
+}

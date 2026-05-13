@@ -25,11 +25,24 @@ export function WriteTab() {
   const [length, setLength] = useState<Length>('sama')
   const [rewriteState, doRewrite] = useRewrite()
   const [expandState, doExpand] = useExpand()
-
+  
   const paragraphBlocks = blocks.filter(b => b.type === 'paragraph' || b.type === 'quote')
   const selected = blocks.find(b => b.id === selectedId)
   const content = (selected as any)?.content || ''
   const selectedIdx = blocks.findIndex(b => b.id === selectedId)
+  
+  // Calculate estimated cost (approximate)
+  const estimateCost = (inputChars: number, outputChars: number): string => {
+    const inputTokens = Math.ceil(inputChars / 4)
+    const outputTokens = Math.ceil(outputChars / 4)
+    // GPT-4o pricing: $5/1M input, $15/1M output
+    const cost = (inputTokens / 1_000_000 * 5) + (outputTokens / 1_000_000 * 15)
+    if (cost < 0.001) return '~$0.00'
+    return `~$${cost.toFixed(3)}`
+  }
+  
+  const rewriteCost = rewriteState.result ? estimateCost(content.length, rewriteState.result.length) : '~$0.015'
+  const expandCost = expandState.result ? estimateCost(content.length, expandState.result.length) : '~$0.012'
 
   const handleRewrite = async () => {
     if (!content) return
@@ -67,8 +80,36 @@ export function WriteTab() {
       </div>
 
       {selected && (
-        <div className="bg-gray-50 rounded-lg p-2.5 text-xs text-gray-600 max-h-20 overflow-auto">
-          {content.slice(0, 150)}{content.length > 150 ? '...' : ''}
+        <div className="space-y-2">
+          <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-xs font-medium text-gray-500">Paragraf Terpilih ({content.length} kar)</label>
+              <span className="text-xs text-gray-400">Blok #{selectedIdx + 1}</span>
+            </div>
+            <p className="text-sm text-gray-800 leading-relaxed">{content}</p>
+          </div>
+          
+          {/* Context: Previous Paragraph */}
+          {selectedIdx > 0 && (blocks[selectedIdx - 1] as any)?.content && (
+            <div className="bg-blue-50 rounded-lg p-2.5 border border-blue-100">
+              <p className="text-[10px] font-medium text-blue-600 mb-1">Sebelumnya:</p>
+              <p className="text-xs text-blue-800 leading-relaxed">
+                {(blocks[selectedIdx - 1] as any).content?.slice(0, 300)}
+                {(blocks[selectedIdx - 1] as any).content?.length > 300 ? '...' : ''}
+              </p>
+            </div>
+          )}
+          
+          {/* Context: Next Paragraph */}
+          {selectedIdx < blocks.length - 1 && (blocks[selectedIdx + 1] as any)?.content && (
+            <div className="bg-green-50 rounded-lg p-2.5 border border-green-100">
+              <p className="text-[10px] font-medium text-green-600 mb-1">Setelahnya:</p>
+              <p className="text-xs text-green-800 leading-relaxed">
+                {(blocks[selectedIdx + 1] as any).content?.slice(0, 300)}
+                {(blocks[selectedIdx + 1] as any).content?.length > 300 ? '' : ''}
+              </p>
+            </div>
+          )}
         </div>
       )}
 
@@ -96,30 +137,48 @@ export function WriteTab() {
         </div>
       </div>
 
-      <div className="flex gap-2">
+      <div className="space-y-2">
         <button onClick={handleRewrite} disabled={!selectedId || rewriteState.loading}
-          className="flex-1 text-xs py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 disabled:opacity-50">
-          {rewriteState.loading ? 'Menulis ulang...' : 'Tulis Ulang'}
+          className="w-full text-xs py-2.5 bg-amber-600 text-white rounded-lg hover:bg-amber-700 disabled:opacity-50 font-medium flex items-center justify-between px-3">
+          <span>{rewriteState.loading ? 'Menulis ulang...' : '✏️ Tulis Ulang'}</span>
+          <span className="text-[10px] opacity-80">{rewriteCost}</span>
         </button>
         <button onClick={handleExpand} disabled={!selectedId || expandState.loading}
-          className="flex-1 text-xs py-2 border border-amber-300 text-amber-700 rounded-lg hover:bg-amber-50 disabled:opacity-50">
-          {expandState.loading ? 'Mengembangkan...' : 'Kembangkan'}
+          className="w-full text-xs py-2.5 border border-amber-300 text-amber-700 rounded-lg hover:bg-amber-50 disabled:opacity-50 font-medium flex items-center justify-between px-3">
+          <span>{expandState.loading ? 'Mengembangkan...' : '🚀 Kembangkan'}</span>
+          <span className="text-[10px] opacity-70">{expandCost}</span>
         </button>
       </div>
 
       {rewriteState.result && (
-        <AIResultCard
-          label="Hasil Tulis Ulang"
-          content={rewriteState.result}
-          onApply={() => applyRewrite(rewriteState.result!)}
-        />
+        <div className="space-y-2">
+          <div className="text-xs font-medium text-gray-700 flex items-center justify-between">
+            <span>✅ Hasil Tulis Ulang</span>
+            <span className="text-gray-400">{rewriteState.result.length} karakter</span>
+          </div>
+          <AIResultCard
+            label=""
+            content={rewriteState.result}
+            onApply={() => applyRewrite(rewriteState.result!)}
+            showCompare={true}
+            originalContent={content}
+          />
+        </div>
       )}
       {expandState.result && (
-        <AIResultCard
-          label="Hasil Pengembangan"
-          content={expandState.result}
-          onApply={() => applyRewrite(expandState.result!)}
-        />
+        <div className="space-y-2">
+          <div className="text-xs font-medium text-gray-700 flex items-center justify-between">
+            <span>✅ Hasil Pengembangan</span>
+            <span className="text-gray-400">{expandState.result.length} karakter (+{Math.round((expandState.result.length - content.length) / content.length * 100)}%)</span>
+          </div>
+          <AIResultCard
+            label=""
+            content={expandState.result}
+            onApply={() => applyRewrite(expandState.result!)}
+            showCompare={true}
+            originalContent={content}
+          />
+        </div>
       )}
       {(rewriteState.error || expandState.error) && (
         <p className="text-xs text-red-500 bg-red-50 p-2 rounded-lg">
