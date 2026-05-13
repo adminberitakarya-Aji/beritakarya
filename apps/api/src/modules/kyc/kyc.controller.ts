@@ -8,6 +8,7 @@ import { siteMiddleware, requireSiteAccess } from '../../middleware/site.middlew
 import { asyncHandler } from '../../utils/asyncHandler'
 import { FileValidator } from '../../services/file-validator.service'
 import { WatermarkService } from '../../services/watermark.service'
+import { StorageService } from '../../services/storage.service'
 import { sendNotification } from '../notification/notification.controller'
 import { logger } from '../../lib/logger'
 
@@ -239,13 +240,43 @@ kycRouter.post('/submit',
         ? await WatermarkService.savePermanent(familyCard.path, userId, 'kk')
         : null
 
+      // --- S3 UPLOAD START ---
+      let idPath = idCardResult.original
+      let familyPath = familyCardResult?.original
+
+      if (process.env.STORAGE_TYPE === 's3') {
+        try {
+          const idKey = `kyc/${userId}/ktp_${Date.now()}.jpg`
+          await StorageService.uploadFile(idCardResult.original, idKey, 'image/jpeg')
+          idPath = idKey
+          
+          // Cleanup local
+          await fs.unlink(idCardResult.original).catch(() => {})
+          await fs.unlink(idCardResult.thumbnail).catch(() => {})
+
+          if (familyCardResult) {
+            const familyKey = `kyc/${userId}/kk_${Date.now()}.jpg`
+            await StorageService.uploadFile(familyCardResult.original, familyKey, 'image/jpeg')
+            familyPath = familyKey
+            
+            // Cleanup local
+            await fs.unlink(familyCardResult.original).catch(() => {})
+            await fs.unlink(familyCardResult.thumbnail).catch(() => {})
+          }
+        } catch (err) {
+          logger.error(`S3 Upload failed: ${err}`)
+          return res.status(500).json({ success: false, error: { message: 'Gagal mengunggah ke penyimpanan awan' } })
+        }
+      }
+      // --- S3 UPLOAD END ---
+
       const updatedUser = await prisma.$transaction(async (tx) => {
         const u = await tx.user.update({
           where: { id: userId },
           data: {
             bio: req.body.bio,
-            idCardPath: idCardResult.original,
-            familyCardPath: familyCardResult?.original,
+            idCardPath: idPath,
+            familyCardPath: familyPath || null,
             kycSubmittedAt: new Date(),
             kycConsentGivenAt: new Date(),
             kycDataExpiresAt: new Date(Date.now() + 5 * 365 * 24 * 60 * 60 * 1000), // 5 years
@@ -408,6 +439,16 @@ kycRouter.get('/view/:userId/:type',
         userAgent: req.headers['user-agent']
       }
     })
+
+    if (process.env.STORAGE_TYPE === 's3') {
+      try {
+        const signedUrl = await StorageService.getSignedUrl(filePath, 300) // 5 minutes expiry
+        return res.redirect(signedUrl)
+      } catch (err) {
+        logger.error(`Failed to get signed URL: ${err}`)
+        return res.status(500).json({ success: false, error: { message: 'Gagal mengambil file dari penyimpanan awan' } })
+      }
+    }
 
     res.sendFile(filePath)
   })
