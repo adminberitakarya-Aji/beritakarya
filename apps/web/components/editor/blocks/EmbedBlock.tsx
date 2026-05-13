@@ -11,8 +11,7 @@ function detectEmbedType(url: string): TEmbedBlock['embedType'] {
 }
 
 function getYouTubeId(url: string) {
-  // eslint-disable-next-line no-useless-escape
-  const match = url.match(/(?:v=|youtu\.be\/)([\w-]{11})/)
+  const match = url.match(new RegExp('(?:v=|youtu\\.be/)([\\w-]{11})'))
   return match?.[1]
 }
 
