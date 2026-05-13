@@ -1,17 +1,18 @@
-{
-  "extends": "../../tsconfig.json",
-  "compilerOptions": {
-    "module": "CommonJS",
-    "moduleResolution": "node",
-    "outDir": "./dist",
-    "baseUrl": ".",
-    "paths": {
-      "@beritakarya/*": ["../../packages/*/src"]
+  {
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+      "module": "CommonJS",
+      "moduleResolution": "node",
+      "outDir": "./dist",
+      "baseUrl": ".",
+      "paths": {
+        "@beritakarya/*": ["../../packages/*/src"]
+      },
+      "skipLibCheck": true,
+      "declaration": false,
+      "declarationMap": false,
+      "ignoreDeprecations": "6.0"
     },
-    "skipLibCheck": true,
-    "declaration": false,
-    "declarationMap": false
-  },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"]
-}
+    "include": ["src/**/*"],
+    "exclude": ["node_modules", "dist"]
+  }

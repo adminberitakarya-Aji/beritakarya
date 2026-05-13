@@ -12,7 +12,7 @@
 |----------|-------|----------------|--------------|
 | **P0 - CRITICAL** | 6 items | 2-3 weeks | None (must start immediately) |
 | **P1 - HIGH** | 4 items | 1-2 weeks | P0 complete |
-| **P2 - MEDIUM** | 4 items | 2-3 weeks | P1 complete |
+| **P2 - MEDIUM** | 4 items | 2-3 weeks | ✅ DONE (Cloudflare R2, Analytics, Audit, Cleanup) |
 | **P3 - LOW** | 3 items | 1-2 weeks | P2 complete |
 
 **Total Estimated**: 6-10 weeks for full implementation
@@ -1550,9 +1550,11 @@ Metrics:
 
 ---
 
-### **1. Cloud Storage Integration (S3/R2)**
+### **1. Cloud Storage Integration (Cloudflare R2)**
 
-Replace local `/uploads/kyc/` with S3-compatible storage.
+Replace local `/uploads/kyc/` with Cloudflare R2 (S3-compatible storage). Cloudflare R2 chosen for its free tier (10GB) and zero egress fees.
+
+#### Step 1: Update Storage Service for R2 Compatibility
 
 #### Step 1: Create Storage Service
 
@@ -1621,6 +1623,25 @@ export class StorageService {
     return map[contentType] || '.jpg'
   }
 }
+```
+
+#### Step 2: Automated Migration to Cloudflare R2
+
+Create a script to move existing local KYC files to R2 storage.
+
+**Script**: `apps/api/src/scripts/migrate-kyc-to-r2.ts`
+
+```typescript
+// See file for full implementation
+// 1. Fetch users with local paths
+// 2. Upload to R2 via StorageService
+// 3. Update DB paths to remote keys
+// 4. (Optional) Cleanup local files after verification
+```
+
+To run the migration:
+```bash
+npx ts-node -r tsconfig-paths/register src/scripts/migrate-kyc-to-r2.ts
 ```
 
 #### Step 2: Update Upload Flow (Client-side Direct to S3)
@@ -1890,54 +1911,12 @@ const stats = await prisma.$queryRaw`
 
 #### Step 4.1: Daily Cleanup Job
 
+**Implementation**: `apps/api/src/cron/kyc-cleanup.ts`
+
 ```typescript
-// cron/data-retention.ts
-export async function enforceDataRetention() {
-  logger.info('Running data retention policy enforcement...')
-
-  const now = new Date()
-
-  // 1. Delete expired KYC data (5 years)
-  const expiredKYC = await prisma.user.findMany({
-    where: {
-      kycDataExpiresAt: { lt: now },
-      OR: [
-        { idCardPath: { not: null } },
-        { familyCardPath: { not: null } }
-      ]
-    }
-  })
-
-  for (const user of expiredKYC) {
-    await prisma.$transaction(async (tx) => {
-      // Delete physical files
-      if (user.idCardPath) await storage.deleteFile(extractKey(user.idCardPath))
-      if (user.familyCardPath) await storage.deleteFile(extractKey(user.familyCardPath))
-      
-      // Clear DB fields
-      await tx.user.update({
-        where: { id: user.id },
-        data: {
-          idCardPath: null,
-          familyCardPath: null,
-          bio: null,
-          kycSubmittedAt: null,
-          kycNotes: 'EXPIRED by data retention policy',
-          kycConsentGivenAt: null,
-          kycDataExpiresAt: null
-        }
-      })
-
-      // Soft delete view logs (anonymize)
-      await tx.kYCViewLog.updateMany({
-        where: { userId: user.id },
-        data: { userId: 'anonymized' } // or delete
-      })
-    })
-  }
-
-  logger.info(`Data retention: cleaned ${expiredKYC.length} expired KYC records`)
-}
+// - Deletes expired KYC data (5 years)
+// - Deletes old rejected files (30 days)
+// - Registered in main.ts with node-cron
 ```
 
 #### Step 4.2: Add Endpoint for User-Initiated Deletion

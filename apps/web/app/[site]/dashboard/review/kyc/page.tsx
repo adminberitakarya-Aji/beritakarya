@@ -104,6 +104,9 @@ export default function KYCReviewPage() {
     { label: 'Rata-rata Waktu', value: `${stats.avgApprovalTime} Jam`, color: 'text-slate-600', bg: 'bg-slate-50' }
   ]
 
+  // Recharts components
+  const { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } = require('recharts')
+
   return (
     <div className="space-y-8 animate-fade-in">
       {/* Header */}
@@ -127,14 +130,59 @@ export default function KYCReviewPage() {
         </button>
       </div>
 
-      {/* Stat Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {statCards.map((card, i) => (
-          <div key={i} className={cn("p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm bg-white dark:bg-slate-900")}>
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">{card.label}</p>
-            <p className={cn("text-2xl font-black tracking-tight", card.color)}>{card.value}</p>
+      {/* Analytics Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Stat Cards */}
+        <div className="lg:col-span-1 grid grid-cols-1 gap-4">
+          {statCards.map((card, i) => (
+            <div key={i} className={cn("p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm bg-white dark:bg-slate-900 flex justify-between items-center")}>
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-1">{card.label}</p>
+                <p className={cn("text-2xl font-black tracking-tight", card.color)}>{card.value}</p>
+              </div>
+              <div className={cn("w-10 h-10 rounded-full flex items-center justify-center", card.bg)}>
+                {i === 0 && <Clock size={18} className="text-blue-600" />}
+                {i === 1 && <CheckCircle2 size={18} className="text-emerald-600" />}
+                {i === 2 && <XCircle size={18} className="text-red-600" />}
+                {i === 3 && <RefreshCw size={18} className="text-slate-600" />}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Trend Chart */}
+        <div className="lg:col-span-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm">
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <h3 className="text-xs font-black uppercase tracking-widest text-slate-900 dark:text-white">Tren Pengajuan</h3>
+              <p className="text-[10px] text-slate-500 mt-1">7 Hari Terakhir</p>
+            </div>
           </div>
-        ))}
+          <div className="h-[240px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={(stats as any).trendData || []}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                <XAxis 
+                  dataKey="date" 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{ fontSize: 10, fontWeight: 700, fill: '#94a3b8' }}
+                  tickFormatter={(val) => new Date(val).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
+                />
+                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#94a3b8' }} />
+                <Tooltip 
+                  cursor={{ fill: 'transparent' }}
+                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', fontSize: '12px', fontWeight: 'bold' }}
+                />
+                <Bar dataKey="count" radius={[4, 4, 0, 0]}>
+                  {((stats as any).trendData || []).map((entry: any, index: number) => (
+                    <Cell key={`cell-${index}`} fill={index === 6 ? '#e11d48' : '#cbd5e1'} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
       </div>
 
       {/* Stats & Filters */}

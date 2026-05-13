@@ -136,6 +136,27 @@ kycRouter.get('/stats',
       avgApprovalTime = Math.round(totalHours / allVerifiedUsers.length)
     }
 
+    // NEW: Calculate Trend Data (Last 7 Days)
+    const trendData = []
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date(now)
+      date.setDate(date.getDate() - i)
+      const dateStr = date.toISOString().split('T')[0]
+      
+      const startOfDay = new Date(dateStr)
+      const endOfDay = new Date(dateStr)
+      endOfDay.setHours(23, 59, 59, 999)
+
+      const count = await prisma.user.count({
+        where: { 
+          siteId, 
+          kycSubmittedAt: { gte: startOfDay, lte: endOfDay } 
+        }
+      })
+      
+      trendData.push({ date: dateStr, count })
+    }
+
     res.json({
       success: true,
       data: {
@@ -143,7 +164,8 @@ kycRouter.get('/stats',
         approvedThisWeek,
         rejectedThisWeek,
         avgApprovalTime,
-        conversionRate: Math.round((approvedThisWeek / (approvedThisWeek + rejectedThisWeek || 1)) * 100)
+        conversionRate: Math.round((approvedThisWeek / (approvedThisWeek + rejectedThisWeek || 1)) * 100),
+        trendData
       }
     })
   })
@@ -240,11 +262,13 @@ kycRouter.post('/submit',
         ? await WatermarkService.savePermanent(familyCard.path, userId, 'kk')
         : null
 
-      // --- S3 UPLOAD START ---
+      // --- CLOUD STORAGE UPLOAD (S3/R2) ---
       let idPath = idCardResult.original
       let familyPath = familyCardResult?.original
 
-      if (process.env.STORAGE_TYPE === 's3') {
+      const isCloudEnabled = process.env.STORAGE_TYPE === 's3' || process.env.STORAGE_TYPE === 'r2'
+
+      if (isCloudEnabled) {
         try {
           const idKey = `kyc/${userId}/ktp_${Date.now()}.jpg`
           await StorageService.uploadFile(idCardResult.original, idKey, 'image/jpeg')
@@ -264,11 +288,11 @@ kycRouter.post('/submit',
             await fs.unlink(familyCardResult.thumbnail).catch(() => {})
           }
         } catch (err) {
-          logger.error(`S3 Upload failed: ${err}`)
-          return res.status(500).json({ success: false, error: { message: 'Gagal mengunggah ke penyimpanan awan' } })
+          logger.error(`Cloud Upload failed: ${err}`)
+          return res.status(500).json({ success: false, error: { message: 'Gagal mengunggah ke penyimpanan awan (R2)' } })
         }
       }
-      // --- S3 UPLOAD END ---
+      // --- CLOUD STORAGE END ---
 
       const updatedUser = await prisma.$transaction(async (tx) => {
         const u = await tx.user.update({
@@ -440,13 +464,15 @@ kycRouter.get('/view/:userId/:type',
       }
     })
 
-    if (process.env.STORAGE_TYPE === 's3') {
+    const isCloudEnabled = process.env.STORAGE_TYPE === 's3' || process.env.STORAGE_TYPE === 'r2'
+
+    if (isCloudEnabled) {
       try {
         const signedUrl = await StorageService.getSignedUrl(filePath, 300) // 5 minutes expiry
         return res.redirect(signedUrl)
       } catch (err) {
         logger.error(`Failed to get signed URL: ${err}`)
-        return res.status(500).json({ success: false, error: { message: 'Gagal mengambil file dari penyimpanan awan' } })
+        return res.status(500).json({ success: false, error: { message: 'Gagal mengambil file dari penyimpanan awan (R2)' } })
       }
     }
 

@@ -17,6 +17,9 @@ import { auditRouter } from './modules/audit/audit.controller'
 import { analyticsRouter } from './modules/analytics/analytics.controller'
 import { notificationRouter } from './modules/notification/notification.controller'
 import { commentRouter } from './modules/comment/comment.controller'
+import { kycRouter } from './modules/kyc/kyc.controller'
+import cron from 'node-cron'
+import { runKYCCleanup } from './cron/kyc-cleanup'
 import { requestIdMiddleware } from './middleware/requestId.middleware'
 import { errorMiddleware } from './middleware/error.middleware'
 import { sanitizeMiddleware } from './middleware/sanitize.middleware'
@@ -125,6 +128,7 @@ app.use('/api/v1/audit', auditRouter)
 app.use('/api/v1/analytics', analyticsRouter)
 app.use('/api/v1/notifications', notificationRouter)
 app.use('/api/v1/comments', commentRouter)
+app.use('/api/v1/kyc', kycRouter)
 
 app.get('/health', asyncHandler(async (_, res) => {
   let databaseHealth = false
