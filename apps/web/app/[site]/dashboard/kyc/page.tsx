@@ -17,8 +17,8 @@ import {
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import axios from 'axios'
-import { useAuthStore } from '../../../store/authStore'
-import { cn } from '../../../lib/utils'
+import { useAuthStore } from '../../../../store/authStore'
+import { cn } from '../../../../lib/utils'
 
 export default function KYCPage() {
   const params = useParams()

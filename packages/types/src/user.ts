@@ -6,8 +6,12 @@ export interface User {
   name: string
   role: UserRole
   siteId: string | null  // null = editor pusat (akses semua site)
-  createdAt: Date
-  updatedAt: Date
+  isVerified: boolean
+  kycSubmittedAt: string | null
+  kycReviewedAt: string | null
+  kycNotes: string | null
+  createdAt: string
+  updatedAt: string
 }
 
 export interface AuthUser {
@@ -16,6 +20,8 @@ export interface AuthUser {
   name: string
   role: UserRole
   siteId: string | null
+  isVerified: boolean
+  kycSubmittedAt: string | null
 }
 
 export interface JWTPayload {

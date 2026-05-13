@@ -13,10 +13,10 @@ import {
   RefreshCw,
   Clock
 } from 'lucide-react'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import axios from 'axios'
-import { cn } from '../../../../lib/utils'
+import { cn } from '../../../../../lib/utils'
 
 interface KYCUser {
   id: string
