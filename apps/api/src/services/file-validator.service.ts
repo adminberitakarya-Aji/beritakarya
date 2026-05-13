@@ -1,5 +1,4 @@
 import sharp from 'sharp'
-import path from 'path'
 import fs from 'fs/promises'
 import { logger } from '../lib/logger'
 

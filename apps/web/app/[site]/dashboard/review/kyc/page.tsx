@@ -5,18 +5,15 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { 
   ClipboardCheck, 
   Search, 
-  Filter, 
-  ExternalLink, 
-  Clock, 
   CheckCircle2, 
-  XCircle,
-  Loader2,
+  XCircle, 
+  Loader2, 
   AlertCircle,
   Eye,
-  User as UserIcon,
-  RefreshCw
+  RefreshCw,
+  Clock
 } from 'lucide-react'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import axios from 'axios'
 import { cn } from '../../../../lib/utils'

@@ -10,12 +10,8 @@ import {
   Loader2, 
   AlertCircle,
   FileText,
-  User as UserIcon,
-  Calendar,
-  MessageSquare,
   Eye,
-  Lock,
-  ExternalLink
+  Lock
 } from 'lucide-react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -193,7 +189,7 @@ export default function KYCDetailReviewPage() {
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 shadow-sm">
             <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 mb-4">Biografi Penulis</h3>
             <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed italic">
-              "{user.bio || 'Pengguna tidak memberikan biografi.'}"
+              &ldquo;{user.bio || 'Pengguna tidak memberikan biografi.'}&rdquo;
             </p>
           </div>
         </div>
