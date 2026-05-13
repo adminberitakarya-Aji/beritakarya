@@ -7,7 +7,7 @@ const envSchema = z.object({
   JWT_SECRET: z.string(),
   JWT_ACCESS_EXPIRES: z.string().default('15m'),
   OPENAI_API_KEY: z.string().optional(),
-  AI_MODEL: z.string().default('gpt-4-turbo-preview'),
+  AI_MODEL: z.string().default('gpt-4o'),
   API_URL: z.string().default('http://localhost:3001'),
   CORS_ORIGIN: z.string().optional(),
   REDIS_HOST: z.string().default('localhost'),
