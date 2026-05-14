@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express'
+import { Router, Request, Response, NextFunction } from 'express'
 import { requireAuth } from '../middleware/auth.middleware'
 import { prisma } from '../db/client'
 import { asyncHandler } from '../utils/asyncHandler'
@@ -6,7 +6,7 @@ import { asyncHandler } from '../utils/asyncHandler'
 const adminRouter = Router()
 
 // Admin-only middleware (wapimred + superadmin)
-async function requireAdmin(req: Request, res: Response, next: Function) {
+async function requireAdmin(req: Request, res: Response, next: NextFunction) {
   const role = req.user?.role
   if (!role || !['superadmin', 'wapimred'].includes(role)) {
     return res.status(403).json({ error: 'Admin access required' })

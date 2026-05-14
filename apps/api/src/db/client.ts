@@ -24,7 +24,9 @@ prisma.$connect().then(() => {
   logger.info('Database connected successfully')
 }).catch((error) => {
   logger.error('Database connection failed:', error)
-  process.exit(1)
+  if (env.NODE_ENV !== 'test') {
+    process.exit(1)
+  }
 })
 
 if (env.NODE_ENV !== 'production') {

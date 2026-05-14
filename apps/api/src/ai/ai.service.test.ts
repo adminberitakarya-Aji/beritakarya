@@ -19,6 +19,17 @@ vi.mock('openai', () => {
   }
 })
 
+vi.mock('opossum', () => {
+  return {
+    default: vi.fn().mockImplementation(function (action: Function) {
+      this.fire = (...args: any[]) => action(...args)
+      this.stats = { state: 'closed' }
+      return this
+    })
+  }
+})
+
+
 
 import { callAI, chatComplete } from './base.service'
 

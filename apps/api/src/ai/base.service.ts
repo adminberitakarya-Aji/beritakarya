@@ -132,7 +132,7 @@ export async function chatComplete(
     logger.error('OpenAI circuit breaker error:', err.message)
     
     // Circuit is open, return fallback message
-    // @ts-ignore - opossum circuit breaker has stats.state
+    // @ts-expect-error - opossum circuit breaker has stats.state
     if (openaiBreaker.stats?.state === 'open') {
       return '[Service temporarily unavailable]'
     }

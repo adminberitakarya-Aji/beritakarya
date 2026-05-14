@@ -13,15 +13,23 @@ vi.mock('openai', () => ({
 import { aiRouter } from './ai.controller'
 import { errorMiddleware } from '../middleware/error.middleware'
 
-// Mock semua AI service agar tidak hit OpenAI
 vi.mock('./write.service', () => ({
-  rewriteBlock: vi.fn().mockResolvedValue({ success: true, data: 'teks hasil rewrite' }),
-  expandBlock: vi.fn().mockResolvedValue({ success: true, data: 'teks hasil expand' })
+  rewriteBlock: vi.fn().mockResolvedValue('teks hasil rewrite'),
+  expandBlock: vi.fn().mockResolvedValue('teks hasil expand')
 }))
 
 vi.mock('../middleware/auth.middleware', () => ({
   requireAuth: (_: any, __: any, next: any) => {
     _.user = { userId: 'u1', role: 'journalist', siteId: 'bandung' }
+    next()
+  }
+}))
+
+vi.mock('../middleware/aiQuota', () => ({
+  checkAIPermissions: (_: any, __: any, next: any) => {
+    // Mock user quota context
+    _.aiQuota = { allowedFeatures: ['rewrite', 'expand'] }
+    _.aiUserId = 'u1'
     next()
   }
 }))
@@ -32,6 +40,12 @@ vi.mock('../lib/rateLimit', () => ({
 
 vi.mock('./usage.service', () => ({
   logUsage: vi.fn()
+}))
+
+vi.mock('../db/client', () => ({
+  prisma: {
+    aIUsage: { create: vi.fn() }
+  }
 }))
 
 const app = express()
