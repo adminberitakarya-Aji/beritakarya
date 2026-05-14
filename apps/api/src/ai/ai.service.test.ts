@@ -21,7 +21,7 @@ vi.mock('openai', () => {
 
 vi.mock('opossum', () => {
   return {
-    default: vi.fn().mockImplementation(function (action: Function) {
+    default: vi.fn().mockImplementation(function (this: any, action: Function) {
       this.fire = (...args: any[]) => action(...args)
       this.stats = { state: 'closed' }
       return this
