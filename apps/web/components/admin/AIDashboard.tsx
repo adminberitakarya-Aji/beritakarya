@@ -71,7 +71,7 @@ export function AIDashboard() {
     fetchData()
   }, [])
 
-  const fetchData = async () => {
+  async function fetchData() {
     try {
       const [usageRes, quotaRes] = await Promise.all([
         fetch('/api/v1/admin/ai-usage', {

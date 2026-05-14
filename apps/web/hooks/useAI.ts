@@ -19,11 +19,13 @@ function useAIAction<TInput, TResult>(
     loading: false, result: null, error: null
   })
 
+  const model = options?.model
+
   const call = useCallback(async (input: TInput): Promise<TResult | null> => {
     setState({ loading: true, result: null, error: null })
     try {
-      const payload = options?.model
-        ? { ...input, model: options.model }
+      const payload = model
+        ? { ...input, model }
         : input
       const { data } = await api.post(`/ai/${endpoint}`, payload)
       if (!data.success) throw new Error(data.error || 'AI gagal')
@@ -39,7 +41,7 @@ function useAIAction<TInput, TResult>(
       setState({ loading: false, result: null, error: msg })
       return null
     }
-  }, [endpoint, options?.model])
+  }, [endpoint, model])
 
   return [state, call]
 }
