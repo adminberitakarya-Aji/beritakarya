@@ -6,6 +6,7 @@ import { useKeyboardShortcuts } from '../../../hooks/useKeyboardShortcuts'
 
 interface Props {
   model?: string
+  onTrigger?: () => void
 }
 
 function getAllText(blocks: any[]): string {
@@ -19,7 +20,7 @@ function getAllText(blocks: any[]): string {
 const SCORE_COLOR = (s: number) =>
   s >= 70 ? 'text-green-600' : s >= 40 ? 'text-yellow-600' : 'text-red-500'
 
-export function ValidateTab({ model = 'gpt-4o' }: Props) {
+export function ValidateTab({ model = 'gpt-4o', onTrigger }: Props) {
   const { blocks, updateBlock } = useEditorStore()
   const [grammarState, doGrammar] = useGrammar(model)
   const [readState, doRead] = useReadability(model)
@@ -79,16 +80,22 @@ export function ValidateTab({ model = 'gpt-4o' }: Props) {
       ctrl: true,
       alt: false,
       action: () => {
-        if (allText && !grammarState.loading) doGrammar({ text: allText })
+        if (allText && !grammarState.loading) {
+          if (onTrigger) onTrigger()
+          doGrammar({ text: allText })
+        }
       }
     },
     {
-      key: 'r',
+      key: 'v',
       shift: true,
       ctrl: true,
       alt: false,
       action: () => {
-        if (allText && !readState.loading) doRead({ text: allText })
+        if (allText && !readState.loading) {
+          if (onTrigger) onTrigger()
+          doRead({ text: allText })
+        }
       }
     }
   ], true)

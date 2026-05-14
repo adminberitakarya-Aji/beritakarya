@@ -53,13 +53,22 @@ model User {
   bio              String?   @db.Text
   idCardPath       String?
   familyCardPath   String?
-  isVerified       Boolean   @default(false)
+  isVerified       Boolean  @default(false)
   kycSubmittedAt   DateTime?
   kycNotes         String?
   kycReviewedBy    String?   // userId admin yang approval
   kycReviewedAt    DateTime?
   kycConsentGivenAt DateTime? // Waktu user setuju kebijakan data
   kycDataExpiresAt DateTime?  // Auto-delete after X years (GDPR compliance)
+
+  // AI Quota Fields
+  aiEnabled          Boolean     @default(true)
+  aiDailyLimit       Int         @default(50)  // Daily request limit
+  aiMonthlyBudget    Decimal     @default(10.00)  // Monthly budget in USD
+  aiFeaturesAllowed  Json        @default("[\"rewrite\",\"expand\",\"grammar\",\"readability\",\"caption\"]")  // Allowed AI features
+  aiQuotaResetDate   DateTime?   // Manual reset date tracking
+  aiModelRestriction String?    // Force specific model (e.g., 'gpt-3.5-turbo')
+  aiConsentGivenAt   DateTime?  // Waktu user setuju dengan ketentuan penggunaan AI
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -75,6 +84,7 @@ model User {
   @@index([isVerified])
   @@index([kycSubmittedAt])
   @@index([deletedAt])
+  @@index([aiEnabled])
 }
 
 model Category {
@@ -201,10 +211,16 @@ model AIUsage {
   outputLength Int
   latencyMs    Int
   success      Boolean
+  estimatedCost Decimal?  // Cost in USD
+  modelUsed     String?   // AI model used (gpt-4o, gpt-3.5-turbo, etc.)
+  tokensInput   Int?     // Input tokens (if available from API)
+  tokensOutput  Int?     // Output tokens (if available from API)
   createdAt    DateTime @default(now())
 
   @@index([userId, action])
   @@index([siteId])
+  @@index([userId, createdAt])
+  @@index([siteId, createdAt])
 }
 
 model NewsletterSubscriber {
@@ -343,4 +359,16 @@ model KYCViewLog {
   @@index([userId, viewedAt])
   @@index([viewerId])
   @@index([siteId])
+}
+
+// Quota definitions per role
+model RoleQuota {
+  role               String   @id
+  dailyRequests      Int       // Daily request limit
+  dailyTokens        Int       // Daily token limit
+  monthlyBudget      Decimal   // Monthly budget in USD
+  allowedFeatures    Json      // Array of allowed feature endpoints
+  modelRestriction   String?   // Force specific model (e.g., 'gpt-3.5-turbo')
+
+  @@map("RoleQuota")
 }

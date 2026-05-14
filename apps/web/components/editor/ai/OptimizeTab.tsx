@@ -6,9 +6,10 @@ import { useKeyboardShortcuts } from '../../../hooks/useKeyboardShortcuts'
 
 interface Props {
   model?: string
+  onTrigger?: () => void
 }
 
-export function OptimizeTab({ model = 'gpt-4o' }: Props) {
+export function OptimizeTab({ model = 'gpt-4o', onTrigger }: Props) {
   const { blocks } = useEditorStore()
   const [headlineState, generateHeadlines] = useHeadlines(model)
   const [seoState, generateSEO] = useSEO(model)
@@ -26,7 +27,10 @@ export function OptimizeTab({ model = 'gpt-4o' }: Props) {
       ctrl: true,
       alt: false,
       action: () => {
-        if (title && !headlineState.loading) generateHeadlines({ title, contentExcerpt: excerpt })
+        if (title && !headlineState.loading) {
+          if (onTrigger) onTrigger()
+          generateHeadlines({ title, contentExcerpt: excerpt })
+        }
       }
     },
     {
@@ -35,7 +39,10 @@ export function OptimizeTab({ model = 'gpt-4o' }: Props) {
       ctrl: true,
       alt: false,
       action: () => {
-        if (title && !seoState.loading) generateSEO({ title, contentExcerpt: excerpt })
+        if (title && !seoState.loading) {
+          if (onTrigger) onTrigger()
+          generateSEO({ title, contentExcerpt: excerpt })
+        }
       }
     }
   ], true)

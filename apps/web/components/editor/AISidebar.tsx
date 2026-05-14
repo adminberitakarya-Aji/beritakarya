@@ -115,11 +115,21 @@ export function AISidebar() {
       </div>
 
       <div className="flex-1 overflow-y-auto p-6 scrollbar-thin">
-        {tab === 'write' && <WriteTab model={selectedModel} />}
-        {tab === 'optimize' && <OptimizeTab model={selectedModel} />}
-        {tab === 'validate' && <ValidateTab model={selectedModel} />}
-        {tab === 'layout' && <LayoutTab model={selectedModel} />}
-        {tab === 'image' && <ImageTab model={selectedModel} />}
+        <div style={{ display: tab === 'write' ? 'block' : 'none' }}>
+          <WriteTab model={selectedModel} onTrigger={() => { setOpen(true); setTab('write') }} />
+        </div>
+        <div style={{ display: tab === 'optimize' ? 'block' : 'none' }}>
+          <OptimizeTab model={selectedModel} onTrigger={() => { setOpen(true); setTab('optimize') }} />
+        </div>
+        <div style={{ display: tab === 'validate' ? 'block' : 'none' }}>
+          <ValidateTab model={selectedModel} onTrigger={() => { setOpen(true); setTab('validate') }} />
+        </div>
+        <div style={{ display: tab === 'layout' ? 'block' : 'none' }}>
+          <LayoutTab model={selectedModel} onTrigger={() => { setOpen(true); setTab('layout') }} />
+        </div>
+        <div style={{ display: tab === 'image' ? 'block' : 'none' }}>
+          <ImageTab model={selectedModel} onTrigger={() => { setOpen(true); setTab('image') }} />
+        </div>
       </div>
 
       <div className="px-6 py-4 border-t border-gray-50 bg-brand-surface">

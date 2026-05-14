@@ -21,9 +21,10 @@ const LENGTH_OPTIONS: { value: Length; label: string }[] = [
 
 interface Props {
   model?: string
+  onTrigger?: () => void
 }
 
-export function WriteTab({ model = 'gpt-4o' }: Props) {
+export function WriteTab({ model = 'gpt-4o', onTrigger }: Props) {
   const { blocks, updateBlock } = useEditorStore()
   const [selectedId, setSelectedId] = useState('')
   const [tone, setTone] = useState<Tone>('berita')
@@ -74,7 +75,10 @@ export function WriteTab({ model = 'gpt-4o' }: Props) {
       ctrl: true,
       alt: false,
       action: () => {
-        if (selectedId && !rewriteState.loading) handleRewrite()
+        if (selectedId && !rewriteState.loading) {
+          if (onTrigger) onTrigger()
+          handleRewrite()
+        }
       }
     },
     {
@@ -83,7 +87,10 @@ export function WriteTab({ model = 'gpt-4o' }: Props) {
       ctrl: true,
       alt: false,
       action: () => {
-        if (selectedId && !expandState.loading) handleExpand()
+        if (selectedId && !expandState.loading) {
+          if (onTrigger) onTrigger()
+          handleExpand()
+        }
       }
     }
   ], true)

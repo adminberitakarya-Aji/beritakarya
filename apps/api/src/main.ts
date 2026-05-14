@@ -19,8 +19,10 @@ import { analyticsRouter } from './modules/analytics/analytics.controller'
 import { notificationRouter } from './modules/notification/notification.controller'
 import { commentRouter } from './modules/comment/comment.controller'
 import { kycRouter } from './modules/kyc/kyc.controller'
+import adminRouter from './admin/admin.router'
 import cron from 'node-cron'
 import { runKYCCleanup } from './cron/kyc-cleanup'
+import { checkAllQuotas } from './middleware/quotaNotifications'
 import { requestIdMiddleware } from './middleware/requestId.middleware'
 import { errorMiddleware } from './middleware/error.middleware'
 import { sanitizeMiddleware } from './middleware/sanitize.middleware'
@@ -158,6 +160,7 @@ app.use('/api/v1/analytics', analyticsRouter)
 app.use('/api/v1/notifications', notificationRouter)
 app.use('/api/v1/comments', commentRouter)
 app.use('/api/v1/kyc', kycRouter)
+app.use('/api/v1/admin', adminRouter)
 
 app.get('/health', asyncHandler(async (_, res) => {
   let databaseHealth = false
@@ -206,6 +209,17 @@ if (env.SENTRY_DSN) {
 
 const server = app.listen(PORT, () => {
   logger.info(`API berjalan di http://localhost:${PORT}`)
+})
+
+// ── CRON JOBS ────────────────────────────────────────────────────────────
+// Hourly AI quota check: warn users approaching limits, disable if exceeded
+cron.schedule('0 * * * *', async () => {
+  logger.info('Running hourly AI quota check...')
+  try {
+    await checkAllQuotas()
+  } catch (err) {
+    logger.error('Hourly quota check failed:', err)
+  }
 })
 
 // Graceful shutdown handler

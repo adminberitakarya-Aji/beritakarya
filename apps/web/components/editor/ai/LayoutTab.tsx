@@ -5,9 +5,10 @@ import { useKeyboardShortcuts } from '../../../hooks/useKeyboardShortcuts'
 
 interface Props {
   model?: string
+  onTrigger?: () => void
 }
 
-export function LayoutTab({ model = 'gpt-4o' }: Props) {
+export function LayoutTab({ model = 'gpt-4o', onTrigger }: Props) {
   const { blocks } = useEditorStore()
   const [layoutState, analyzeLayout] = useLayout(model)
 
@@ -23,7 +24,10 @@ export function LayoutTab({ model = 'gpt-4o' }: Props) {
       ctrl: true,
       alt: false,
       action: () => {
-        if (blocks.length > 0 && !layoutState.loading) handleAnalyze()
+        if (blocks.length > 0 && !layoutState.loading) {
+          if (onTrigger) onTrigger()
+          handleAnalyze()
+        }
       }
     }
   ], true)

@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express'
 import { z } from 'zod'
 import { requireAuth } from '../middleware/auth.middleware'
+import { checkAIPermissions } from '../middleware/aiQuota'
 import { aiLimiter } from '../lib/rateLimit'
 import { asyncHandler } from '../utils/asyncHandler'
 import { logUsage } from './usage.service'
@@ -9,28 +10,39 @@ import * as optimizeService from './optimize.service'
 import * as validateService from './validate.service'
 import * as layoutService from './layout.service'
 import * as imageService from './image.service'
+import { callAIWithTracking } from './base.service'
+
+import { prisma } from '../db/client'
 
 export const aiRouter: Router = Router()
-aiRouter.use(requireAuth, aiLimiter)
 
-async function withUsageLog(
+// ── CONSENT (No Quota Check) ──────────────────────────────────
+aiRouter.post('/consent', requireAuth, asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.user?.userId
+  if (!userId) {
+    res.status(401).json({ error: 'Unauthorized' })
+    return
+  }
+
+  const user = await prisma.user.update({
+    where: { id: userId },
+    data: { aiConsentGivenAt: new Date() }
+  })
+
+  res.json({ success: true, aiConsentGivenAt: user.aiConsentGivenAt })
+}))
+
+// Apply quota checking middleware to all OTHER AI routes
+// Note: checkAIPermissions runs BEFORE aiLimiter to reject quota violations early
+aiRouter.use(requireAuth, checkAIPermissions, aiLimiter)
+
+// Helper function to wrap AI calls with tracking and quota enforcement
+async function withQuotaAndTracking<T>(
   req: Request,
   action: string,
-  input: string,
-  fn: () => Promise<any>
+  fn: () => Promise<T>
 ) {
-  const start = Date.now()
-  const result = await fn()
-  await logUsage({
-    userId: req.user!.userId,
-    siteId: req.user!.siteId ?? 'pusat',
-    action,
-    inputLength: input.length,
-    outputLength: JSON.stringify(result.data ?? '').length,
-    latencyMs: Date.now() - start,
-    success: result.success
-  })
-  return result
+  return callAIWithTracking(fn, req, action)
 }
 
 // ── WRITE ─────────────────────────────────────────────────────
@@ -43,7 +55,7 @@ aiRouter.post('/rewrite', asyncHandler(async (req: Request, res: Response) => {
     nextContent: z.string().optional()
   }).parse(req.body)
 
-  const result = await withUsageLog(req, 'rewrite', content, () =>
+  const result = await withQuotaAndTracking(req, 'rewrite', () =>
     writeService.rewriteBlock(content, tone, length, {
       prev: prevContent, next: nextContent
     })
@@ -58,7 +70,7 @@ aiRouter.post('/expand', asyncHandler(async (req: Request, res: Response) => {
     nextContent: z.string().optional()
   }).parse(req.body)
 
-  const result = await withUsageLog(req, 'expand', content, () =>
+  const result = await withQuotaAndTracking(req, 'expand', () =>
     writeService.expandBlock(content, { prev: prevContent, next: nextContent })
   )
   res.json(result)
@@ -71,7 +83,7 @@ aiRouter.post('/headline', asyncHandler(async (req: Request, res: Response) => {
     contentExcerpt: z.string().max(1000)
   }).parse(req.body)
 
-  const result = await withUsageLog(req, 'headline', title + contentExcerpt, () =>
+  const result = await withQuotaAndTracking(req, 'headline', () =>
     optimizeService.generateHeadlines(title, contentExcerpt)
   )
   res.json(result)
@@ -83,7 +95,7 @@ aiRouter.post('/seo', asyncHandler(async (req: Request, res: Response) => {
     contentExcerpt: z.string().max(2000)
   }).parse(req.body)
 
-  const result = await withUsageLog(req, 'seo', title + contentExcerpt, () =>
+  const result = await withQuotaAndTracking(req, 'seo', () =>
     optimizeService.generateSEOMeta(title, contentExcerpt)
   )
   res.json(result)
@@ -92,7 +104,7 @@ aiRouter.post('/seo', asyncHandler(async (req: Request, res: Response) => {
 // ── VALIDATE ──────────────────────────────────────────────────
 aiRouter.post('/grammar', asyncHandler(async (req: Request, res: Response) => {
   const { text } = z.object({ text: z.string().min(10).max(5000) }).parse(req.body)
-  const result = await withUsageLog(req, 'grammar', text, () =>
+  const result = await withQuotaAndTracking(req, 'grammar', () =>
     validateService.checkGrammar(text)
   )
   res.json(result)
@@ -100,7 +112,7 @@ aiRouter.post('/grammar', asyncHandler(async (req: Request, res: Response) => {
 
 aiRouter.post('/readability', asyncHandler(async (req: Request, res: Response) => {
   const { text } = z.object({ text: z.string().min(50).max(10000) }).parse(req.body)
-  const result = await withUsageLog(req, 'readability', text, () =>
+  const result = await withQuotaAndTracking(req, 'readability', () =>
     validateService.checkReadability(text)
   )
   res.json(result)
@@ -112,7 +124,7 @@ aiRouter.post('/layout', asyncHandler(async (req: Request, res: Response) => {
     blocks: z.array(z.any()).min(1).max(100)
   }).parse(req.body)
 
-  const result = await withUsageLog(req, 'layout', JSON.stringify(blocks), () =>
+  const result = await withQuotaAndTracking(req, 'layout', () =>
     layoutService.analyzeLayout(blocks)
   )
   res.json(result)
@@ -124,7 +136,7 @@ aiRouter.post('/caption', asyncHandler(async (req: Request, res: Response) => {
     imageUrl: z.string().url()
   }).parse(req.body)
 
-  const result = await withUsageLog(req, 'caption', imageUrl, () =>
+  const result = await withQuotaAndTracking(req, 'caption', () =>
     imageService.generateCaption(imageUrl)
   )
   res.json(result)

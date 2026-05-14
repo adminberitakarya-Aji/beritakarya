@@ -6,9 +6,10 @@ import { useKeyboardShortcuts } from '../../../hooks/useKeyboardShortcuts'
 
 interface Props {
   model?: string
+  onTrigger?: () => void
 }
 
-export function ImageTab({ model = 'gpt-4o' }: Props) {
+export function ImageTab({ model = 'gpt-4o', onTrigger }: Props) {
   const [imageUrl, setImageUrl] = useState('')
   const [altText, setAltText] = useState('')
   const [uploadMode, setUploadMode] = useState<'url' | 'preview'>('url')
@@ -44,7 +45,10 @@ export function ImageTab({ model = 'gpt-4o' }: Props) {
       ctrl: true,
       alt: false,
       action: () => {
-        if (imageUrl && !captionState.loading) handleGenerate()
+        if (imageUrl && !captionState.loading) {
+          if (onTrigger) onTrigger()
+          handleGenerate()
+        }
       }
     }
   ], true)

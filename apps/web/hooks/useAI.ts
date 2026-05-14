@@ -31,6 +31,11 @@ function useAIAction<TInput, TResult>(
       return data.data
     } catch (err: any) {
       const msg = err.response?.data?.error || err.message || 'AI tidak tersedia'
+      
+      if (msg === 'CONSENT_REQUIRED' && typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('ai:consent:required'))
+      }
+
       setState({ loading: false, result: null, error: msg })
       return null
     }

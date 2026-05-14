@@ -29,6 +29,7 @@ import { useState, useEffect } from 'react'
 import { cn } from '../../../lib/utils'
 import { useRouter } from 'next/navigation'
 import NotificationBell from '../../../components/dashboard/NotificationBell'
+import { AIConsentModal } from '../../../components/editor/AIConsentModal'
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -100,6 +101,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       label: 'Superadmin',
       items: [
         { name: 'Manajemen Situs', href: `/${site}/dashboard/admin`, icon: Settings, roles: ['superadmin'] },
+        { name: 'AI Dashboard', href: `/${site}/dashboard/admin/ai-usage`, icon: Activity, roles: ['superadmin'] },
       ]
     }] : [])
   ]
@@ -338,6 +340,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </div>
       </main>
+      
+      <AIConsentModal />
     </div>
   )
 }
